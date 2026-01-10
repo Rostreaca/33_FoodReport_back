@@ -16,7 +16,7 @@ public class RenamePolicy {
 								 .format(new Date());
 		int randomNo = (int)(Math.random() * 900) + 100;
 		
-		String changeName = "KH_" + currentTime + "_"
+		String changeName = "FR_" + currentTime + "_"
 						  + randomNo + ext;
 		
 		return "KH_" + currentTime + "_" + randomNo + ext;
