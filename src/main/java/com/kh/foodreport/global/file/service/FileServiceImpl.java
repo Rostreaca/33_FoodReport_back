@@ -57,7 +57,8 @@ public class FileServiceImpl implements FileService{
 			log.error("알 수 없는 파일 업로드 오류: {}", e.getMessage());
 			throw new FileUploadException("파일 업로드 중 알 수 없는 오류가 발생했습니다.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("알 수 없는 입 출력 오류: {}", e.getMessage());
+			throw new FileUploadException("알 수 없는 파일 업로드 오류가 발생했습니다.");
 		}
 		
 		String filePath = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + changeFilename;
