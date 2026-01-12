@@ -40,7 +40,7 @@ public class FileService {
 		String changeFilename = renamePolicy.rename(originalFilename);
 		
 		PutObjectRequest request = PutObjectRequest.builder()
-												   .bucket(changeFilename)
+												   .bucket(bucketName)
 												   .key(changeFilename)
 												   .contentType(file.getContentType())
 												   .build();
