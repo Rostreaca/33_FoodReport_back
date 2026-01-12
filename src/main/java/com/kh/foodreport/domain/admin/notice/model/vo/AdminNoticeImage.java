@@ -17,5 +17,5 @@ public class AdminNoticeImage {
 	private Date updateDate;
 	private Date deleteDate;
 	private Long refNoticeNo;
-	
+
 }

@@ -37,6 +37,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		int imgResult = noticeMapper.saveImage(image);
 
 		if (imgResult == 0) {
+			fileService.deleteStoredFile(imageUrl);
 		    throw new NoticeImageUploadException("이미지 저장 실패");
 		}
 
@@ -52,12 +53,13 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		if (result == 0) { // 공지사항이 저장안됐을시(예외처리)
 			throw new NoticeCreationException("공지사항 등록에 실패하셨습니다!");
 		}
+		
 		// 공지사항 번호를 뽑음
 		Long num = notice.getNoticeNo();
 
 		// 2. 공지사항의 번호로 이미지가 있다면 notice에 이미지 정보 세팅
 		saveImage(file, num);
-
+		
 	}
 
 }
