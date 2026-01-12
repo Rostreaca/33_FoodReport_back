@@ -24,5 +24,19 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 공지사항 못만들었을 때 예외 
+	@ExceptionHandler(NoticeCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleNoticeCreationException(NoticeCreationException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	// 파일 업로드 예외
+	@ExceptionHandler(FileUploadException.class)
+	public ResponseEntity<ApiResponse<Object>> handleFileUploadException(FileUploadException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 
 }

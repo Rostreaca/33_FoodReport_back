@@ -27,3 +27,7 @@ mybatis:
 server:
   port: 8080
   
+springdoc:
+  swagger-ui:
+    path: /ui.html
+
