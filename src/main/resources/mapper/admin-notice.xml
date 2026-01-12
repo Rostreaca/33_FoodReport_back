@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.notice.model.dao.AdminNoticeMapper">
+	
+	<!-- 공지사항 insert -->
+	<insert id = "saveNotice"
+		parameterType="com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO"
+		>
+	<selectKey resultType="long" keyProperty="noticeNo" order="BEFORE">
+		SELECT SEQ_NOTICE_NO.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT 
+  		  INTO 
+  	   		   FR_NOTICE
+  	   		   (
+  	   		   NOTICE_NO,
+  	   		   NOTICE_TITLE,
+  	   		   NOTICE_CONTENT,
+  	   		   VIEW_COUNT,
+  	   		   STATUS,
+  	   		   CREATE_DATE,
+  	   		   UPDATE_DATE,
+  	   		   DELETE_DATE,
+  	   		   MEMBER_NO
+  	   		   )
+		VALUES 
+	   		   (
+	   			 #{noticeNo},
+	   			 #{noticeTitle},
+	   			 #{noticeContent},
+	   			 DEFAULT,
+	   			 DEFAULT,
+	   			 DEFAULT,
+	   			 NULL,
+	   			 NULL,
+	   			 #{refMemberNo}
+	   		   )
+	</insert>
+	
+	<!-- 공지사항 이미지 insert -->
+	<insert id = "saveImage"
+		parameterType="com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage">
+		INSERT
+		  INTO
+		  	   FR_NOTICE_IMAGE
+		  	   (
+		  	   IMAGE_NO,
+		  	   ORIGIN_NAME,
+		  	   CHANGE_NAME,
+		  	   STATUS,
+		  	   CREATE_DATE,
+		  	   UPDATE_DATE,
+		  	   DELETE_DATE,
+		  	   NOTICE_NO
+		  	   )
+		VALUES 
+			   (
+			   SEQ_NOTICE_IMAGE_NO.NEXTVAL,
+			   #{originName},
+			   #{changeName},
+			   DEFAULT,
+			   DEFAULT,
+			   NULL,
+			   NULL,
+			   #{refNoticeNo}
+			   )
+	</insert>
+</mapper>

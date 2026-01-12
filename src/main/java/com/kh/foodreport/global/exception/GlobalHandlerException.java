@@ -24,5 +24,12 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 잘못된 상태 전달시
+	@ExceptionHandler(NoticeCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleNoticeCreationException(NoticeCreationException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 }
