@@ -8,6 +8,7 @@ build/
 application-private.yml
 
 ### STS ###
+.metadata
 .apt_generated
 .classpath
 .factorypath
