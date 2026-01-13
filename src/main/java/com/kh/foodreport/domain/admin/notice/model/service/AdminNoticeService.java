@@ -12,4 +12,6 @@ public interface AdminNoticeService {
 	void saveNotice(AdminNoticeDTO notice, MultipartFile file);
 	
 	AdminNoticeResponse findAllNotices(int page);
+	
+	AdminNoticeResponse findByNoticeTitle(int page, String noticeTitle);
 }

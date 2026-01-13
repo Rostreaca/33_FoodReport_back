@@ -43,4 +43,16 @@ public class AdminNoticeController {
 		
 		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
 	}
+	
+	
+	@GetMapping("/keyword") // 공지사항 제목 키워드로 조회
+	public ResponseEntity<ApiResponse<AdminNoticeResponse>> findByNoticeTitle(@RequestParam(name="page", defaultValue = "1") int page
+																		     ,@RequestParam(name="noticeTitle")String noticeTitle) {
+		
+		AdminNoticeResponse response = noticeService.findByNoticeTitle(page, noticeTitle);
+		
+		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
+	}
+	
+	
 }
