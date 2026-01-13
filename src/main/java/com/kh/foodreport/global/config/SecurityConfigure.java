@@ -38,6 +38,7 @@ public class SecurityConfigure {
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(requests -> {
 					// 비로그인 허용
+					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET).permitAll();
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST).permitAll();

@@ -19,6 +19,6 @@ public class RenamePolicy {
 		String changeName = "FR_" + currentTime + "_"
 						  + randomNo + ext;
 		
-		return "KH_" + currentTime + "_" + randomNo + ext;
+		return changeName;
 	}
 }

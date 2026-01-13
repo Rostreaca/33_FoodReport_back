@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.review.model.dao.ReviewMapper">
+	
+	<insert id="saveReview" parameterType="ReviewDTO">
+		<selectKey resultType="long" keyProperty="reviewNo" order="BEFORE">
+			SELECT SEQ_REVIEW_NO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT
+		  INTO
+		       FR_REVIEW
+		       (
+		       REVIEW_NO
+		     , REVIEW_TITLE
+		     , REVIEW_CONTENT
+		     , MEMBER_NO
+		     , CREATE_DATE
+		     , STATUS
+		       )
+		VALUES
+		       (
+		       #{reviewNo}
+		     , #{reviewTitle}
+		     , #{reviewContent}
+		     , #{reviewWriter}
+		     , SYSDATE
+		     , 'Y'
+		       )		
+	</insert>
+	
+	<insert id="saveImage" parameterType="ReviewImage">
+		INSERT
+		  INTO
+		       FR_REVIEW_IMAGE
+		       (
+		       IMAGE_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , REVIEW_NO
+		     , CREATE_DATE
+		     , STATUS
+		     , IMAGE_LEVEL
+		       )
+		VALUES
+		       (
+		       SEQ_REVIEW_IMAGE_NO.NEXTVAL
+		     , #{originName}
+		     , #{changeName}
+		     , #{refReviewNo}
+		     , SYSDATE
+		     , 'Y'
+		     , #{imageLevel}
+		       )
+	</insert>
+	
+</mapper>
