@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.service.MemberService;
+import com.kh.foodreport.global.common.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,11 @@ public class MemberController {
 	private final MemberService memberService;
 	
 	@PostMapping
-	public ResponseEntity<?> signUp(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody MemberDTO member){
 		log.info("멤버 잘들어오나 : {}", member);
 		
 		memberService.signUp(member);
 
-		return ResponseEntity.status(201).build();
+		return ApiResponse.created("회원가입에 성공했습니다.");
 	}
 }
