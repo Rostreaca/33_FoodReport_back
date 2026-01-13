@@ -21,7 +21,7 @@ mybatis:
   configuration:
     jdbc-type-for-null: VARCHAR
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: com.kh.foodreport.*.model.vo, com.kh.foodreport.*.model.dto
+  type-aliases-package: com.kh.foodreport.*.*.model.vo, com.kh.foodreport.*.*.model.dto
   mapper-locations: classpath:mapper/**/*.xml
   
 server:
@@ -30,4 +30,3 @@ server:
 springdoc:
   swagger-ui:
     path: /ui.html
-
