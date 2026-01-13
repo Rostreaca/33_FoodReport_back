@@ -96,6 +96,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
+		pages.put("noticeTitle", noticeTitle);
+		
 		List<AdminNoticeDTO> notices = noticeMapper.findByNoticeTitle(pages);
 		
 		return createResponse(notices, pages);
