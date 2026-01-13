@@ -12,6 +12,7 @@ import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.util.PageInfo;
@@ -76,7 +77,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		// 전체 개수 조회
 		int listCount = noticeMapper.countByNotices();
-		
+				
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findAllNotices(pages);
@@ -86,9 +87,12 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	
 	public AdminNoticeResponse findByNoticeTitle(int page, String noticeTitle) {
 		
+		if(noticeTitle == null || "".equals(noticeTitle.trim())) {
+			throw new InvalidKeywordException("키워드를 입력해주세요.");
+		}
+		
 		// 부분 개수 조회
 		int listCount = noticeMapper.countByNoticeTitle(noticeTitle);
-		// 여까지 완성
 		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
