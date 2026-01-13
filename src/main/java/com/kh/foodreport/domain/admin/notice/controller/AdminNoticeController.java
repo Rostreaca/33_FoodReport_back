@@ -49,7 +49,7 @@ public class AdminNoticeController {
 	public ResponseEntity<ApiResponse<AdminNoticeResponse>> findByNoticeTitle(@RequestParam(name="page", defaultValue = "1") int page
 																		     ,@RequestParam(name="noticeTitle")String noticeTitle) {
 		
-		AdminNoticeResponse response = noticeService.findByNoticeTitle(page, noticeTitle);
+		AdminNoticeResponse response = noticeService.findByNoticeTitle(page,noticeTitle);
 		
 		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
 	}

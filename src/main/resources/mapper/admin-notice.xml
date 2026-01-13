@@ -104,7 +104,7 @@
 			 , I.CHANGE_NAME noticeImageUrl
 		  FROM FR_NOTICE N
 		  LEFT JOIN FR_NOTICE_IMAGE I ON I.NOTICE_NO = N.NOTICE_NO
-		  WHERE NOTICE_TITLE LIKE '%' || #{noticeTitle} || '%' 
+		  WHERE N.NOTICE_TITLE LIKE '%' || #{noticeTitle} || '%' 
 		  ORDER BY N.NOTICE_NO DESC
 		 OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY
 	</select>

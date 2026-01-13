@@ -39,7 +39,7 @@ public class Pagenation {
 		PageInfo pageInfo = getPageInfo(listCount, page, 5, boardLimit);
 		
 		if(page > pageInfo.getMaxPage()) {
-			throw new PageNotFoundException("초과된 페이지입니다.");
+			throw new PageNotFoundException("존재하지 않는 페이지입니다.");
 		}
 		
 		map.put("pageInfo", pageInfo);
