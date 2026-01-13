@@ -16,6 +16,7 @@ public class Review {
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
+	private int likes;
 	private int viewCount;
 	private String status;
 	
