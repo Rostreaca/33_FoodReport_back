@@ -1,11 +1,14 @@
 package com.kh.foodreport.domain.admin.notice.model.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.admin.notice.model.dao.AdminNoticeMapper;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
+import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
@@ -60,6 +63,21 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		// 2. 공지사항의 번호로 이미지가 있다면 notice에 이미지 정보 세팅
 		saveImage(file, num);
 		
+	}
+
+	@Override
+	public List<AdminNoticeResponse> findAllNotice(int page) {
+		
+		// 전체 개수 조회
+		
+		
+		// 2. PageInfo 객체 생성
+		
+		
+		// 3. limit과 offset 계산
+		
+		
+		return null;
 	}
 
 }

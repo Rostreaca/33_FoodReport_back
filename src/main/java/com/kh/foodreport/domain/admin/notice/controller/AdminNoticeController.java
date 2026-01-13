@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
+import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.service.AdminNoticeService;
 import com.kh.foodreport.global.common.ApiResponse;
 
@@ -36,10 +37,10 @@ public class AdminNoticeController {
 	}
 
 	@GetMapping // 전체 공지사항 조회
-	public ResponseEntity<ApiResponse<List<AdminNoticeDTO>>> findAllNotice(@RequestParam(name="page", defaultValue = "1") int page) {
+	public ResponseEntity<ApiResponse<List<AdminNoticeResponse>>> findAllNotice(@RequestParam(name="page", defaultValue = "1") int page) {
 		
-		List<AdminNoticeDTO> response = noticeService.findAllNotice(page);
+		List<AdminNoticeResponse> response = noticeService.findAllNotice(page);
 		
-		return ApiResponse.ok("조회", response);
+		return ApiResponse.ok("",null);
 	}
 }
