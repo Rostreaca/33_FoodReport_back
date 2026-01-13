@@ -1,6 +1,9 @@
 package com.kh.foodreport.domain.admin.notice.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,4 +35,11 @@ public class AdminNoticeController {
 		return ApiResponse.created("공지사항 등록에 성공하였습니다");
 	}
 
+	@GetMapping // 전체 공지사항 조회
+	public ResponseEntity<ApiResponse<List<AdminNoticeDTO>>> findAllNotice(@RequestParam(name="page", defaultValue = "1") int page) {
+		
+		List<AdminNoticeDTO> response = noticeService.findAllNotice(page);
+		
+		return ApiResponse.ok("조회", response);
+	}
 }

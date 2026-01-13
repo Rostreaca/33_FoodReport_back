@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.foodreport.domain.admin.notice.model.dao.AdminNoticeMapper;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
+import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
-import com.kh.foodreport.global.exception.NoticeImageUploadException;
 import com.kh.foodreport.global.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
 		if (imgResult == 0) {
 			fileService.deleteStoredFile(imageUrl);
-		    throw new NoticeImageUploadException("이미지 저장 실패");
+		    throw new FileUploadException("이미지 저장 실패");
 		}
 
 	}

@@ -8,4 +8,5 @@ public interface AdminNoticeService {
 
 	void saveNotice(AdminNoticeDTO notice, MultipartFile file);
 	
+	
 }
