@@ -25,6 +25,8 @@ public class MemberController {
 	public ResponseEntity<?> signUp(@Valid @RequestBody MemberDTO member){
 		log.info("멤버 잘들어오나 : {}", member);
 		
+		memberService.signUp(member);
+
 		return ResponseEntity.status(201).build();
 	}
 }

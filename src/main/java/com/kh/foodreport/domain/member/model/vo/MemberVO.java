@@ -3,10 +3,14 @@ package com.kh.foodreport.domain.member.model.vo;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@Builder
 @AllArgsConstructor
+@ToString
 public class MemberVO {
 	private Long memberNo;
 	private String email;
