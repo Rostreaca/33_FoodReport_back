@@ -32,7 +32,7 @@ public class ReviewServiceImpl implements ReviewService{
 		int imageLevel = 1;
 		
 		// Mapper에서 Insert문을 성공적으로 처리했는 지 확인 할 변수 
-		int result = 0;
+		int result = 1;
 		
 		// 예외 발생 시 이미지 삭제 요청을 보낼 URL을 모아놓을 리스트
 		List<String> imageUrls = new ArrayList();
