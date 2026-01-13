@@ -26,10 +26,8 @@ public class ReviewServiceImpl implements ReviewService{
 	private final ReviewMapper reviewMapper;
 	private final FileService fileService;
 	
-	private int saveImage(Long reviewNo,List<MultipartFile> images) {
+	private void saveImage(Long reviewNo,List<MultipartFile> images) {
 		
-		// 썸네일 여부를 저장할 변수
-		int imageLevel = 1;
 		
 		// Mapper에서 Insert문을 성공적으로 처리했는 지 확인 할 변수 
 		int result = 1;
@@ -38,10 +36,15 @@ public class ReviewServiceImpl implements ReviewService{
 		List<String> imageUrls = new ArrayList();
 		
 		for(int i=0; i<images.size(); i++){
-			
+
+			// 이미지가 하나라도 존재하지 않을 경우 예외 발생
 			if(images.get(i) == null || images.get(i).isEmpty()) {
-				return 0;
+				result = 0;
+				break;
 			}
+
+			// 썸네일 여부를 저장할 변수
+			int imageLevel = 0;
 			
 			if(i == 0) { // 첫 이미지 : 썸네일(imageLevel : 0), 다른 이미지(imageLevel : 1)
 				imageLevel = 0;
@@ -62,7 +65,6 @@ public class ReviewServiceImpl implements ReviewService{
 												.imageLevel(imageLevel)
 												.build();
 			
-			
 			result = result * reviewMapper.saveImage(reviewImage);
 			
 		}
@@ -78,22 +80,14 @@ public class ReviewServiceImpl implements ReviewService{
 			throw new FileUploadException("이미지 업로드 실패 ");
 		}
 		
-		return result;
-		
 	}
 	
 	@Transactional
 	@Override
 	public void saveReview(ReviewDTO review, List<MultipartFile> images) {
-
-		int imageResult = 0;
-		int reviewResult = 0;
-		
-		log.info("{}", review);
-		log.info("{}", images);
 		
 		// DB에 리뷰 내용 저장 및 resultSet으로 ReviewDTO의 reviewNo 필드에 값 대입 
-		reviewResult = reviewMapper.saveReview(review);
+		int reviewResult = reviewMapper.saveReview(review);
 		
 		// 리뷰 INSERT 실패 시 예외 발생
 		if(reviewResult == 0) {
@@ -102,7 +96,7 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		// 이미지가 존재할 경우 이미지 저장 메서드 호출
 		if(!images.isEmpty()) {
-			imageResult = saveImage(review.getReviewNo(),images);
+			saveImage(review.getReviewNo(),images);
 		}
 		
 		
