@@ -25,9 +25,9 @@ public class Pagenation {
 	
 	public Map<String, Object> getPageRequest(int listCount, int page, int boardLimit) {
 		
-		if (page <= 0) 
+		if (page <= 0) {
 			throw new PageNotFoundException("잘못된접근입니다.( 0보다 큰값을 입력해주세요.)");
-		
+		}
 		
 		Map<String, Object> map = new HashMap<>();
 		
