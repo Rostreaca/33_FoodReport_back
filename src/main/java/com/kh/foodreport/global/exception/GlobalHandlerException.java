@@ -1,5 +1,8 @@
 package com.kh.foodreport.global.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,9 +16,34 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalHandlerException {
 
+	
+	
+
+
 	/* 공통 응답 포맷 */
 	private ResponseEntity<ApiResponse<Object>> createErrorResponseEntity(Exception e, HttpStatus status) {
 		return ApiResponse.failure(e.getMessage(), status);
+	}
+
+	// 인증 실패 시
+	@ExceptionHandler(CustomAuthenticationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleAuth(CustomAuthenticationException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.UNAUTHORIZED);
+	}
+	
+	// 유저 정보 전달 실패 시
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ApiResponse<Object>> handlerUsernameNotFound(UsernameNotFoundException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 이메일 중복 확인
+	@ExceptionHandler(EmailDuplicateException.class)
+	public ResponseEntity<ApiResponse<Object>> handlerDuplicateEmail(EmailDuplicateException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	// 잘못된 상태 전달시
