@@ -75,18 +75,10 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Transactional
 	public AdminNoticeResponse findAllNotices(int page) {
 		
-		// 페이징처리 예외 발생
-		if (page <= 0) {
-			throw new PageNotFoundException("잘못된접근임");
-		}
 		// 전체 개수 조회
 		int listCount = noticeMapper.countByNotices();
-
-		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
-		if(page > ((PageInfo)pages.get("pageInfo")).getBoardLimit()) {
-			throw new PageNotFoundException("초과된 페이지임");
-		}
+		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findAllNotices(pages);
 		
@@ -98,6 +90,4 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		return response;
 	}
 	
-	
-
 }

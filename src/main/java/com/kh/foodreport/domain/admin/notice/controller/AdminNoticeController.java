@@ -33,7 +33,7 @@ public class AdminNoticeController {
 		
 		noticeService.saveNotice(notice, file);
 		
-		return ApiResponse.created("공지사항 등록에 성공하였습니다");
+		return ApiResponse.created("공지사항 등록에 성공하였습니다.");
 	}
 
 	@GetMapping // 전체 공지사항 조회
@@ -41,6 +41,6 @@ public class AdminNoticeController {
 		
 		AdminNoticeResponse response = noticeService.findAllNotices(page);
 		
-		return ApiResponse.ok(response,"성공");
+		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
 	}
 }
