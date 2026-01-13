@@ -55,4 +55,77 @@
 		       )
 	</insert>
 	
+	<select id="countByReviews" resultType="_int" parameterType="map">
+		
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW
+		  <if test="keyword != ''">
+		 WHERE
+			   REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+		  </if>
+		       
+    </select>
+	
+	<resultMap id="findAllReviews" type="ReviewDTO">
+		<id column="REVIEW_NO" property="reviewNo"/>
+		<result column="REVIEW_TITLE" property="reviewTitle"/>
+		<result column="REVIEW_CONTENT" property="reviewContent"/>
+		<result column="MEMBER_NO" property="reviewWriter" />
+		<result column="VIEW_COUNT" property="viewCount"/>
+		<result column="LIKES" property="likes" />
+		<result column="CREATE_DATE" property="createDate" />
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="IMAGE_NO" property="imageNo"/>
+			<result column="CHANGE_NAME" property="changeName"/>
+			<result column="IMAGE_LEVEL" property="imageLevel"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
+		SELECT
+		       REVIEW_NO
+		     , REVIEW_TITLE
+		     , REVIEW_CONTENT
+		     , MEMBER_NO
+		     , VIEW_COUNT
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+		     , REVIEW.CREATE_DATE
+		     , IMAGE_NO
+		     , IMG.CHANGE_NAME
+		     , IMG.IMAGE_LEVEL
+		  FROM
+		       FR_REVIEW REVIEW
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG USING (REVIEW_NO)
+		 WHERE
+		       REVIEW.STATUS = 'Y'
+		   AND
+		       IMAGE_LEVEL = 0
+		 	<if test="keyword != ''">
+		   AND
+		       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+			</if>
+		 ORDER
+		    BY 
+		    <choose>
+				<when test="order == 'likes'">
+			   LIKES DESC
+				</when>
+			    <otherwise>
+		       REVIEW.CREATE_DATE DESC
+				</otherwise>
+			</choose>
+		
+		
+	</select>
+	
+	
 </mapper>
