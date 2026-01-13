@@ -46,4 +46,10 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 
+	// 페이징 처리 예외
+	@ExceptionHandler(PageNotFoundException.class)
+	public ResponseEntity<ApiResponse<Object>> handlePageNotFoundException(PageNotFoundException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.NOT_FOUND);
+	}
 }

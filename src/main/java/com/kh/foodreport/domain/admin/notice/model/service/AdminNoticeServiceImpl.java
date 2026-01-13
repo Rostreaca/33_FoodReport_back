@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.admin.notice.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,10 @@ import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.util.PageInfo;
+import com.kh.foodreport.global.util.Pagenation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
 	private final AdminNoticeMapper noticeMapper;
 	private final FileService fileService;
+	private final Pagenation pagenation;
 
 	private void saveImage(MultipartFile file, Long num) {
 
@@ -65,19 +70,34 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 	}
 
+	
 	@Override
-	public List<AdminNoticeResponse> findAllNotice(int page) {
+	@Transactional
+	public AdminNoticeResponse findAllNotices(int page) {
 		
+		// 페이징처리 예외 발생
+		if (page <= 0) {
+			throw new PageNotFoundException("잘못된접근임");
+		}
 		// 전체 개수 조회
+		int listCount = noticeMapper.countByNotices();
+
+		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
+		if(page > ((PageInfo)pages.get("pageInfo")).getBoardLimit()) {
+			throw new PageNotFoundException("초과된 페이지임");
+		}
 		
-		// 2. PageInfo 객체 생성
+		List<AdminNoticeDTO> notices = noticeMapper.findAllNotices(pages);
 		
+		AdminNoticeResponse response = new AdminNoticeResponse();
 		
-		// 3. limit과 offset 계산
+		response.setAdminNotice(notices);
+		response.setPageInfo(((PageInfo)pages.get("pageInfo")));
 		
-		
-		return null;
+		return response;
 	}
+	
+	
 
 }

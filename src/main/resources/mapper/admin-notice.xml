@@ -68,25 +68,32 @@
 			   )
 	</insert>
 	
-	<select id="findAllNotice"
-		resultMap="AdminNoticeResponse">
+	<!-- 공지사항 전체 목록 조회 -->
+	<select id="findAllNotices"
+		resultType="AdminNoticeDTO" parameterType="map">
 		SELECT
 			   N.NOTICE_NO noticeNo
 			 , N.NOTICE_TITLE noticeTitle
 			 , N.NOTICE_CONTENT noticeContent
-			 , N.VIEW_COUNT view
+			 , N.VIEW_COUNT viewCount
 			 , N.STATUS status
 			 , N.CREATE_DATE createDate
 			 , N.UPDATE_DATE updateDate
 			 , N.DELETE_DATE deleteDate
 			 , N.MEMBER_NO refMemberNo
-			 , CHANGE_NAME noticeImageUrl
-		  FROM
-		  	   FR_NOTICE N
+			 , I.CHANGE_NAME noticeImageUrl
+		  FROM FR_NOTICE N
 		  LEFT JOIN FR_NOTICE_IMAGE I ON I.NOTICE_NO = N.NOTICE_NO
-		  ORDER
-		     BY 
-		        N.NOTICE_NO DESC
-		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY;
+		  ORDER BY N.NOTICE_NO DESC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+	
+	<select id="countByNotices"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+	      FROM
+	      	   FR_NOTICE
+	</select>
+	
 </mapper>

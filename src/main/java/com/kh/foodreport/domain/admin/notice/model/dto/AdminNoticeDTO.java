@@ -20,7 +20,7 @@ public class AdminNoticeDTO {
 	private Long noticeNo;
 	private String noticeTitle;
 	private String noticeContent;
-	private int view;
+	private int viewCount;
 	private String status;
 	private Date createDate;
 	private Date updateDate;

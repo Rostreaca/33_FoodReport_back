@@ -1,10 +1,12 @@
 package com.kh.foodreport.domain.admin.notice.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
+import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 
 @Mapper
@@ -14,8 +16,8 @@ public interface AdminNoticeMapper {
 	
 	int saveImage(AdminNoticeImage image);
 	
-	int selectListCount();
+	int countByNotices();
 	
-	List<AdminNoticeDTO> findAll();
+	List<AdminNoticeDTO> findAllNotices(Map<String, Object> pages);
 	
 }

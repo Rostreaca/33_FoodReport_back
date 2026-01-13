@@ -37,10 +37,10 @@ public class AdminNoticeController {
 	}
 
 	@GetMapping // 전체 공지사항 조회
-	public ResponseEntity<ApiResponse<List<AdminNoticeResponse>>> findAllNotice(@RequestParam(name="page", defaultValue = "1") int page) {
+	public ResponseEntity<ApiResponse<AdminNoticeResponse>> findAllNotices(@RequestParam(name="page", defaultValue = "1") int page) {
 		
-		List<AdminNoticeResponse> response = noticeService.findAllNotice(page);
+		AdminNoticeResponse response = noticeService.findAllNotices(page);
 		
-		return ApiResponse.ok("",null);
+		return ApiResponse.ok(response,"성공");
 	}
 }

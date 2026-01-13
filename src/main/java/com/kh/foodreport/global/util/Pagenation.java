@@ -1,5 +1,8 @@
 package com.kh.foodreport.global.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 @Component //클래스를 빈으로 등록하는것이다. 즉 spring제어하게 만드는 것객체를 생성안해도됨 
@@ -17,5 +20,22 @@ public class Pagenation {
 		return new PageInfo(listCount,currentPage,boardLimit,pageLimit,maxPage,
 				startPage,endPage);
 	}
+	
+	public Map<String, Object> getPageRequest(int listCount, int page, int boardLimit) {
 		
+		Map<String, Object> map = new HashMap<>();
+		
+		int offset = (page - 1) * boardLimit;
+		
+		
+		map.put("offset", offset);
+		map.put("limit", boardLimit);
+		
+		PageInfo pageInfo = getPageInfo(listCount, page, 5, boardLimit);
+		
+		map.put("pageInfo", pageInfo);
+		
+		return map;
+	}
+	
 }
