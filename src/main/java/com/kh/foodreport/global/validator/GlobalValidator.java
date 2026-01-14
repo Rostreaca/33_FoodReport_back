@@ -12,4 +12,10 @@ public class GlobalValidator {
 			throw new PageNotFoundException(message);
 		}
 	}
+	
+	public void validateNo(Long number,String message) {
+		if (number <= 0) {
+			throw new PageNotFoundException(message);
+		}
+	}
 }

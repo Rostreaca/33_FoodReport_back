@@ -14,9 +14,11 @@ import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
+import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	private final AdminNoticeMapper noticeMapper;
 	private final FileService fileService;
 	private final Pagenation pagenation;
+	private final GlobalValidator validator;
 
 	private void saveImage(MultipartFile file, Long num) {
 
@@ -116,7 +119,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Transactional
 	public void deleteNotice(Long noticeNo) {
 		
-		
+		validator.validateNo(noticeNo , "0보다 큰 값을 넣어주시길바랍니다.");
 		
 		// 1. 이미지 테이블 접근 1행 반환시 변경됨, 0행 반환시 변경안되거나 없음.
 		int imageResult = noticeMapper.deleteNoticeImage(noticeNo);
@@ -125,9 +128,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		int deleteResult = noticeMapper.deleteNotice(noticeNo);
 		
 		// 이미 삭제됐거나, 없는 데이터
-		if(deleteResult == 0) {
-			throw new t
-		}
+		validator.validateNo(deleteResult , "일치하는 번호가 존재하지 않습니다.");
 	}
 	
 }
