@@ -19,7 +19,7 @@ public class AdminNoticeDTO {
 	
 	private Long noticeNo;
 	private String noticeTitle;
-	private String notSiceContent;
+	private String noticeContent;
 	private int viewCount;
 	private String status;
 	private Date createDate;
