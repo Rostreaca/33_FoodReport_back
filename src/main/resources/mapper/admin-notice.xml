@@ -128,4 +128,25 @@
 		 WHERE NOTICE_TITLE LIKE '%' || #{noticeTitle} || '%'
 	</select>
 	
+	<!-- 이미지 테이블 삭제 -->
+	<update id="deleteNoticeImage">
+		UPDATE 
+			   FR_NOTICE_IMAGE
+		   SET 
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<!-- 공지사항 테이블 삭제-->
+	<update id="deleteNotice">
+		UPDATE
+			   FR_NOTICE
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   NOTICE_NO = #{noticeNo}
+	</update>
 </mapper>

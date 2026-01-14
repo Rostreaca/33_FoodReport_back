@@ -14,4 +14,6 @@ public interface AdminNoticeService {
 	AdminNoticeResponse findAllNotices(int page);
 	
 	AdminNoticeResponse findByNoticeTitle(int page, String noticeTitle);
+	
+	void deleteNotice(Long noticeNo);
 }
