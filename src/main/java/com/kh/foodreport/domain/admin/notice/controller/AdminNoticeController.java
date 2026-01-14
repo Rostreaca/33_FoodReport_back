@@ -1,10 +1,10 @@
 package com.kh.foodreport.domain.admin.notice.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,5 +54,12 @@ public class AdminNoticeController {
 		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
 	}
 	
+	@DeleteMapping("/{noticeNo}")
+	public ResponseEntity<ApiResponse<Object>> deleteNotice(@PathVariable(name="noticeNo") Long noticeNo) {
+		
+		noticeService.deleteNotice(noticeNo);
+		
+		return ApiResponse.noContent();
+	}
 	
 }

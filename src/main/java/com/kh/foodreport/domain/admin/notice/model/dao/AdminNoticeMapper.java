@@ -22,4 +22,8 @@ public interface AdminNoticeMapper {
 	int countByNoticeTitle(String noticeTitle);
 	
 	List<AdminNoticeDTO> findByNoticeTitle(Map<String, Object> pages);
+	
+	int deleteNoticeImage(Long noticeNo);
+	
+	int deleteNotice(Long noticeNo);
 }

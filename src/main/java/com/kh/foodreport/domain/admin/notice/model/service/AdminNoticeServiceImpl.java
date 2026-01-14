@@ -50,7 +50,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		}
 
 	}
-
+	
 	@Override
 	@Transactional
 	public void saveNotice(AdminNoticeDTO notice, MultipartFile file) {
@@ -70,7 +70,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 	}
 
-	
 	@Override
 	@Transactional
 	public AdminNoticeResponse findAllNotices(int page) {
@@ -85,6 +84,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		return createResponse(notices, pages);
 	}
 	
+	@Override
 	public AdminNoticeResponse findByNoticeTitle(int page, String noticeTitle) {
 		
 		if(noticeTitle == null || "".equals(noticeTitle.trim())) {
@@ -110,6 +110,24 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		response.setAdminNotice(notices);
 		response.setPageInfo(((PageInfo)pages.get("pageInfo")));
 		return response;
+	}
+
+	@Override
+	@Transactional
+	public void deleteNotice(Long noticeNo) {
+		
+		
+		
+		// 1. 이미지 테이블 접근 1행 반환시 변경됨, 0행 반환시 변경안되거나 없음.
+		int imageResult = noticeMapper.deleteNoticeImage(noticeNo);
+		
+		// 2. 다음 공지사항 테이블 접근 1행 반환시 잘반환됨, 0행 반환시 삭제가 안된거기때문에 예외발생
+		int deleteResult = noticeMapper.deleteNotice(noticeNo);
+		
+		// 이미 삭제됐거나, 없는 데이터
+		if(deleteResult == 0) {
+			throw new t
+		}
 	}
 	
 }
