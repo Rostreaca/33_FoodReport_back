@@ -29,4 +29,5 @@ public class AdminNoticeDTO {
 	private String noticeImageUrl;
 	private String imageStatus;
 	
+	
 }

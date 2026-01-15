@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
 
 @Mapper
@@ -22,5 +23,12 @@ public interface ReviewMapper {
 	public ReviewDTO findByReviewNo(Long reviewNo);
 
 	public void updateViewCount(Long reviewNo);
+
+	public int updateReview(ReviewDTO review);
+
+	public int deleteImage(Long imageNo);
+
+	public List<ReviewImageDTO> findImagesByReviewNo(Long reviewNo);
+
 
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "images") List<MultipartFile> images){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
 		
 		reviewService.saveReview(review, images);
 		
@@ -58,6 +59,14 @@ public class ReviewController {
 		ReviewDTO response = reviewService.findByReviewNo(reviewNo);
 		
 		return ApiResponse.ok(response, "상세 조회 성공");
+	}
+	
+	@PutMapping("/{reviewNo}")
+	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo, @ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
+		
+		reviewService.updateReview(reviewNo, review, images);
+		
+		return ApiResponse.ok(null, "리뷰 변경에 성공했습니다.");
 	}
 	
 }
