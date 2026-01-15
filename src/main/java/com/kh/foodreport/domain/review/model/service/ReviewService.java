@@ -14,4 +14,6 @@ public interface ReviewService {
 
 	public ReviewResponse findAllReviews(int page, Map<String, Object> params);
 
+	public ReviewDTO findByReviewNo(Long reviewNo);
+	
 }
