@@ -30,7 +30,7 @@ public class AdminNoticeController {
 	
 	@PostMapping // 공지사항 등록
 	public ResponseEntity<ApiResponse<String>> saveNotice(@ModelAttribute AdminNoticeDTO notice
-										,@RequestParam(name="file") MultipartFile file) {
+										,@RequestParam(name="file", required = false) MultipartFile file) {
 		
 		noticeService.saveNotice(notice, file);
 		

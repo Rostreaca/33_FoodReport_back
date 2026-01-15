@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.tag.model.dao.AdminTagMapper">
+	
+	<!-- 태그 insert -->
+	<insert id="saveTag"
+		parameterType="AdminTag"	
+		>
+		INSERT 
+		  INTO
+		  	   FR_TAG
+		  	   (
+		  	   TAG_NO
+		  	 , TAG_TITLE
+		  	 , TAG_CONTENT
+		  	   )
+		 VALUES
+		  	   (
+		  	   SEQ_TAG_NO.NEXTVAL
+		  	 , #{tagTitle}
+		  	 , #{tagContent}
+		  	   )
+	</insert>
+	
+</mapper>
