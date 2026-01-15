@@ -27,6 +27,7 @@ public class AdminNoticeDTO {
 	private Date deleteDate;
 	private Long refMemberNo;
 	private String noticeImageUrl;
+	private String imageStatus;
 	
 	
 }

@@ -32,7 +32,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "images") List<MultipartFile> images){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
 		
 		reviewService.saveReview(review, images);
 		
@@ -62,7 +62,7 @@ public class ReviewController {
 	}
 	
 	@PutMapping("/{reviewNo}")
-	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo, @ModelAttribute ReviewDTO review, @RequestParam(name = "images") List<MultipartFile> images){
+	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo, @ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
 		
 		reviewService.updateReview(reviewNo, review, images);
 		

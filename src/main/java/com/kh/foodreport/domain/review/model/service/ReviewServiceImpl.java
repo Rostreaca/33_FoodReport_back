@@ -12,8 +12,8 @@ import com.kh.foodreport.domain.review.model.dao.ReviewMapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
-import com.kh.foodreport.domain.review.model.validator.ReviewValidator;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
+import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
@@ -34,8 +34,6 @@ public class ReviewServiceImpl implements ReviewService{
 	private final FileService fileService;
 	private final Pagenation pagenation;
 	private final GlobalValidator globalValidator;
-	private final ReviewValidator reviewValidator;
-	
 	
 	private void saveImages(Long reviewNo,List<MultipartFile> images) {
 		
@@ -45,6 +43,7 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		// 예외 발생 시 이미지 삭제 요청을 보낼 URL을 모아놓을 리스트
 		List<String> imageUrls = new ArrayList();
+
 		
 		for(int i=0; i<images.size(); i++){
 
@@ -87,6 +86,15 @@ public class ReviewServiceImpl implements ReviewService{
 		
 	}
 	
+	private void deleteImagesFromS3(List<String> imageUrls) {
+
+		imageUrls.forEach(file -> {
+			fileService.deleteStoredFile(file);
+		});
+		
+		throw new FileUploadException("이미지 업로드 실패");
+	}
+	
 	@Transactional
 	@Override
 	public void saveReview(ReviewDTO review, List<MultipartFile> images) {
@@ -100,7 +108,7 @@ public class ReviewServiceImpl implements ReviewService{
 		}
 		
 		// 이미지가 존재할 경우 이미지 저장 메서드 호출
-		if(!images.isEmpty()) {
+		if(images != null && !images.isEmpty()) {
 			saveImages(review.getReviewNo(),images);
 		}
 		
@@ -146,47 +154,7 @@ public class ReviewServiceImpl implements ReviewService{
 		return review;
 	}
 
-	private void updateImages(Long reviewNo, List<MultipartFile> images) {
-		
-		int result = 1;
-		
-		List<String> imageUrls = new ArrayList();
-		
-		for(int i=0; i<images.size(); i++) {
-			
-			if(images.get(i) == null || images.get(i).isEmpty()) {
-				result = 0;
-				break;
-			}
-			
-			String changeName = fileService.store(images.get(i));
-			
-			ReviewImage reviewImage = ReviewImage.builder()
-												 .ImageNo()
-												 .originName(images.get(i).getOriginalFilename())
-												 .changeName(changeName)
-												 .refReviewNo(reviewNo)
-												 .build();
-			
-			result = result * reviewMapper.updateImages(reviewImage);
-			
-		};
-		
-		if(result == 0) {
-			deleteImagesFromS3(imageUrls);
-		}
-		
-		
-	}
 
-	private void deleteImagesFromS3(List<String> imageUrls) {
-
-		imageUrls.forEach(file -> {
-			fileService.deleteStoredFile(file);
-		});
-		
-		throw new FileUploadException("이미지 업로드 실패");
-	}
 	
 	@Transactional
 	@Override
@@ -204,23 +172,35 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
 		
-		
-		
-		if(reviewImages == null || reviewImages.isEmpty()) {
-			if(images != null || !images.isEmpty()) {
+		if(reviewImages == null || reviewImages.isEmpty()) { // 기존 이미지 X
+			if(images != null && !images.isEmpty()) {
 				saveImages(reviewNo, images);
 			}
-		} else {
-			
-			
-			
-			if(images != null || !images.isEmpty()) {
-				updateImages(reviewNo, images);
+		} else { // 기존 이미지 O
+			if(images != null && !images.isEmpty()) { // 새 파일 저장
+				saveImages(reviewNo, images);
 			}
+
+			reviewImages.forEach(image -> { // 반복
+				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+			});
 			
 		}
 		
+	}
+	
+	// 이미지 삭제 메서드
+	private void deleteImage(ReviewImageDTO image) {
 		
+		//DB에서 이미지 삭제
+		int result = reviewMapper.deleteImage(image.getImageNo());
+		
+		if(result == 0) {
+			throw new FileManipulateException("기존 이미지 삭제에 실패했습니다.");
+		}
+		
+		//S3에서 파일 삭제
+		fileService.deleteStoredFile(image.getChangeName());
 		
 		
 		

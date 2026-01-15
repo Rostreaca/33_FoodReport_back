@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,12 +55,21 @@ public class AdminNoticeController {
 		return ApiResponse.ok(response,"공지사항 조회에 성공하였습니다.");
 	}
 	
-	@DeleteMapping("/{noticeNo}")
-	public ResponseEntity<ApiResponse<Object>> deleteNotice(@PathVariable(name="noticeNo") Long noticeNo) {
+	@DeleteMapping("/{noticeNo}") // 공지사항 삭제
+	public ResponseEntity<ApiResponse<Void>> deleteNotice(@PathVariable(name="noticeNo") Long noticeNo) {
 		
 		noticeService.deleteNotice(noticeNo);
 		
 		return ApiResponse.noContent();
 	}
 	
+	@PutMapping("/{noticeNo}") // 공지사항 변경
+	public ResponseEntity<ApiResponse<Void>> updateNotice(@PathVariable(name="noticeNo") Long noticeNo
+														 ,@ModelAttribute AdminNoticeDTO noticeDTO
+														 ,@RequestParam(name="file" , required = false) MultipartFile file) {
+		
+		noticeService.updateNotice(noticeNo, noticeDTO, file);
+		
+		return ApiResponse.ok("변경에 성공하였습니다", null);
+	}
 }

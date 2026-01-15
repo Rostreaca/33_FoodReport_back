@@ -73,6 +73,13 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 파일 조작(수정/ 삭제) 예외
+	@ExceptionHandler(FileManipulateException.class)
+	public ResponseEntity<ApiResponse<Object>> handleFileManipulateException(FileManipulateException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 
 	// 페이징 처리 예외
 	@ExceptionHandler(PageNotFoundException.class)
