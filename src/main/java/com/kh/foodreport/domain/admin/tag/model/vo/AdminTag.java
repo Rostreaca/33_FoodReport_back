@@ -16,11 +16,11 @@ public class AdminTag{
 	private Long tagNo;
 	
 	@NotBlank(message = "태그 제목을 입력해주세요.")
-	@Size(min = 1, max = 50, message = "태그 제목은 1~255바이트여야합니다.")
+	@Size(min = 1, max = 50, message = "태그 제목은 1~50바이트여야합니다.")
 	private String tagTitle;
 	
 	@NotBlank(message = "태그 내용을 입력해주세요.")
-	@Size(min = 1, max = 500, message = "태그 내용은 1~1000바이트여야합니다.")
+	@Size(min = 1, max = 500, message = "태그 내용은 1~500바이트여야합니다.")
 	private String tagContent;
 	
 	private String status;
