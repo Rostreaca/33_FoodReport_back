@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +40,7 @@ public class ReviewController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<Map<String,Object>>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order){
+	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order){
 		
 		Map<String, Object> params = new HashMap();
 		
@@ -49,6 +50,14 @@ public class ReviewController {
 		ReviewResponse response = reviewService.findAllReviews(page,params);
 		
 		return ApiResponse.ok(response, "전체 조회 성공");
+	}
+	
+	@GetMapping("/{reviewNo}")
+	public ResponseEntity<ApiResponse<ReviewDTO>> findByReviewNo(@PathVariable(name = "reviewNo" ) Long reviewNo){
+		
+		ReviewDTO response = reviewService.findByReviewNo(reviewNo);
+		
+		return ApiResponse.ok(response, "상세 조회 성공");
 	}
 	
 }

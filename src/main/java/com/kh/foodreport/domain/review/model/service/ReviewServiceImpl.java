@@ -13,10 +13,12 @@ import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
+import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,8 @@ public class ReviewServiceImpl implements ReviewService{
 	private final ReviewMapper reviewMapper;
 	private final FileService fileService;
 	private final Pagenation pagenation;
+	private final GlobalValidator globalValidator;
+	
 	
 	private void saveImage(Long reviewNo,List<MultipartFile> images) {
 		
@@ -128,6 +132,24 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		return response;
 	}
+
+	@Override
+	public ReviewDTO findByReviewNo(Long reviewNo) {
+		
+		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		
+		reviewMapper.updateViewCount(reviewNo);
+		
+		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
+		
+		if(review == null) {
+			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
+		}
+		
+		return review;
+	}
+	
+	
 	
 
 }

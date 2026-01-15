@@ -19,4 +19,8 @@ public interface ReviewMapper {
 
 	public List<ReviewDTO> findAllReviews(Map<String, Object> params);
 
+	public ReviewDTO findByReviewNo(Long reviewNo);
+
+	public void updateViewCount(Long reviewNo);
+
 }
