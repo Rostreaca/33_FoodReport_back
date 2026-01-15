@@ -14,7 +14,6 @@ import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
-import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -130,5 +129,39 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		// 이미 삭제됐거나, 없는 데이터
 		validator.validateNo(deleteResult , "일치하는 번호가 존재하지 않습니다.");
 	}
+
+	@Override
+	@Transactional
+	public void updateNotice(Long noticeNo, AdminNoticeDTO notice, MultipartFile file) {
+
+		validator.validateNo(noticeNo, "0보다 큰값을 넣어주시길 바랍니다.");
+		
+		String url = noticeMapper.countByNoticeNo(noticeNo); // 기존 파일 url 조회
+		notice.setNoticeNo(noticeNo);
+		noticeMapper.updateNotice(notice);
+		
+		if(url != null && !"".equals(url)) { // 기존 파일이 있음
+			if(file != null && !file.isEmpty()) { // 새 파일이 존재함
+				String imageUrl = fileService.store(file);
+				AdminNoticeImage image = AdminNoticeImage.builder()
+						.originName(file.getOriginalFilename())
+						.changeName(imageUrl)
+						.refNoticeNo(noticeNo).build();
+				int imageResult = noticeMapper.updateImage(image);
+				if(imageResult > 0) {
+					fileService.deleteStoredFile(url);
+				} else {
+					fileService.deleteStoredFile(imageUrl);
+					throw new FileUploadException("파일 업로드에 실패하였습니다.");
+				}
+			}
+		} else { // 기존 파일이 없음
+			if(file != null && !file.isEmpty()) { // 새 파일이 존재함
+				saveImage(file, noticeNo);
+			}
+		}
+
+	}
+	
 	
 }

@@ -26,4 +26,11 @@ public interface AdminNoticeMapper {
 	int deleteNoticeImage(Long noticeNo);
 	
 	int deleteNotice(Long noticeNo);
+	
+	String countByNoticeNo(Long noticeNo);
+	
+	int updateImage(AdminNoticeImage noticeImage);
+	
+	int updateNotice(AdminNoticeDTO notice);
+	
 }
