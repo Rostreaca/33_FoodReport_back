@@ -4,4 +4,19 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.foodreport.domain.token.model.dao.TokenMapper">
 	
+	<insert id="saveToken"
+			parameterType="RefreshToken">
+		INSERT 
+		  INTO 
+		  	   FR_TOKEN 
+		VALUES 
+			   (
+			   SEQ_TOKEN_NO.NEXTVAL
+			 , #{token}
+			 , #{expiration}
+			 , #{memberNo}
+			   )
+	</insert>
+	
+	
 </mapper>
