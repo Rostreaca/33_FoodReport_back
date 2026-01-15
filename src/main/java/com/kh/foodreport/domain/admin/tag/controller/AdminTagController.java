@@ -23,7 +23,7 @@ public class AdminTagController {
 	private final AdminTagService tagService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<AdminTag>> createTag(@RequestBody AdminTagDTO tag) {
+	public ResponseEntity<ApiResponse<Void>> createTag(@RequestBody AdminTagDTO tag) {
 		
 		tagService.saveTag(tag);
 		
