@@ -138,8 +138,11 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		String url = noticeMapper.countByNoticeNo(noticeNo); // 기존 파일 url 조회
 		notice.setNoticeNo(noticeNo);
-		noticeMapper.updateNotice(notice);
 		
+		int noticeResult = noticeMapper.updateNotice(notice);
+		if(noticeResult == 0) {
+			throw new NoticeCreationException("존재하지 않는 공지사항이거나 수정에 실패했습니다.");
+		}
 		if(url != null && !"".equals(url)) { // 기존 파일이 있음
 			if(file != null && !file.isEmpty()) { // 새 파일이 존재함
 				String imageUrl = fileService.store(file);
