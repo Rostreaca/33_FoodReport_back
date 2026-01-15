@@ -10,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.review.model.dao.ReviewMapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
+import com.kh.foodreport.domain.review.model.validator.ReviewValidator;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
@@ -32,9 +34,10 @@ public class ReviewServiceImpl implements ReviewService{
 	private final FileService fileService;
 	private final Pagenation pagenation;
 	private final GlobalValidator globalValidator;
+	private final ReviewValidator reviewValidator;
 	
 	
-	private void saveImage(Long reviewNo,List<MultipartFile> images) {
+	private void saveImages(Long reviewNo,List<MultipartFile> images) {
 		
 		
 		// Mapper에서 Insert문을 성공적으로 처리했는 지 확인 할 변수 
@@ -79,13 +82,7 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		// 이미지 INSERT를 하나라도 실패했을 경우
 		if(result == 0) {
-			
-			// 저장한 url들로 반복하여 삭제 요청을 보냄
-			imageUrls.forEach(file -> {
-				fileService.deleteStoredFile(file);
-			});
-			
-			throw new FileUploadException("이미지 업로드 실패 ");
+			deleteImagesFromS3(imageUrls);
 		}
 		
 	}
@@ -95,16 +92,16 @@ public class ReviewServiceImpl implements ReviewService{
 	public void saveReview(ReviewDTO review, List<MultipartFile> images) {
 		
 		// DB에 리뷰 내용 저장 및 resultSet으로 ReviewDTO의 reviewNo 필드에 값 대입 
-		int reviewResult = reviewMapper.saveReview(review);
+		int result = reviewMapper.saveReview(review);
 		
 		// 리뷰 INSERT 실패 시 예외 발생
-		if(reviewResult == 0) {
+		if(result == 0) {
 			throw new ReviewCreationException("리뷰 생성에 실패하였습니다.");
 		}
 		
 		// 이미지가 존재할 경우 이미지 저장 메서드 호출
 		if(!images.isEmpty()) {
-			saveImage(review.getReviewNo(),images);
+			saveImages(review.getReviewNo(),images);
 		}
 		
 		
@@ -148,6 +145,87 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		return review;
 	}
+
+	private void updateImages(Long reviewNo, List<MultipartFile> images) {
+		
+		int result = 1;
+		
+		List<String> imageUrls = new ArrayList();
+		
+		for(int i=0; i<images.size(); i++) {
+			
+			if(images.get(i) == null || images.get(i).isEmpty()) {
+				result = 0;
+				break;
+			}
+			
+			String changeName = fileService.store(images.get(i));
+			
+			ReviewImage reviewImage = ReviewImage.builder()
+												 .ImageNo()
+												 .originName(images.get(i).getOriginalFilename())
+												 .changeName(changeName)
+												 .refReviewNo(reviewNo)
+												 .build();
+			
+			result = result * reviewMapper.updateImages(reviewImage);
+			
+		};
+		
+		if(result == 0) {
+			deleteImagesFromS3(imageUrls);
+		}
+		
+		
+	}
+
+	private void deleteImagesFromS3(List<String> imageUrls) {
+
+		imageUrls.forEach(file -> {
+			fileService.deleteStoredFile(file);
+		});
+		
+		throw new FileUploadException("이미지 업로드 실패");
+	}
+	
+	@Transactional
+	@Override
+	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images) {
+		
+		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지 입니다.");
+		
+		review.setReviewNo(reviewNo);
+		
+		int result = reviewMapper.updateReview(review);
+
+		if(result == 0) {
+			throw new ReviewCreationException("리뷰 내용 수정에 실패했습니다");
+		}
+		
+		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
+		
+		
+		
+		if(reviewImages == null || reviewImages.isEmpty()) {
+			if(images != null || !images.isEmpty()) {
+				saveImages(reviewNo, images);
+			}
+		} else {
+			
+			
+			
+			if(images != null || !images.isEmpty()) {
+				updateImages(reviewNo, images);
+			}
+			
+		}
+		
+		
+		
+		
+		
+	}
+	
 	
 	
 	

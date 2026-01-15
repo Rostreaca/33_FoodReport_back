@@ -28,4 +28,5 @@ public class AdminNoticeDTO {
 	private Long refMemberNo;
 	private String noticeImageUrl;
 	
+	
 }

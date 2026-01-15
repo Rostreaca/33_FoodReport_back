@@ -202,12 +202,36 @@
 		       REVIEW_NO = #{reviewNo}
 		 ORDER
 		    BY
-		       IMG.CREATE_DATE ASC,REPLY.CREATE_DATE DESC
+		       IMG.IMAGE_LEVEL ASC, IMG.CREATE_DATE ASC,REPLY.CREATE_DATE DESC
 		       
 		  
 		
 		
 	</select>
+	
+	<update id="updateReview" parameterType="ReviewDTO">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       REVIEW_TITLE = #{reviewTitle}
+		     , REVIEW_CONTENT = #{reviewContent}
+		     , UPDATE_DATE = SYSDATE
+		
+	</update>
+	
+	<update id="updateImage" parameterType="ReviewImageDTO">
+		UPDATE
+		       FR_REVIEW_IMAGE
+		   SET
+		       ORIGIN_NAME = #{originName}
+		     , CHANGE_NAME = #{changeName}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+	</update>
+	
+	
+	
 	
 	
 </mapper>

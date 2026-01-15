@@ -23,4 +23,8 @@ public interface ReviewMapper {
 
 	public void updateViewCount(Long reviewNo);
 
+	public int updateReview(Long reviewNo, ReviewDTO review);
+
+	public int updateImages(ReviewImage reviewImage);
+
 }
