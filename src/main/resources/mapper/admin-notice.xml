@@ -156,10 +156,9 @@
 		SELECT
 			   I.CHANGE_NAME noticeImageUrl
 		  FROM FR_NOTICE N
-		  LEFT JOIN FR_NOTICE_IMAGE I ON I.NOTICE_NO = N.NOTICE_NO
+		  LEFT JOIN FR_NOTICE_IMAGE I ON I.NOTICE_NO = N.NOTICE_NO AND I.STATUS = 'Y'
 		  WHERE N.NOTICE_NO = #{noticeNo}
 		  	AND N.STATUS = 'Y'
-		  	AND (I.IMAGE_NO IS NOT NULL OR I.STATUS = 'Y')
 	</select>
 	
 	<!-- 공지사항 이미지 테이블 변경 기능 -->
