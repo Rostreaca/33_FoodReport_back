@@ -18,7 +18,8 @@ public interface MemberMapper {
 	
 	@Select("""
 			SELECT 
-				   EMAIL email
+				   MEMBER_NO memberNo
+				 , EMAIL email
 				 , PASSWORD password
 				 , NICKNAME nickname
 				 , PHONE phone
@@ -27,9 +28,9 @@ public interface MemberMapper {
 			  FROM 
 			       FR_MEMBER
 			 WHERE 
-			       EMAIL = #{email}
+			       EMAIL = #{username}
 		""")
-	MemberDTO loadUser(String memberId);
+	MemberDTO loadUser(String username);
 
 
 }

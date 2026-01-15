@@ -24,10 +24,8 @@ public class MemberController {
 	
 	@PostMapping
 	public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody MemberDTO member){
-		log.info("멤버 잘들어오나 : {}", member);
-		
+		log.info("멤버 : {}", member);		
 		memberService.signUp(member);
-
 		return ApiResponse.created("회원가입에 성공했습니다.");
 	}
 }

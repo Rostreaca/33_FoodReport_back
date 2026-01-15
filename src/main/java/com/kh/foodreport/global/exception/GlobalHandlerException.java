@@ -25,21 +25,21 @@ public class GlobalHandlerException {
 		return ApiResponse.failure(e.getMessage(), status);
 	}
 
-	// 인증 실패 시
+	// 인증 실패 예외
 	@ExceptionHandler(CustomAuthenticationException.class)
 	public ResponseEntity<ApiResponse<Object>> handleAuth(CustomAuthenticationException e){
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.UNAUTHORIZED);
 	}
 	
-	// 유저 정보 전달 실패 시
+	// 유저 정보 전달 실패 예외
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ApiResponse<Object>> handlerUsernameNotFound(UsernameNotFoundException e) {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
-	// 이메일 중복 확인
+	// 이메일 중복 예외
 	@ExceptionHandler(EmailDuplicateException.class)
 	public ResponseEntity<ApiResponse<Object>> handlerDuplicateEmail(EmailDuplicateException e) {
 		log.error("잘못된 상태 : {}", e.getMessage());

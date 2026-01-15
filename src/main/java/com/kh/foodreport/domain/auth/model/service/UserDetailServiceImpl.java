@@ -13,7 +13,9 @@ import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
@@ -24,16 +26,20 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
+		log.info("{}",username);
+		
 		MemberDTO user = memberMapper.loadUser(username);
 		
 		if(user == null) {
 			throw new UsernameNotFoundException("UsernameNotFoundException");
 		}
-		return CustomUserDetails.builder().username(user.getEmail())
-				  .password(user.getPassword())
-				  .nickname(user.getNickname())
-				  .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
-				  .build();
+		return CustomUserDetails.builder()
+								.memberNo(user.getMemberNo())
+								.username(user.getEmail())
+								.password(user.getPassword())
+								.nickname(user.getNickname())
+								.authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
+								.build();
 
 	}
 
