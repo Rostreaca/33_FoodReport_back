@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.domain.token.model.vo.RefreshToken;
 import com.kh.foodreport.domain.token.util.JwtUtil;
+import com.kh.foodreport.global.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,13 @@ public class TokenService {
 										 .memberNo(memberNo)
 										 .expiration(System.currentTimeMillis() + 3600000L * 72)
 										 .build();	
-		tokenMapper.saveToken(token);
+		
+		int result = tokenMapper.saveToken(token);
+		if(result == 0) {
+			throw new CustomAuthenticationException("토큰 저장 실패");
+		}
 	}
+	
+	
 
 }

@@ -2,6 +2,55 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.demo">
+<mapper namespace="com.kh.foodreport.domain.member.model.dao.MemberMapper">
+	
+	<insert id="signUp"
+		parameterType="MemberVO">
+		INSERT 
+		  INTO 
+		  	   FR_MEMBER 
+		VALUES 
+			   (
+			   SEQ_MEMBER_NO.NEXTVAL
+			 , #{email}
+			 , #{password}
+			 , #{nickname}
+			 , #{phone}
+			 , #{introduce}
+			 , SYSDATE
+			 , NULL
+			 , NULL
+			 , 'Y'
+			 , 'ROLE_USER'
+			   )
+	</insert>
+	
+	<select id="countByEmail"
+			resultType="int" parameterType="string">		
+		SELECT 
+		       COUNT(*) 
+		  FROM 
+		  	   FR_MEMBER 
+		 WHERE 
+		 	   EMAIL = #{email}
+	</select>
+	
+	<select id="loadUser"
+			resultType="MemberDTO" parameterType="string">	
+		SELECT 
+			   MEMBER_NO memberNo
+		     , EMAIL email
+		 	 , PASSWORD password
+		 	 , NICKNAME nickname
+		 	 , PHONE phone
+		 	 , status
+		 	 , role
+	  	  FROM 
+	           FR_MEMBER
+	 	 WHERE 
+	       	   EMAIL = #{username}
+	</select>
+
+	
 	
 </mapper>
