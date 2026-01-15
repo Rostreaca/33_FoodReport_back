@@ -80,4 +80,12 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.NOT_FOUND);
 	}
+	
+	// 키워드 공백 및 입력 null값 예외
+	@ExceptionHandler(InvalidKeywordException.class)
+	public ResponseEntity<ApiResponse<Object>> handleInvalidKeywordException(InvalidKeywordException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 }

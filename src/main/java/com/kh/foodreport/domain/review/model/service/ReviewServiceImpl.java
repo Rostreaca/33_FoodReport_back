@@ -2,6 +2,7 @@ package com.kh.foodreport.domain.review.model.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,11 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.review.model.dao.ReviewMapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
-import com.kh.foodreport.domain.review.model.vo.Review;
+import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.util.PageInfo;
+import com.kh.foodreport.global.util.Pagenation;
+import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +30,9 @@ public class ReviewServiceImpl implements ReviewService{
 	
 	private final ReviewMapper reviewMapper;
 	private final FileService fileService;
+	private final Pagenation pagenation;
+	private final GlobalValidator globalValidator;
+	
 	
 	private void saveImage(Long reviewNo,List<MultipartFile> images) {
 		
@@ -68,7 +76,7 @@ public class ReviewServiceImpl implements ReviewService{
 			result = result * reviewMapper.saveImage(reviewImage);
 			
 		}
-
+		
 		// 이미지 INSERT를 하나라도 실패했을 경우
 		if(result == 0) {
 			
@@ -101,5 +109,47 @@ public class ReviewServiceImpl implements ReviewService{
 		
 		
 	}
+
+
+	@Override
+	public ReviewResponse findAllReviews(int page, Map<String, Object> params) {
+		
+		
+		// 페이징 처리용 게시글 개수 SELECT
+		int listCount = reviewMapper.countByReviews(params);
+		
+		// 페이지 처리 메서드 호출, PageInfo객체와 offset, limit를 담은 Map을 반환받음
+		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 9);
+
+		// Map을 하나로 만들어서 Mapper에 요청을 보내기 위해 putAll을 사용해 두 개의 맵을 하나로 합침
+		params.putAll(pages);
+		
+		// DB에서 전체 리뷰 목록 조회
+		List<ReviewDTO> reviews = reviewMapper.findAllReviews(params);
+
+		// 응답 값을 ReviewResponse에 담아 반환
+		ReviewResponse response = new ReviewResponse(reviews, ((PageInfo)params.get("pageInfo")));
+		
+		return response;
+	}
+
+	@Override
+	public ReviewDTO findByReviewNo(Long reviewNo) {
+		
+		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		
+		reviewMapper.updateViewCount(reviewNo);
+		
+		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
+		
+		if(review == null) {
+			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
+		}
+		
+		return review;
+	}
+	
+	
+	
 
 }

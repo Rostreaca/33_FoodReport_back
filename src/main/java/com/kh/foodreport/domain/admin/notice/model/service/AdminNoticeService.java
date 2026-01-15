@@ -12,4 +12,10 @@ public interface AdminNoticeService {
 	void saveNotice(AdminNoticeDTO notice, MultipartFile file);
 	
 	AdminNoticeResponse findAllNotices(int page);
+	
+	AdminNoticeResponse findByNoticeTitle(int page, String noticeTitle);
+	
+	void deleteNotice(Long noticeNo);
+	
+	void updateNotice(Long noticeNo, AdminNoticeDTO notice, MultipartFile file);
 }

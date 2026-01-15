@@ -55,4 +55,159 @@
 		       )
 	</insert>
 	
+	<select id="countByReviews" resultType="_int" parameterType="map">
+		
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW
+		  <if test="keyword != ''">
+		 WHERE
+			   REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+		  </if>
+		       
+    </select>
+	
+	<resultMap id="findAllReviews" type="ReviewDTO">
+		<id column="REVIEW_NO" property="reviewNo"/>
+		<result column="REVIEW_TITLE" property="reviewTitle"/>
+		<result column="REVIEW_CONTENT" property="reviewContent"/>
+		<result column="MEMBER_NO" property="reviewWriter" />
+		<result column="VIEW_COUNT" property="viewCount"/>
+		<result column="LIKES" property="likes" />
+		<result column="CREATE_DATE" property="createDate" />
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="IMAGE_NO" property="imageNo"/>
+			<result column="CHANGE_NAME" property="changeName"/>
+			<result column="IMAGE_LEVEL" property="imageLevel"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
+		SELECT
+		       REVIEW_NO
+		     , REVIEW_TITLE
+		     , REVIEW_CONTENT
+		     , MEMBER_NO
+		     , VIEW_COUNT
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+		     , REVIEW.CREATE_DATE
+		     , IMAGE_NO
+		     , IMG.CHANGE_NAME
+		     , IMG.IMAGE_LEVEL
+		  FROM
+		       FR_REVIEW REVIEW
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG USING (REVIEW_NO)
+		 WHERE
+		       REVIEW.STATUS = 'Y'
+		   AND
+		       IMAGE_LEVEL = 0
+		 	<if test="keyword != ''">
+		   AND
+		       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+			</if>
+		 ORDER
+		    BY 
+		    <choose>
+				<when test="order == 'likes'">
+			   LIKES DESC
+				</when>
+			    <otherwise>
+		       REVIEW.CREATE_DATE DESC
+				</otherwise>
+			</choose>
+		
+		
+	</select>
+	
+	<update id="updateViewCount" parameterType="long">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</update>
+	
+	<resultMap id="findByReviewNo" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="reviewWriter" property="reviewWriter" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="reviewCreateDate" property="createDate" />
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageCreateDate" property="createDate" />
+		</collection>
+		<collection property="reviewReplies" ofType="ReviewReplyDTO">
+			<id column="replyNo" property="replyNo"/>
+			<result column="replyContent" property="replyContent"/>
+			<result column="replyCreateDate" property="createDate"/>
+			<result column="replyWriter" property="replyWriter"/>
+		</collection>
+		
+	</resultMap>
+	
+	<select id="findByReviewNo" resultMap="findByReviewNo" parameterType="long">
+		SELECT
+			   REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , MEMBER.NICKNAME reviewWriter
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE reviewCreateDate
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.CREATE_DATE imageCreateDate
+		     , REPLY.REPLY_NO replyNo
+		     , REPLY.REPLY_CONTENT replyContent
+		     , REPLY.CREATE_DATE replyCreateDate
+		     , REPLYMEMBER.NICKNAME replyWriter
+		  FROM
+		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG USING (REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REPLY REPLY USING (REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER REPLYMEMBER ON (REPLYMEMBER.MEMBER_NO = REPLY.MEMBER_NO)
+		 WHERE
+		       REVIEW.STATUS = 'Y'
+		   AND
+		       (REPLY.REPLY_NO IS NOT NULL OR REVIEW.STATUS = 'Y')
+		   AND
+		       (IMG.IMGAGE_NO IS NOT NULL OR IMG.STATUS = 'Y')
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		 ORDER
+		    BY
+		       IMG.CREATE_DATE ASC,REPLY.CREATE_DATE DESC
+		       
+		  
+		
+		
+	</select>
+	
+	
 </mapper>
