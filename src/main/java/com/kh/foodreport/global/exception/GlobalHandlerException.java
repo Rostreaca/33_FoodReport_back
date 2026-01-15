@@ -95,4 +95,11 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 생성 실패 예외
+	@ExceptionHandler(ObjectCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleObjectCreationException(ObjectCreationException e) {
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 }
