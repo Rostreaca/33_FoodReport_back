@@ -18,5 +18,7 @@ public interface ReviewService {
 
 	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images);
 
+	public void deleteReview(Long reviewNo);
+	
 	
 }

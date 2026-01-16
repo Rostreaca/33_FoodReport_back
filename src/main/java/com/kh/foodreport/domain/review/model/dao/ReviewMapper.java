@@ -30,5 +30,9 @@ public interface ReviewMapper {
 
 	public List<ReviewImageDTO> findImagesByReviewNo(Long reviewNo);
 
+	public int deleteReview(Long reviewNo);
+
+	public int deleteReplies(Long reviewNo);
+
 
 }

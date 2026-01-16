@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 
 public interface AdminNoticeService {
 

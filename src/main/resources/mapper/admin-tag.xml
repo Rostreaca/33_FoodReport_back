@@ -6,7 +6,7 @@
 	
 	<!-- 태그 insert -->
 	<insert id="saveTag"
-		parameterType="AdminTag"	
+		parameterType="Tag"	
 		>
 		INSERT 
 		  INTO
@@ -23,5 +23,29 @@
 		  	 , #{tagContent}
 		  	   )
 	</insert>
+	
+	<select id="countByTags"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+	      FROM
+	      	   FR_TAG
+	</select>
+	
+	<select id="findAllTag"
+		resultType="AdminTagDTO" parameterType="map">
+		SELECT 
+			   TAG_NO tagNo
+			 , TAG_TITLE tagTitle
+			 , TAG_CONTENT tagContent
+			 , STATUS status
+			 , CREATE_DATE createDate
+			 , UPDATE_DATE updateDate
+			 , DELETE_DATE deleteDate
+		  FROM 
+			   FR_TAG
+		 ORDER BY TAG_TITLE ASC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
 	
 </mapper>

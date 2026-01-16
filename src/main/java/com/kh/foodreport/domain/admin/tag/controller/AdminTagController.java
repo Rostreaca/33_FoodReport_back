@@ -1,14 +1,16 @@
 package com.kh.foodreport.domain.admin.tag.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
+import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagResponse;
 import com.kh.foodreport.domain.admin.tag.model.service.AdminTagService;
-import com.kh.foodreport.domain.admin.tag.model.vo.AdminTag;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,14 @@ public class AdminTagController {
 		tagService.saveTag(tag);
 		
 		return ApiResponse.created("태그가 생성되었습니다.");
+	}
+	
+	@GetMapping
+	public ResponseEntity<ApiResponse<AdminTagResponse>> findAllTag(@RequestParam(name="page", defaultValue = "1")int page) {
+		
+		AdminTagResponse tags = tagService.findAllTag(page);
+		
+		return ApiResponse.ok(tags, "태그 조회 성공하였습니다.");
 	}
 	
 }
