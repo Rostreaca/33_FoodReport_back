@@ -43,6 +43,13 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 회원가입 실패 예외
+	@ExceptionHandler(SignUpFailedException.class)
+	public ResponseEntity<ApiResponse<Object>> handlerSignUpFailed(SignUpFailedException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 	// 잘못된 상태 전달시
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalStateException e) {
