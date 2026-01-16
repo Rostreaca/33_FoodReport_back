@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
-import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
+import com.kh.foodreport.global.exception.SignUpFailedException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
 		log.info("사용자 등록 성공 : {} ", memberBuilder);
 		 
 		if(0 == result) {
-			throw new CustomAuthenticationException("회원가입에 실패했습니다.");
+			throw new SignUpFailedException("회원가입에 실패했습니다.");
 		}
 
 	}
