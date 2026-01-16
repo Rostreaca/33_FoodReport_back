@@ -1,8 +1,5 @@
 package com.kh.foodreport.global.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -116,4 +113,10 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 태그 업데이트 실패 예외
+	@ExceptionHandler(TagUpdateException.class)
+	public ResponseEntity<ApiResponse<Object>> handleTagUpdateException(TagUpdateException e){
+		log.error("잘못된 상태 : {}",e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }

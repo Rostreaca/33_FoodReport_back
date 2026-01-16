@@ -9,6 +9,7 @@ import com.kh.foodreport.domain.admin.tag.model.dao.AdminTagMapper;
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagResponse;
 import com.kh.foodreport.global.exception.ObjectCreationException;
+import com.kh.foodreport.global.exception.TagUpdateException;
 import com.kh.foodreport.global.tag.Tag;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -28,11 +29,11 @@ public class AdminTagServiceImpl implements AdminTagService {
 	@Override
 	public void saveTag(AdminTagDTO tag) {
 		
-		Tag newTag = Tag.createTag(tag.getTagTitle(), tag.getTagContent());
+		Tag newTag = Tag.createTag(null ,tag.getTagTitle(), tag.getTagContent());
 		
 		int result = tagMapper.saveTag(newTag);
 		
-		if(result <= 0) {
+		if(result == 0) {
 			throw new ObjectCreationException("태그 생성에 실패하였습니다.");
 		}
 	}
@@ -54,6 +55,20 @@ public class AdminTagServiceImpl implements AdminTagService {
 		// 응답 객체 생성 -> 페이지네이션 정보와 tags를 넣어서 보내줌
 		
 		return response;
+	}
+
+	@Override
+	public void updateTag(Long tagNo, AdminTagDTO tagDTO) {
+		
+		validator.validateNo(tagNo,"일치하는 번호가 없습니다.");
+		
+		Tag tag = Tag.createTag(tagNo, tagDTO.getTagTitle(), tagDTO.getTagContent());
+		
+		int result = tagMapper.updateTag(tag);
+		
+		if(result == 0) {
+			throw new TagUpdateException("태그 업데이트에 실패하였습니다.");
+		}
 	}
 	
 }
