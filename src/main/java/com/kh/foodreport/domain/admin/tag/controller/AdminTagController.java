@@ -2,7 +2,9 @@ package com.kh.foodreport.domain.admin.tag.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +40,15 @@ public class AdminTagController {
 		AdminTagResponse tags = tagService.findAllTag(page);
 		
 		return ApiResponse.ok(tags, "태그 조회 성공하였습니다.");
+	}
+	
+	@PutMapping("/{tagNo}")
+	public ResponseEntity<ApiResponse<?>> updateTag(@PathVariable(name="tagNo")Long tagNo 
+												   ,@RequestBody AdminTagDTO tag) {
+		
+		tagService.updateTag(tagNo,tag);
+		
+		return null;
 	}
 	
 }

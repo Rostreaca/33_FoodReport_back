@@ -28,11 +28,12 @@ public class Tag{
 	private Date updateDate;
 	private Date deleteDate;
 	
-	public static Tag createTag(String tagTitle, String tagContent) {
+	public static Tag createTag(Long tagNo, String tagTitle, String tagContent) {
 		
-		validateTrim(tagTitle, tagContent);
+		validateTrim( tagTitle, tagContent);
 		
 		return Tag.builder()
+					.tagNo(tagNo)
 					.tagTitle(tagTitle)
 					.tagContent(tagContent)
 					.build();

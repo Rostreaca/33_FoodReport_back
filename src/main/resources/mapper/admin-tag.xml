@@ -48,4 +48,15 @@
 		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<update id="updateTag">
+		UPDATE
+			   FR_TAG
+		   SET
+		   	   TAG_TITLE = #{tagTitle}
+		   	 , TAG_CONTENT = #{tagContent}
+		   	 , UPDATE_DATE = SYSDATE
+		WHERE
+			  TAG_NO = #{tagNo}
+	</update>
+	
 </mapper>
