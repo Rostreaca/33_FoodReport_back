@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 
 public interface ReviewService {
@@ -19,6 +20,8 @@ public interface ReviewService {
 	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images);
 
 	public void deleteReview(Long reviewNo);
+
+	public void insertReply(Long reviewNo, ReviewReplyDTO reply);
 	
 	
 }

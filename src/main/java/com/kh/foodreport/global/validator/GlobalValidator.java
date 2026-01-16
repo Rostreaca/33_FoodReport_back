@@ -1,7 +1,5 @@
 package com.kh.foodreport.global.validator;
 
-import org.springframework.stereotype.Component;
-
 import com.kh.foodreport.global.exception.PageNotFoundException;
 
 public class GlobalValidator {
