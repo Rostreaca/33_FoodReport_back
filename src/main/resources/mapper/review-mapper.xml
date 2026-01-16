@@ -237,6 +237,7 @@
 		       FR_REVIEW_IMAGE
 		   SET
 		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
 		 WHERE
 		       IMAGE_NO = #{imageNo}
 		   AND
@@ -249,6 +250,7 @@
 		       FR_REVIEW
 		   SET
 		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
 		 WHERE
 		       STATUS = 'Y'
 		   AND
@@ -261,11 +263,33 @@
 		       FR_REVIEW_REPLY
 		   SET
 		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
 		 WHERE
 		       REVIEW_NO = #{reviewNo}
 		   AND
 		       STATUS = 'Y'
 	</update>
+	
+	<insert id="saveReply" parameterType="ReviewReply">
+		INSERT
+		  INTO
+		       FR_REVIEW_REPLY
+		       (
+		       REPLY_NO
+		     , REPLY_CONTENT
+		     , MEMBER_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+	    VALUES
+		       (
+		       SEQ_REVIEW_REPLY_NO.NEXTVAL
+		     , #{replyContent}
+		     , #{replyWriter}
+		     , #{refReviewNo}
+		     , SYSDATE
+		       )
+	</insert>
 	
 	
 	

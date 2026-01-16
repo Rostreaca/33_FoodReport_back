@@ -132,4 +132,10 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}",e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(ReplyCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleReplyCreationException(ReplyCreationException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }
