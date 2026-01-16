@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
 import com.kh.foodreport.domain.admin.tag.model.service.AdminTagService;
-import com.kh.foodreport.domain.admin.tag.model.vo.AdminTag;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;

@@ -11,6 +11,7 @@ import com.kh.foodreport.domain.admin.notice.model.dao.AdminNoticeMapper;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
@@ -38,6 +39,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		if (file == null || file.isEmpty()) {
 			return;
 		}
+		
+		
 
 		String imageUrl = fileService.store(file);
 
@@ -56,7 +59,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Override
 	@Transactional
 	public void saveNotice(AdminNoticeDTO notice, MultipartFile file) {
-
+		
+		
 		// 1. 공지사항을 먼저 저장
 		int result = noticeMapper.saveNotice(notice);
 

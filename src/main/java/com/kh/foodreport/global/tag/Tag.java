@@ -1,4 +1,4 @@
-package com.kh.foodreport.domain.admin.tag.model.vo;
+package com.kh.foodreport.global.tag;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class AdminTag{
+public class Tag{
 	
 	private Long tagNo;
 	
@@ -28,11 +28,11 @@ public class AdminTag{
 	private Date updateDate;
 	private Date deleteDate;
 	
-	public static AdminTag createTag(String tagTitle, String tagContent) {
+	public static Tag createTag(String tagTitle, String tagContent) {
 		
 		validateTrim(tagTitle, tagContent);
 		
-		return AdminTag.builder()
+		return Tag.builder()
 					.tagTitle(tagTitle)
 					.tagContent(tagContent)
 					.build();
