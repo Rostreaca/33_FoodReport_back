@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +68,15 @@ public class ReviewController {
 		reviewService.updateReview(reviewNo, review, images);
 		
 		return ApiResponse.ok(null, "리뷰 변경에 성공했습니다.");
+	}
+	
+	@DeleteMapping("/{reviewNo}")
+	public ResponseEntity<ApiResponse<Void>> deleteReview(@PathVariable(name = "reviewNo") Long reviewNo){
+		
+		reviewService.deleteReview(reviewNo);
+		
+		return ApiResponse.ok(null, "리뷰 삭제에 성공했습니다.");
+		
 	}
 	
 }
