@@ -59,4 +59,14 @@
 			  TAG_NO = #{tagNo}
 	</update>
 	
+	<update id="deleteTag">
+		UPDATE
+			   FR_TAG
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   TAG_NO = #{tagNo}
+	</update>
+	
 </mapper>

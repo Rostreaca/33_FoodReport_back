@@ -126,4 +126,10 @@ public class GlobalHandlerException {
 		log.error("잘못된 상태 : {}",e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(TagDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleTagDeleteException(TagDeleteException e) {
+		log.error("잘못된 상태 : {}",e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }

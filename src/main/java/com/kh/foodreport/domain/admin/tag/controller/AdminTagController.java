@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.admin.tag.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,4 +52,11 @@ public class AdminTagController {
 		return ApiResponse.ok(null, "태그 업데이트에 성공하였습니다.");
 	}
 	
+	@DeleteMapping("/{tagNo}")
+	public ResponseEntity<ApiResponse<Void>> deleteTag(@PathVariable(name="tagNo")Long tagNo) {
+	
+		tagService.deleteTag(tagNo);
+		
+		return ApiResponse.noContent();
+	}
 }
