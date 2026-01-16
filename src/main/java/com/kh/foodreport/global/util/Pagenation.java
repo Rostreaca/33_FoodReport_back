@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Pagenation {
 	
-	private final GlobalValidator globalValidator;
-
 	public PageInfo getPageInfo(int listCount
 							  , int currentPage
 							  , int boardLimit
@@ -30,7 +28,7 @@ public class Pagenation {
 	
 	public Map<String, Object> getPageRequest(int listCount, int page, int boardLimit) {
 		
-		globalValidator.validateNo(page, "잘못된 접근입니다. (0보다 큰 값을 입력해주세요.)");
+		GlobalValidator.validateNo(page, "잘못된 접근입니다. (0보다 큰 값을 입력해주세요.)");
 		
 		Map<String, Object> map = new HashMap<>();
 		
