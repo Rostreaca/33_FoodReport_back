@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 @Component //클래스를 빈으로 등록하는것이다. 즉 spring제어하게 만드는 것객체를 생성안해도됨
 @RequiredArgsConstructor
 public class Pagenation {
-	
-	private final GlobalValidator globalValidator;
 
 	public PageInfo getPageInfo(int listCount
 							  , int currentPage
@@ -30,7 +28,7 @@ public class Pagenation {
 	
 	public Map<String, Object> getPageRequest(int listCount, int page, int boardLimit) {
 		
-		globalValidator.validateNo(page, "잘못된 접근입니다. (0보다 큰 값을 입력해주세요.)");
+		GlobalValidator.validateNo(page, "잘못된 접근입니다. (0보다 큰 값을 입력해주세요.)");
 		
 		Map<String, Object> map = new HashMap<>();
 		
