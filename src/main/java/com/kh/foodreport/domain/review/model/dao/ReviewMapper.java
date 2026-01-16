@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
+import com.kh.foodreport.domain.review.model.vo.ReviewReply;
 
 @Mapper
 public interface ReviewMapper {
@@ -34,5 +35,7 @@ public interface ReviewMapper {
 
 	public int deleteReplies(Long reviewNo);
 
+	public int saveReply(ReviewReply replyVO);
 
+	
 }

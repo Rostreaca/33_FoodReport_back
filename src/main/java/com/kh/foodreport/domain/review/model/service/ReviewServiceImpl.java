@@ -11,12 +11,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.foodreport.domain.review.model.dao.ReviewMapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
+import com.kh.foodreport.domain.review.model.vo.ReviewReply;
 import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.ReplyDeleteException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.file.service.FileService;
@@ -35,7 +38,6 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewMapper reviewMapper;
 	private final FileService fileService;
 	private final Pagenation pagenation;
-	private final GlobalValidator globalValidator;
 
 	private void saveImages(Long reviewNo, List<MultipartFile> images) {
 
@@ -134,7 +136,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public ReviewDTO findByReviewNo(Long reviewNo) {
 
-		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
 
 		reviewMapper.updateViewCount(reviewNo);
 
@@ -151,7 +153,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images) {
 
-		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지 입니다.");
+		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지 입니다.");
 
 		review.setReviewNo(reviewNo);
 
@@ -199,7 +201,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void deleteReview(Long reviewNo) {
 
-		globalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
 		
 		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
 		
@@ -231,5 +233,27 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 		
 	}
+
+	@Override
+	public void insertReply(Long reviewNo, ReviewReplyDTO reply) {
+		
+		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		
+		ReviewReply replyVO = ReviewReply.builder()
+											  .replyContent(reply.getReplyContent())
+											  .replyWriter(reply.getReplyWriter())
+											  .refReviewNo(reviewNo)
+											  .build();
+		
+		int result = reviewMapper.saveReply(replyVO);
+		
+		if(result == 0) {
+			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
+		}
+		
+		
+	}
+	
+	
 
 }
