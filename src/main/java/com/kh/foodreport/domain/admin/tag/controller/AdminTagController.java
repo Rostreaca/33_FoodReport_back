@@ -43,12 +43,12 @@ public class AdminTagController {
 	}
 	
 	@PutMapping("/{tagNo}")
-	public ResponseEntity<ApiResponse<?>> updateTag(@PathVariable(name="tagNo")Long tagNo 
+	public ResponseEntity<ApiResponse<Void>> updateTag(@PathVariable(name="tagNo")Long tagNo 
 												   ,@RequestBody AdminTagDTO tag) {
 		
 		tagService.updateTag(tagNo,tag);
 		
-		return null;
+		return ApiResponse.ok(null, "태그 업데이트에 성공하였습니다.");
 	}
 	
 }
