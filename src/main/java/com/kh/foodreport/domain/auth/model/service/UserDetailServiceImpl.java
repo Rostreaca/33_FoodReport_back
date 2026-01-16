@@ -37,6 +37,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 								.memberNo(user.getMemberNo())
 								.username(user.getEmail())
 								.password(user.getPassword())
+								.phone(user.getPhone())
 								.nickname(user.getNickname())
 								.authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())))
 								.build();

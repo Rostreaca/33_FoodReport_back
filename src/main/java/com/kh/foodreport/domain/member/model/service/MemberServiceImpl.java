@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
 	public void signUp(MemberDTO member) {
 		
 		// 유효성 검사  ==> Validator에게 위임
-		// 아이디 중복 검사
+		// 이메일 중복 검사
 		int count = memberMapper.countByEmail(member.getEmail());
 		
 		if(1 == count) {
@@ -42,8 +43,12 @@ public class MemberServiceImpl implements MemberService {
 										 .build();
 
 		// 매퍼 호출
-		memberMapper.signUp(memberBuilder);
+		int result = memberMapper.signUp(memberBuilder);
 		log.info("사용자 등록 성공 : {} ", memberBuilder);
+		 
+		if(0 == result) {
+			throw new CustomAuthenticationException("회원가입에 실패했습니다.");
+		}
 
 	}
 

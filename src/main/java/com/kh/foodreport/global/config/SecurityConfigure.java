@@ -2,7 +2,6 @@ package com.kh.foodreport.global.config;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,9 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.kh.foodreport.global.config.filter.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
+	
+	private final JwtFilter jwtFilter;
 	
 //	@Value("${instnace.url}")
 //	private String instance;
@@ -48,9 +52,9 @@ public class SecurityConfigure {
 					
 					requests.requestMatchers(HttpMethod.GET).authenticated();
 					// 로그인 필요(POST)
-					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "members").permitAll();
+					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members").permitAll();
 					// 로그인 필요(PUT)
-					requests.requestMatchers(HttpMethod.PUT, "members").authenticated();
+					requests.requestMatchers(HttpMethod.PUT, "/api/members").authenticated();
 					// 로그인 필요(DELETE)
 					requests.requestMatchers(HttpMethod.DELETE).authenticated();
 					
@@ -61,6 +65,7 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.DELETE).hasAuthority("");
 				})
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 		        .build();
 	}
 	
