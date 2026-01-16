@@ -4,12 +4,11 @@ import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.admin.tag.model.dao.AdminTagMapper;
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
-import com.kh.foodreport.domain.admin.tag.model.vo.AdminTag;
 import com.kh.foodreport.global.exception.ObjectCreationException;
+import com.kh.foodreport.global.tag.Tag;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +19,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 	@Override
 	public void saveTag(AdminTagDTO tag) {
 		
-		AdminTag newTag = AdminTag.createTag(tag.getTagTitle(), tag.getTagContent());
+		Tag newTag = Tag.createTag(tag.getTagTitle(), tag.getTagContent());
 		
 		int result = tagMapper.saveTag(newTag);
 		
