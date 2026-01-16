@@ -31,7 +31,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	private final AdminNoticeMapper noticeMapper;
 	private final FileService fileService;
 	private final Pagenation pagenation;
-	private final GlobalValidator validator;
 
 	private void saveImage(MultipartFile file, Long num) {
 
@@ -39,8 +38,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		if (file == null || file.isEmpty()) {
 			return;
 		}
-		
-		
 
 		String imageUrl = fileService.store(file);
 
@@ -59,7 +56,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Override
 	@Transactional
 	public void saveNotice(AdminNoticeDTO notice, MultipartFile file) {
-		
 		
 		// 1. 공지사항을 먼저 저장
 		int result = noticeMapper.saveNotice(notice);
@@ -122,7 +118,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Transactional
 	public void deleteNotice(Long noticeNo) {
 		
-		validator.validateNo(noticeNo , "0보다 큰 값을 넣어주시길바랍니다.");
+		GlobalValidator.validateNo(noticeNo , "0보다 큰 값을 넣어주시길바랍니다.");
 		
 		// 1. 이미지 테이블 접근 1행 반환시 변경됨, 0행 반환시 변경안되거나 없음.
 		int imageResult = noticeMapper.deleteNoticeImage(noticeNo);
@@ -131,14 +127,14 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		int deleteResult = noticeMapper.deleteNotice(noticeNo);
 		
 		// 이미 삭제됐거나, 없는 데이터
-		validator.validateNo(deleteResult , "일치하는 번호가 존재하지 않습니다.");
+		GlobalValidator.validateNo(deleteResult , "일치하는 번호가 존재하지 않습니다.");
 	}
 
 	@Override
 	@Transactional
 	public void updateNotice(Long noticeNo, AdminNoticeDTO notice, MultipartFile file) {
 
-		validator.validateNo(noticeNo, "0보다 큰값을 넣어주시길 바랍니다.");
+		GlobalValidator.validateNo(noticeNo, "0보다 큰값을 넣어주시길 바랍니다.");
 		
 		String url = noticeMapper.countByNoticeNo(noticeNo); // 기존 파일 url 조회
 		notice.setNoticeNo(noticeNo);

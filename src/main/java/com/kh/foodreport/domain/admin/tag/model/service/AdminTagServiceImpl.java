@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminTagServiceImpl implements AdminTagService {
 	
 	private final AdminTagMapper tagMapper;
-	private final GlobalValidator validator;
 	private final Pagenation pagenation;
 
 	@Override
@@ -41,7 +40,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 	@Override
 	public AdminTagResponse findAllTag(int page) {
 		
-		validator.validateNo(page, "0보다 큰 값을 입력해주시기 바랍니다.");
+		GlobalValidator.validateNo(page, "0보다 큰 값을 입력해주시기 바랍니다.");
 		
 		int listCount = tagMapper.countByTags(); // 토탈 카운트 세어줌.
 		
@@ -60,7 +59,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 	@Override
 	public void updateTag(Long tagNo, AdminTagDTO tagDTO) {
 		
-		validator.validateNo(tagNo,"일치하는 번호가 없습니다.");
+		GlobalValidator.validateNo(tagNo,"일치하는 번호가 없습니다.");
 		
 		Tag tag = Tag.createTag(tagNo, tagDTO.getTagTitle(), tagDTO.getTagContent());
 		
