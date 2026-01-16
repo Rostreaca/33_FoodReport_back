@@ -241,11 +241,31 @@
 		       IMAGE_NO = #{imageNo}
 		   AND
 		       STATUS = 'Y'
-		       
-		
 	</update>
 	
 	
+	<update id="deleteReview" parameterType="long">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		
+	</update>
+	
+	<update id="deleteReplies" parameterType="long">
+		UPDATE
+		       FR_REVIEW_REPLY
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
 	
 	
 	

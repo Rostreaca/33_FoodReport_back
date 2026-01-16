@@ -102,4 +102,18 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 게시글 삭제 실패 예외
+	@ExceptionHandler(BoardDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBoardDeleteException(BoardDeleteException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 댓글 삭제 실패 예외
+	@ExceptionHandler(ReplyDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleReplyDeleteException(ReplyDeleteException e){
+		log.error("잘못된 상태 : {}",e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 }
