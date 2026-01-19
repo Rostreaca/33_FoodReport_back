@@ -18,4 +18,6 @@ public interface AdminTagMapper {
 	List<AdminTagDTO> findAllTag(Map<String, Object> pages);
 	
 	int updateTag(Tag tag);
+	
+	int deleteTag(Tag tag);
 }

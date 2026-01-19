@@ -20,6 +20,7 @@ import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,6 +76,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	@Override
 	@Transactional
 	public AdminNoticeResponse findAllNotices(int page) {
+		
+		GlobalValidator.validateNo(page, "0보다 작은 값은 들어갈 수 없습니다.");
 		
 		// 전체 개수 조회
 		int listCount = noticeMapper.countByNotices();
