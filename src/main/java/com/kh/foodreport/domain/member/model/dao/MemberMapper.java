@@ -23,7 +23,10 @@ public interface MemberMapper {
 	void changePassword(Map<String, String> changeRequest);
 		
 	// 회원 탈퇴
-	void deleteByPassword(String memberId);
+	int deleteMember(String memberId);
+	
+	// 로그인 검증용
+	MemberDTO loadUserByMemberNo(Long memberNo);
 
 
 }
