@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.domain.member.model.dao.MemberMapper;
+import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.token.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
@@ -31,6 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 	private final JwtUtil jwtUtil;
 	private final UserDetailsService userDetailsService;
+	private final MemberMapper memberMapper;
 		
 	// 필터의 주요 로직을 구현하는 메서드,
 	@Override
@@ -57,12 +60,26 @@ public class JwtFilter extends OncePerRequestFilter {
 		
 		try {		
 			Claims claims = jwtUtil.parseJwt(token);
-			String username = claims.getSubject();
+			String memberNo = claims.getSubject();
 			
-			//log.info("토큰 소유주의 아이디 값 : {}", username);
+			//log.info("토큰 소유주의 아이디 값 : {}", memberNo);
 			
-			CustomUserDetails user =
-					(CustomUserDetails)userDetailsService.loadUserByUsername(username);
+			MemberDTO member = memberMapper.loadUserByMemberNo(Long.parseLong(memberNo));
+			CustomUserDetails user = CustomUserDetails.builder()
+					 								  .memberNo(member.getMemberNo())
+					 								  .username(member.getEmail())
+					 								  .password(member.getPassword())
+					 								  .nickname(member.getNickname())
+					 								  .phone(member.getPhone())
+					 								  .introduce(member.getIntroduce())
+					 								  .createDate(member.getCreateDate())
+					 								  .updateDate(member.getUpdateDate())
+					 								  .deleteDate(member.getDeleteDate())
+					 								  .status(member.getStatus())
+					 								  .role(member.getRole())
+					 								  .build();
+					 								  
+													
 			
 			// log.info("DB에서 조회해온 user정보 : {}", user);
 			UsernamePasswordAuthenticationToken authentication

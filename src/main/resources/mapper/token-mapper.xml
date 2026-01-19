@@ -4,6 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.foodreport.domain.token.model.dao.TokenMapper">
 	
+	<!-- 토큰 저장 -->
 	<insert id="saveToken"
 			parameterType="RefreshToken">
 		INSERT 
@@ -17,6 +18,16 @@
 			 , #{memberNo}
 			   )
 	</insert>
+	
+	<!-- 토큰 삭제 -->
+	<update id="deleteToken"
+			parameterType="long">	
+		DELETE 
+		  FROM 
+		  	   FR_TOKEN
+		 WHERE 
+		 	   MEMBER_NO = #{memberNo}
+	</update>
 	
 	
 </mapper>

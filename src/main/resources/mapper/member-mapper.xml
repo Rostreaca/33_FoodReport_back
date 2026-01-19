@@ -66,14 +66,32 @@
 	</update>
 	
 	<!-- 회원 탈퇴 -->
-	<update id="deleteByPassword"
+	<update id="deleteMember"
 			parameterType="String">
-		DELETE 
-		  FROM 
-		  	   FR_MEMBER 
+		UPDATE  
+		  	   FR_MEMBER
+		   SET
+		       STATUS = 'N' 
 		 WHERE 
 		 	   EMAIL = #{email}		
 	</update>
+	
+	<!-- 로그인 검증용 -->
+	<select id="loadUserByMemberNo"
+			resultType="MemberDTO" parameterType="Long">	
+		SELECT 
+			   MEMBER_NO memberNo
+		     , EMAIL email
+		 	 , PASSWORD password
+		 	 , NICKNAME nickname
+		 	 , PHONE phone
+		 	 , status
+		 	 , role
+	  	  FROM 
+	           FR_MEMBER
+	 	 WHERE 
+	       	   MEMBER_NO = #{memberNo}
+	</select>
 
 
 	
