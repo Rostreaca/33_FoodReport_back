@@ -13,4 +13,8 @@ public interface AdminReviewMapper {
 	int countByReviews();
 
 	List<AdminReviewDTO> findAllReviews(Map<String, Object> pages);
+	
+	int countByReviewTitle(String reviewTitle);
+	
+	List<AdminReviewDTO> findByReviewTitle(Map<String, Object> pages);
 }
