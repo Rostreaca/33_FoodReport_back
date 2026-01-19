@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.review.model.dao.ReviewReplyMapper">
+	
+	<update id="updateReply" parameterType="ReviewReplyDTO">
+		UPDATE
+		       FR_REVIEW_REPLY
+		   SET
+		       REPLY_CONTENT = #{replyContent} 
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{replyWriter}
+	</update>
+	
+	
+	
+</mapper>

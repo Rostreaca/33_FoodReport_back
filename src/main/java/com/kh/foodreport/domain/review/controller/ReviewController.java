@@ -25,6 +25,7 @@ import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.service.ReviewService;
 import com.kh.foodreport.global.common.ApiResponse;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

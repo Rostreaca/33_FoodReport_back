@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			Claims claims = jwtUtil.parseJwt(token);
 			String username = claims.getSubject();
 			
-			//log.info("토큰 소유주의 아이디 값 : {}", username);
+			log.info("토큰 소유주의 아이디 값 : {}", username);
 			
 			CustomUserDetails user =
 					(CustomUserDetails)userDetailsService.loadUserByUsername(username);
@@ -72,7 +72,8 @@ public class JwtFilter extends OncePerRequestFilter {
 			
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			// 요청이 만료될 때까지 Authentication에 담겨있는 사용자의 정보를 사용
-		
+			
+			
 		} catch(ExpiredJwtException e) {
 			// log.info("토큰의 유효기간 만료");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
