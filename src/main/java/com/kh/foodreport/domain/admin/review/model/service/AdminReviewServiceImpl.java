@@ -30,8 +30,6 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		int listCount = reviewMapper.countByReviews();
 		
-		log.info("숫자 잘나?{}", listCount);
-		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
 		List<AdminReviewDTO> reviews = reviewMapper.findAllReviews(pages);
