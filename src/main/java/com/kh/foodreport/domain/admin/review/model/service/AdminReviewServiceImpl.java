@@ -50,8 +50,6 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		// 부분 개수 조회
 		int listCount = reviewMapper.countByReviewTitle(reviewTitle);
 		
-		log.info("부분개수조회{}", listCount);
-		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
 		pages.put("reviewTitle", reviewTitle);
