@@ -27,6 +27,6 @@ public class AdminReviewController {
 		
 		AdminReviewResponse reviews = reviewService.findAllReviews(page);
 		
-		return null;
+		return ApiResponse.ok(reviews, "리뷰 조회 성공!");
 	}
 }

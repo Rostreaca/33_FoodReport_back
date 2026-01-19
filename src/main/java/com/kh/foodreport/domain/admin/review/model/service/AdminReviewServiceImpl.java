@@ -1,5 +1,6 @@
 package com.kh.foodreport.domain.admin.review.model.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -33,12 +34,12 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
-		AdminReviewDTO reviews = reviewMapper.findAllReviews(pages);
+		List<AdminReviewDTO> reviews = reviewMapper.findAllReviews(pages);
 		
 		AdminReviewResponse response = new AdminReviewResponse();
 		
 		response.setAdminReviews(reviews);
-		response.setPages((PageInfo)pages);
+		response.setPages((PageInfo)pages.get("pageInfo"));
 		
 		return response;
 	}

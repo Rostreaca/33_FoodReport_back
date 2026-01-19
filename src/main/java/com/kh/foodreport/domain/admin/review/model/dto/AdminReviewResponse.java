@@ -18,6 +18,6 @@ import lombok.ToString;
 @ToString
 public class AdminReviewResponse {
 	
-	private AdminReviewDTO adminReviews;
+	private List<AdminReviewDTO> adminReviews;
 	private PageInfo pages;
 }

@@ -1,5 +1,6 @@
 package com.kh.foodreport.domain.admin.review.model.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -11,5 +12,5 @@ public interface AdminReviewMapper {
 	
 	int countByReviews();
 
-	AdminReviewDTO findAllReviews(Map<String, Object> pages);
+	List<AdminReviewDTO> findAllReviews(Map<String, Object> pages);
 }

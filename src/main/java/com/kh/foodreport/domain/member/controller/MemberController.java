@@ -45,14 +45,14 @@ public class MemberController {
 		// 3. 새 비밀번호에 대한 암호화
 		// 4. 새 비밀번호로 변경
 		memberService.changePassword(password);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ApiResponse.created("비밀번호가 변경되었습니다.");
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<String> deleteByPassword(@RequestBody Map<String, String> request){
+	public ResponseEntity<ApiResponse<String>> deleteByPassword(@RequestBody Map<String, String> request){
 		log.info("확인 {}", request);
 		memberService.deleteByPassword(request.get("password"));
-		return ResponseEntity.ok("Okay");
+		return ApiResponse.created("회원 탈퇴가 정상적으로 처리되었습니다.");
 	}
 	
 }
