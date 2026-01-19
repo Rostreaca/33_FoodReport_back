@@ -16,4 +16,6 @@ public interface AdminTagMapper {
 	int countByTags();
 	
 	List<AdminTagDTO> findAllTag(Map<String, Object> pages);
+	
+	int updateTag(Tag tag);
 }

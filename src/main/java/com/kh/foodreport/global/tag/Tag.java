@@ -28,17 +28,18 @@ public class Tag{
 	private Date updateDate;
 	private Date deleteDate;
 	
-	public static Tag createTag(String tagTitle, String tagContent) {
+	public static Tag createTag(Long tagNo, String tagTitle, String tagContent) {
 		
-		validateTrim(tagTitle, tagContent);
+		validateTrim( tagTitle, tagContent);
 		
 		return Tag.builder()
+					.tagNo(tagNo)
 					.tagTitle(tagTitle)
 					.tagContent(tagContent)
 					.build();
 	}
 	
-	public static void validateTrim(String tagTitle, String tagContent) {
+	private static void validateTrim(String tagTitle, String tagContent) {
 		if(tagTitle == null || tagTitle.trim().length() <= 0) {
 			throw new InvalidKeywordException("빈 문자열은 넣을 수 없습니다.");
 		}
