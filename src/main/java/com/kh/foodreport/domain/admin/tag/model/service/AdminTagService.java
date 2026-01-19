@@ -10,4 +10,6 @@ public interface AdminTagService {
 	AdminTagResponse findAllTag(int page);
 	
 	void updateTag(Long tagNo,AdminTagDTO tag);
+	
+	void deleteTag(Long tagNo);
 }
