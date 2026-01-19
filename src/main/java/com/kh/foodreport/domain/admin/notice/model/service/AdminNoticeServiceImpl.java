@@ -86,7 +86,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findAllNotices(pages);
 		
-		return createResponse(notices, pages);
+		return createFindResponse(notices, pages);
 	}
 	
 	@Override
@@ -105,11 +105,11 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findByNoticeTitle(pages);
 		
-		return createResponse(notices, pages);
+		return createFindResponse(notices, pages);
 	}
 	
 	// 중복 메소드 분리 
-	private AdminNoticeResponse createResponse(List<AdminNoticeDTO> notices, Map<String, Object> pages) {
+	private AdminNoticeResponse createFindResponse(List<AdminNoticeDTO> notices, Map<String, Object> pages) {
 		AdminNoticeResponse response = new AdminNoticeResponse();
 		
 		response.setAdminNotice(notices);

@@ -35,7 +35,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		List<AdminReviewDTO> reviews = reviewMapper.findAllReviews(pages);
 		
-		return createResponse(reviews ,pages);
+		return createFindResponse(reviews ,pages);
 	}
 
 	@Override
@@ -58,11 +58,11 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		List<AdminReviewDTO> reviews = reviewMapper.findByReviewTitle(pages);
 		
-		return createResponse(reviews, pages);
+		return createFindResponse(reviews, pages);
 	}
 	
 	// 중복 메소드 제거(응답 데이터 만드는 메소드)
-	private AdminReviewResponse createResponse(List<AdminReviewDTO> reviews
+	private AdminReviewResponse createFindResponse(List<AdminReviewDTO> reviews
 											  ,Map<String, Object> pages) {
 		AdminReviewResponse response = new AdminReviewResponse();
 		
