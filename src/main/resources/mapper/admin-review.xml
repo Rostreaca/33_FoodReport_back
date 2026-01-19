@@ -72,4 +72,14 @@
 		  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<update id="deleteReview">
+		UPDATE
+			   FR_REVIEW
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+	</update>
+	
 </mapper>

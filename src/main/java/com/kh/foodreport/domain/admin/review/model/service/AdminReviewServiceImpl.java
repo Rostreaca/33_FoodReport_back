@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.foodreport.domain.admin.review.model.dao.AdminReviewMapper;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewDTO;
@@ -68,6 +69,16 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		response.setPages((PageInfo)pages.get("pageInfo"));
 		
 		return response;
+	}
+
+	@Override
+	public void deleteReview(Long reviewNo) {
+		
+		GlobalValidator.validateNo(reviewNo, "없는 리뷰 번호입니다.");
+		
+		int reviewResult = reviewMapper.deleteReview(reviewNo);
+		
+		GlobalValidator.validateNo(reviewResult , "일치하는 번호가 존재하지 않습니다.");
 	}
 
 }
