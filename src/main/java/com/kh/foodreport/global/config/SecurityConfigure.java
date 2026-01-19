@@ -57,7 +57,7 @@ public class SecurityConfigure {
 					// 로그인 필요(PUT)
 					requests.requestMatchers(HttpMethod.PUT, "/api/members").authenticated();
 					// 로그인 필요(DELETE)
-					requests.requestMatchers(HttpMethod.DELETE).authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/members").authenticated();
 					
 					// 관리자
 					requests.requestMatchers(HttpMethod.GET).hasAuthority("");
