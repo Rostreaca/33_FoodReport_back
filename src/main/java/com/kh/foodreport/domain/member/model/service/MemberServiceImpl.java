@@ -1,12 +1,21 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
+import java.util.Map;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
+import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 
@@ -19,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService {
 	
 	private final MemberMapper memberMapper;
+	private final TokenMapper tokenMapper;
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
@@ -50,6 +60,60 @@ public class MemberServiceImpl implements MemberService {
 			throw new SignUpFailedException("회원가입에 실패했습니다.");
 		}
 
+	}
+
+	@Override
+	public void changePassword(ChangePasswordDTO password) {
+		
+		// 현재 비밀번호가 맞는지 검증
+		// Authentication에서 현재 인증된 사용자의 정보 뽑아오기
+		/*
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		String currentPassword = password.getCurrentPassword();
+		String encodedPassword = user.getPassword();
+		if(passwordEncoder.matches(currentPassword, currentPassword)) {
+			throw new CustomAuthenticationException("일치하지 않는 비밀번호");
+		}
+		*/
+		CustomUserDetails user = validatePassword(password.getCurrentPassword());
+		// 현재 비밀번호가 맞다면 새 비밀번호를 암호화
+		String newPassword = passwordEncoder.encode(password.getNewPassword());
+		// UPDATE FR_MEMBER PASSWORD = "newpassword" WHERE EMAIL = "사용자ID"
+		
+		Map<String, String> changeRequest = Map.of("email", user.getUsername(),
+												   "newPassword", newPassword);
+		
+		memberMapper.changePassword(changeRequest);
+		
+	}
+
+	@Override
+	@Transactional
+	public void deleteByPassword(String password) {
+		// 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호 암호문이 맞는지 검증
+		// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		//CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		// 검증이 맞다면
+		//if(!passwordEncoder.matches(password, user.getPassword())) {
+		//	throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+		
+		// DELETE FROM FR_MEMBER WHERE EMAIL = 사용자 아이디(이메일)
+		CustomUserDetails user = validatePassword(password);
+		tokenMapper.deleteToken(user.getUsername());
+		memberMapper.deleteByPassword(user.getUsername());
+	}
+	
+	private CustomUserDetails validatePassword(String password) {
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+	// 검증이 맞다면
+	if(!passwordEncoder.matches(password, user.getPassword())) {
+		throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+	}
+	return user;
+		
 	}
 
 }

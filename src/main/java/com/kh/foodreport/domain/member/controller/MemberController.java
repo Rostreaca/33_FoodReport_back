@@ -1,6 +1,10 @@
 package com.kh.foodreport.domain.member.controller;
 
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,11 +37,22 @@ public class MemberController {
 	
 	// 비밀번호 변경 기능 구현
 	@PutMapping
-	public ResponseEntity<ApiResponse<String>> changePassword(@Valid ChangePasswordDTO password){
+	public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordDTO password){
 		
+		// 1. 비밀번호 입력값에 대한 유효성 검증
 		log.info("비밀번호 정보:{}", password);
-		
-		return null;
+		// 2. 기존 비밀번호 일치 여부
+		// 3. 새 비밀번호에 대한 암호화
+		// 4. 새 비밀번호로 변경
+		memberService.changePassword(password);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+	
+	@DeleteMapping
+	public ResponseEntity<String> deleteByPassword(@RequestBody Map<String, String> request){
+		log.info("확인 {}", request);
+		memberService.deleteByPassword(request.get("password"));
+		return ResponseEntity.ok("Okay");
 	}
 	
 }
