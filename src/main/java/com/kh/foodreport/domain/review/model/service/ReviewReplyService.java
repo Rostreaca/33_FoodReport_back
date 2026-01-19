@@ -7,4 +7,6 @@ public interface ReviewReplyService {
 
 	void updateReply(Long replyNo, ReviewReplyDTO reviewReply, CustomUserDetails user);
 
+	void deleteReply(Long replyNo, CustomUserDetails user);
+
 }

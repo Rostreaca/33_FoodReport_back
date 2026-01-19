@@ -222,16 +222,6 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 		}
 		
-		
-		// 리뷰 삭제 성공 시 리뷰에 담겨있는 댓글 전체 삭제
-		if(review.getReviewReplies() != null && !review.getReviewReplies().isEmpty()) {
-			int replyResult = reviewMapper.deleteReplies(reviewNo);
-			
-			if(replyResult == 0) {
-				throw new ReplyDeleteException("댓글 삭제 실패");
-			}
-		}
-		
 	}
 
 	@Override

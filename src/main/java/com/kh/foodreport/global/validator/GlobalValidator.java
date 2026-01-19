@@ -1,5 +1,7 @@
 package com.kh.foodreport.global.validator;
 
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 
 public class GlobalValidator {
@@ -19,4 +21,5 @@ public class GlobalValidator {
 			throw new PageNotFoundException(message);
 		}
 	}
+	
 }
