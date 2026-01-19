@@ -8,9 +8,10 @@ import com.kh.foodreport.domain.token.model.vo.RefreshToken;
 @Mapper
 public interface TokenMapper {
 	
+	// 토큰 저장
 	int saveToken(RefreshToken token);
 	
-	@Delete("DELETE FROM FR_MEMBER WHERE MEMBER_NO = #{memberNo}")
-	void deleteToken(String Email);
+	// 토큰 삭제
+	int deleteToken(Long memberNo);
 
 }

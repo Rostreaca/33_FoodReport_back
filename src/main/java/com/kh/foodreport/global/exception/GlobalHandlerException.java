@@ -24,28 +24,42 @@ public class GlobalHandlerException {
 
 	// 인증 실패 예외
 	@ExceptionHandler(CustomAuthenticationException.class)
-	public ResponseEntity<ApiResponse<Object>> handleAuth(CustomAuthenticationException e){
+	public ResponseEntity<ApiResponse<Object>> handleCustomAuthenticationException(CustomAuthenticationException e){
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.UNAUTHORIZED);
 	}
 	
 	// 유저 정보 전달 실패 예외
 	@ExceptionHandler(UsernameNotFoundException.class)
-	public ResponseEntity<ApiResponse<Object>> handlerUsernameNotFound(UsernameNotFoundException e) {
+	public ResponseEntity<ApiResponse<Object>> handleUsernameNotFoundException(UsernameNotFoundException e) {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	// 이메일 중복 예외
 	@ExceptionHandler(EmailDuplicateException.class)
-	public ResponseEntity<ApiResponse<Object>> handlerDuplicateEmail(EmailDuplicateException e) {
+	public ResponseEntity<ApiResponse<Object>> handleEmailDuplicateException(EmailDuplicateException e) {
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	// 회원가입 실패 예외
 	@ExceptionHandler(SignUpFailedException.class)
-	public ResponseEntity<ApiResponse<Object>> handlerSignUpFailed(SignUpFailedException e){
+	public ResponseEntity<ApiResponse<Object>> handleSignUpFailedException(SignUpFailedException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 토큰 삭제 실패 예외
+	@ExceptionHandler(TokenDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleTokenDeleteException(TokenDeleteException e){
+		log.error("잘못된 상태 : {}", e.getMessage());
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 회원 탈퇴 실패 예외
+	@ExceptionHandler(SignOutFailedException.class)
+	public ResponseEntity<ApiResponse<Object>> handleSignOutFailedException(SignOutFailedException e){
 		log.error("잘못된 상태 : {}", e.getMessage());
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}

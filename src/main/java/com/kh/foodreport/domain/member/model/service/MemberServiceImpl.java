@@ -18,6 +18,7 @@ import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
+import com.kh.foodreport.global.exception.TokenDeleteException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,8 +102,15 @@ public class MemberServiceImpl implements MemberService {
 		
 		// DELETE FROM FR_MEMBER WHERE EMAIL = 사용자 아이디(이메일)
 		CustomUserDetails user = validatePassword(password);
-		tokenMapper.deleteToken(user.getUsername());
-		memberMapper.deleteByPassword(user.getUsername());
+		int tokenResult = tokenMapper.deleteToken(user.getMemberNo());
+		if(tokenResult == 0) {
+			throw new TokenDeleteException("토큰 삭제에 실패했습니다.");
+		}
+		
+		int memberResult = memberMapper.deleteMember(user.getUsername());
+		if(memberResult == 0) {
+			throw new SignUpFailedException("회원 탈퇴에 실패했습니다.");
+		}
 	}
 	
 	private CustomUserDetails validatePassword(String password) {
