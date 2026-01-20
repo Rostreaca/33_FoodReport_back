@@ -291,7 +291,18 @@
 		       )
 	</insert>
 	
-	<insert id="saveLike" parameterType="">
+	<select id="countLikeByMember" parameterType="ReviewLike">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="ReviewLike">
 		INSERT
 		  INTO
 		       FR_REVIEW_LIKE

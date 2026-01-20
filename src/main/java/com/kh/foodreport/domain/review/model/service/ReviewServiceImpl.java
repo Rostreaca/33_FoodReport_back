@@ -14,13 +14,15 @@ import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
+import com.kh.foodreport.domain.review.model.vo.ReviewLike;
 import com.kh.foodreport.domain.review.model.vo.ReviewReply;
 import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardLikeFailedException;
 import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
-import com.kh.foodreport.global.exception.ReplyDeleteException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.util.PageInfo;
@@ -136,7 +138,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public ReviewDTO findByReviewNo(Long reviewNo) {
 
-		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 
 		reviewMapper.updateViewCount(reviewNo);
 
@@ -153,7 +155,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images) {
 
-		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지 입니다.");
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 
 		review.setReviewNo(reviewNo);
 
@@ -201,7 +203,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void deleteReview(Long reviewNo) {
 
-		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
 		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
 		
@@ -227,7 +229,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void saveReply(Long reviewNo, ReviewReplyDTO reply) {
 		
-		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
 		ReviewReply replyVO = ReviewReply.builder()
 											  .replyContent(reply.getReplyContent())
@@ -246,6 +248,23 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void saveLike(Long reviewNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
+		
+		ReviewLike reviewLike = ReviewLike.builder().reviewNo(reviewNo).memberNo(memberNo).build();
+		
+		// Postman 등으로 좋아요를 여러번 요청했을 경우 예외 발생용 코드
+		int likeCount = reviewMapper.countLikeByMember(reviewLike);
+		
+		if(likeCount == 1) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = reviewMapper.saveLike(reviewLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 등록에 실패했습니다.");
+		}
 		
 	}
 	
