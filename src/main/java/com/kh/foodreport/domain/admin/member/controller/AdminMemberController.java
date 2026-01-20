@@ -1,9 +1,13 @@
 package com.kh.foodreport.domain.admin.member.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,5 +50,14 @@ public class AdminMemberController {
 		memberService.deleteMember(memberNo);
 		
 		return ApiResponse.noContent();
+	}
+	
+	@PutMapping("/{memberNo}")
+	public ResponseEntity<ApiResponse<Void>> updateMember(@PathVariable(name="memberNo")Long memberNo
+														 ,@RequestBody Map<String, String> role) {
+		
+		memberService.updateMember(memberNo, role.get("role"));
+		
+		return ApiResponse.ok(null, "회원 역할 변경에 성공하였습니다");
 	}
 }

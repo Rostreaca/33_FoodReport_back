@@ -1,5 +1,6 @@
 package com.kh.foodreport.domain.admin.member.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import com.kh.foodreport.domain.admin.member.model.dao.AdminMemberMapper;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberDTO;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
 import com.kh.foodreport.global.exception.MemberDeleteException;
+import com.kh.foodreport.global.exception.MemberUpdateException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -72,6 +74,21 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		
 		if(deleteResult == 0) {
 			throw new MemberDeleteException("회원 삭제에 실패하였습니다.");
+		}
+	}
+
+	@Override
+	public void updateMember(Long memberNo, String role) {
+		
+		GlobalValidator.validateNo(memberNo, "0보다 작은값은 들어갈 수 없습니다.");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("memberNo", memberNo);
+		params.put("role", role);
+		int updateResult = memberMapper.updateMember(params);
+		
+		if(updateResult == 0) {
+			throw new MemberUpdateException("회원 역할변경에 실패하였습니다.");
 		}
 	}
 	
