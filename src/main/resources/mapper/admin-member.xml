@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.member.model.dao.AdminMemberMapper">
+	
+	<select id="countByMembers"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_MEMBER
+	</select>
+	
+	<select id="findAllMember"
+		resultType="AdminMemberDTO" parameterType="map">
+	SELECT 
+		   MEMBER_NO memberNo,
+		   SUBSTR(EMAIL, 0, 2) 
+	       || RPAD('*', INSTR(EMAIL, '@') - 3, '*') 
+	       || SUBSTR(EMAIL, INSTR(EMAIL, '@')) email,
+		   NICKNAME nickname,
+	       SUBSTR(PHONE, 1, INSTR(PHONE, '-'))
+	       || RPAD('*', INSTR(PHONE, '-', 1, 2) - INSTR(PHONE, '-') - 1, '*')
+	       || SUBSTR(PHONE, INSTR(PHONE, '-', 1, 2)) phone,
+		   INTRODUCE introduce,
+		   CREATE_DATE createDate,
+		   UPDATE_DATE updateDate,
+		   DELETE_DATE deleteDate,
+		   STATUS status,
+		   ROLE role
+	  FROM
+		   FR_MEMBER
+	 ORDER
+	    BY
+	       MEMBER_NO ASC
+	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+</mapper>
