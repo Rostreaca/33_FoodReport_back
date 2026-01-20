@@ -33,18 +33,29 @@
 		
 	</update>
 	
+	<select id="countReplyLikeByMember" parameterType="ReviewReplyLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_REPLY_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REPLY_NO = #{replyNo}
+	</select>
+	
 	<insert id="saveReplyLike" parameterType="ReviewReplyLike">
 		INSERT
 		  INTO
 		       FR_REVIEW_REPLY_LIKE
 		       (
-		       REVIEW_NO
+		       REPLY_NO
 		     , MEMBER_NO
 		     , CREATE_DATE
 		       )
 		VALUES
 		       (
-		       #{reviewNo}
+		       #{replyNo}
 		     , #{memberNo}
 		     , SYSDATE
 		       )

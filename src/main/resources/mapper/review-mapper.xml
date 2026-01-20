@@ -291,7 +291,7 @@
 		       )
 	</insert>
 	
-	<select id="countLikeByMember" parameterType="ReviewLike">
+	<select id="countLikeByMember" parameterType="ReviewLike" resultType="_int">
 		SELECT
 		       COUNT(*)
 		  FROM

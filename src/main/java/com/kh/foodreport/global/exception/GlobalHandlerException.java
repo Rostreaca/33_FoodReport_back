@@ -164,4 +164,9 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleBoardUpdateException(BoardUpdateException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(ReplyLikeFailedException.class)
+	public ResponseEntity<ApiResponse<Object>> handleReplyLikeFailedException(ReplyLikeFailedException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }

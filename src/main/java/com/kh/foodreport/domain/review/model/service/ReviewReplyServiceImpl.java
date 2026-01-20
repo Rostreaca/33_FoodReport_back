@@ -2,11 +2,13 @@ package com.kh.foodreport.domain.review.model.service;
 
 import org.springframework.stereotype.Service;
 
-import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.review.model.dao.ReviewReplyMapper;
 import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.vo.ReviewReply;
+import com.kh.foodreport.domain.review.model.vo.ReviewReplyLike;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.ReplyDeleteException;
+import com.kh.foodreport.global.exception.ReplyLikeFailedException;
 import com.kh.foodreport.global.exception.ReplyUpdateException;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
@@ -50,6 +52,27 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 			throw new ReplyDeleteException("댓글 삭제에 실패했습니다.");
 		}
 		
+		
+	}
+
+	@Override
+	public void saveReplyLike(Long replyNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		ReviewReplyLike reviewReply = ReviewReplyLike.createReviewLike(replyNo, memberNo);
+		
+		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReply);
+		
+		if(likeCount == 1 ) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = reviewReplyMapper.saveReplyLike(reviewReply);
+		
+		if(result == 0) {
+			throw new ReplyLikeFailedException("좋아요 등록에 실패했습니다.");
+		}
 		
 	}
 	
