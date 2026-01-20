@@ -42,5 +42,7 @@ public interface ReviewMapper {
 
 	public int countLikeByMember(ReviewLike reviewLike);
 
+	public int deleteLike(ReviewLike reviewLike);
+
 	
 }

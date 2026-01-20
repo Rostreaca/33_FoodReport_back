@@ -107,4 +107,12 @@ public class ReviewController {
 		return ApiResponse.created("좋아요 등록에 성공하였습니다.");
 	}
 	
+	@DeleteMapping("/{reviewNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> deleteLike(@PathVariable(name= "reviewNo") Long reviewNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		reviewService.deleteLike(reviewNo, user.getMemberNo());
+		
+		return ApiResponse.created("좋아요를 취소하셨습니다.");
+	}
+	
 }
