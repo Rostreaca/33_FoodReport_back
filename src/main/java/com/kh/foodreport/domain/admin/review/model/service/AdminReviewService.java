@@ -9,4 +9,6 @@ public interface AdminReviewService {
 	AdminReviewResponse findByReviewTitle(int page, String reviewTitle);
 	
 	void deleteReview(Long reviewNo);
+	
+	void updateReview(Long reviewNo);
 }

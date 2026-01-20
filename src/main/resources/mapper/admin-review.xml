@@ -84,4 +84,16 @@
 		   	   STATUS = 'Y'
 	</update>
 	
+	<update id="updateReview">
+		UPDATE
+			   FR_REVIEW
+		   SET
+		   	   STATUS = 'Y'
+		   	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+		   AND
+		   	   STATUS = 'N'
+	</update>
+	
 </mapper>

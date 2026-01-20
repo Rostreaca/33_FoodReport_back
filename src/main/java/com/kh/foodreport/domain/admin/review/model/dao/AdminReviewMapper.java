@@ -19,4 +19,6 @@ public interface AdminReviewMapper {
 	List<AdminReviewDTO> findByReviewTitle(Map<String, Object> pages);
 	
 	int deleteReview(Long reviewNo);
+	
+	int updateReview(Long reviewNo);
 }
