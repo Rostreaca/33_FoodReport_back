@@ -73,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void changePassword(ChangePasswordDTO password) {
+	public void updatePassword(ChangePasswordDTO password) {
 		
 		// 현재 비밀번호가 맞는지 검증
 		// Authentication에서 현재 인증된 사용자의 정보 뽑아오기
@@ -95,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
 		Map<String, String> changeRequest = Map.of("email", user.getUsername(),
 												   "newPassword", newPassword);
 		
-		memberMapper.changePassword(changeRequest);
+		memberMapper.updatePassword(changeRequest);
 		
 	}
 
@@ -151,6 +151,7 @@ public class MemberServiceImpl implements MemberService {
 			int result = memberMapper.saveImage(memberImage);
 
 			if(result == 0) {
+				fileService.deleteStoredFile(changeName);
 				throw new FileUploadException("이미지 업로드에 실패했습니다.");
 			}
 	}

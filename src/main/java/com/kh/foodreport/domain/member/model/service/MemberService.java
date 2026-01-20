@@ -9,7 +9,7 @@ public interface MemberService {
 	
 	void signUp(MemberDTO member);
 	
-	void changePassword(ChangePasswordDTO password);
+	void updatePassword(ChangePasswordDTO password);
 	
 	void deleteByPassword(String password);
 	

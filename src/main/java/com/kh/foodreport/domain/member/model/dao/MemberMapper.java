@@ -22,7 +22,7 @@ public interface MemberMapper {
 	MemberDTO loadUser(String username);
 	
 	// 비밀번호 변경
-	void changePassword(Map<String, String> changeRequest);
+	void updatePassword(Map<String, String> changeRequest);
 		
 	// 회원 탈퇴
 	int deleteMember(String memberId);

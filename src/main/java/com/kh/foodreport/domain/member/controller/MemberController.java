@@ -41,14 +41,14 @@ public class MemberController {
 	
 	// 비밀번호 변경 기능 구현
 	@PutMapping
-	public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordDTO password){
+	public ResponseEntity<ApiResponse<String>> updatePassword(@Valid @RequestBody ChangePasswordDTO password){
 		
 		// 1. 비밀번호 입력값에 대한 유효성 검증
 		log.info("비밀번호 정보:{}", password);
 		// 2. 기존 비밀번호 일치 여부
 		// 3. 새 비밀번호에 대한 암호화
 		// 4. 새 비밀번호로 변경
-		memberService.changePassword(password);
+		memberService.updatePassword(password);
 		return ApiResponse.ok(null, "비밀번호가 변경되었습니다.");
 	}
 	
