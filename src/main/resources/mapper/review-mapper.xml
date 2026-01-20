@@ -291,6 +291,24 @@
 		       )
 	</insert>
 	
+	<insert id="saveLike" parameterType="">
+		INSERT
+		  INTO
+		       FR_REVIEW_LIKE
+		       (
+		       MEMBER_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
 	
 	
 </mapper>

@@ -21,7 +21,9 @@ public interface ReviewService {
 
 	public void deleteReview(Long reviewNo);
 
-	public void insertReply(Long reviewNo, ReviewReplyDTO reply);
+	public void saveReply(Long reviewNo, ReviewReplyDTO reply);
+
+	public void saveLike(Long reviewNo, Long memberNo);
 	
 	
 }
