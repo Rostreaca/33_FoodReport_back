@@ -18,6 +18,21 @@
 		       MEMBER_NO = #{replyWriter}
 	</update>
 	
+	<update id="deleteReply" parameterType="ReviewReply">
+		UPDATE
+		       FR_REVIEW_REPLY
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{replyWriter} 
+		
+	</update>
+	
 	
 	
 </mapper>
