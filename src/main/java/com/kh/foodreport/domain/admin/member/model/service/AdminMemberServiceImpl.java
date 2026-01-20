@@ -46,4 +46,20 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		return createFindResponse(members, pages);
 	}
 
+	@Override
+	public AdminMemberResponse findByNickname(int page, String nickname) {
+
+		GlobalValidator.validateNo(page, "0보다 작은 값은 넣을 수 없습니다.");
+		
+		int listCount = memberMapper.countByNickname(nickname);
+		
+		Map<String, Object> pages = pageNation.getPageRequest(listCount, page, 10);
+		
+		pages.put("nickname", nickname);
+		
+		List<AdminMemberDTO> members = memberMapper.findByNickname(pages);
+		
+		return createFindResponse(members,pages);
+	}
+	
 }

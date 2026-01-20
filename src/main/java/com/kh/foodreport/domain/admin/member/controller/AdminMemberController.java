@@ -28,4 +28,13 @@ public class AdminMemberController {
 		
 		return ApiResponse.ok(response, "유저 전체 조회에 성공하였습니다.");
 	}
+	
+	@GetMapping("/keyword")
+	public ResponseEntity<ApiResponse<AdminMemberResponse>> findByNickname(@RequestParam(name="page")int page,
+													    @RequestParam(name="nickname")String nickname) {
+		
+		AdminMemberResponse response = memberService.findByNickname(page, nickname);
+		
+		return ApiResponse.ok(response, "유저 이름 조회에 성공하였습니다.");
+	}
 }
