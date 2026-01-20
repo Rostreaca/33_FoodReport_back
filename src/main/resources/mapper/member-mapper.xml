@@ -54,8 +54,8 @@
 	       	   EMAIL = #{username}
 	</select>
 	
-	<!-- 회원 정보 수정 -->
-	<update id="update"
+	<!-- 비밀번호 변경 -->
+	<update id="chagePassword"
 			parameterType="Map">
 		UPDATE 
 			   FR_MEMBER 
@@ -92,7 +92,73 @@
 	 	 WHERE 
 	       	   MEMBER_NO = #{memberNo}
 	</select>
+	
+	<!-- 프로필 이미지 저장 -->
+	<insert id="saveImage" 
+				parameterType="MemberImage">
+		INSERT
+		  INTO
+		       FR_MEMBER_IMAGE
+		       (
+		       IMAGE_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , MEMBER_NO
+		     , CREATE_DATE
+		     , STATUS
+		       )
+		VALUES
+		       (
+		       SEQ_MEMBER_IMAGE_NO.NEXTVAL
+		     , #{originName}
+		     , #{changeName}
+		     , #{refMemberNo}
+		     , SYSDATE
+		     , 'Y'
+		       )
+	</insert>
+	
+	<!-- 프로필 이미지 수정-->
+	<update id="updateImage">
+		UPDATE 
+			   FR_MEMBER_IMAGE
+		   SET 
+		   	   ORIGIN_NAME = #{originName}
+		  	 , CHANGE_NAME = #{changeName}
+		  	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{refMemberNo}		
+		
+	</update>
+	
+	<!-- 프로필 이미지 삭제 -->
+	<update id="deleteImage" 
+				parameterType="long">
+		UPDATE
+		       FR_MEMBER_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
 
+	<!-- 회원 정보 수정 -->
+	<update id="updateMember">
+		
+		UPDATE 
+			   FR_MEMBER
+		   SET 
+		   	   NICKNAME = #{nackname}
+		   	 , PHONE = #{phone}
+		   	 , INTRODUCE = #{introduce}
+		   	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{memberNo}		
+		
+	</update>
 
 	
 	

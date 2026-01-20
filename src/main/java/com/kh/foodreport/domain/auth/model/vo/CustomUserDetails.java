@@ -31,5 +31,4 @@ public class CustomUserDetails implements UserDetails {
 
 
 	
-
 }

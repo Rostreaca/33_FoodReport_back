@@ -2,14 +2,16 @@ package com.kh.foodreport.domain.member.controller;
 
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
@@ -28,7 +30,7 @@ public class MemberController {
 	
 	private final MemberService memberService;
 	
-	@PostMapping
+	@PostMapping // 회원가입
 	public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody MemberDTO member){
 		log.info("멤버 : {}", member);		
 		memberService.signUp(member);
@@ -48,11 +50,18 @@ public class MemberController {
 		return ApiResponse.created("비밀번호가 변경되었습니다.");
 	}
 	
-	@DeleteMapping
+	@DeleteMapping // 회원 탈퇴
 	public ResponseEntity<ApiResponse<String>> deleteByPassword(@RequestBody Map<String, String> request){
 		log.info("확인 {}", request);
 		memberService.deleteByPassword(request.get("password"));
 		return ApiResponse.created("회원 탈퇴가 정상적으로 처리되었습니다.");
 	}
 	
+	@PostMapping("/images") // 프로필 이미지 등록
+	public ResponseEntity<ApiResponse<String>> saveImage(@ModelAttribute MemberDTO member
+										,@RequestParam(name="image", required = false) MultipartFile image) {		
+		memberService.saveImage(member, image);		
+		return ApiResponse.created("프로필 사진 등록에 성공하였습니다.");
+	
+	}
 }

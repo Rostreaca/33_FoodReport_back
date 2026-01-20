@@ -1,6 +1,8 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -8,17 +10,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
+import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
+import com.kh.foodreport.global.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +38,8 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberMapper memberMapper;
 	private final TokenMapper tokenMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final FileService fileService;
+
 
 	@Override
 	public void signUp(MemberDTO member) {
@@ -123,5 +132,29 @@ public class MemberServiceImpl implements MemberService {
 	return user;
 		
 	}
+	
+	public void saveImage(MemberDTO member, MultipartFile image) {
 
+		if(image == null || image.isEmpty()) {
+			return;
+		}
+
+		String changeName = fileService.store(image);
+		
+			// Mapper에 전달할 이미지 정보 memberImage 객체 생성
+			MemberImage memberImage = MemberImage.builder()
+					.originName(image.getOriginalFilename())
+					.changeName(changeName).refMemberNo(member.getMemberNo()).build();
+
+			int result = memberMapper.saveImage(memberImage);
+
+			if(result == 0) {
+				throw new FileUploadException("이미지 업로드에 실패했습니다.");
+			}
+	}
+
+	
+	
+	
+		
 }
