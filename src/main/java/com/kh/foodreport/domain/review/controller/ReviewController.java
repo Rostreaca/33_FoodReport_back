@@ -87,15 +87,32 @@ public class ReviewController {
 	}
 	
 	@PostMapping("/{reviewNo}/replies")
-	public ResponseEntity<ApiResponse<Void>> insertReply(@PathVariable(name = "reviewNo") Long reviewNo, @RequestBody ReviewReplyDTO reply, @AuthenticationPrincipal CustomUserDetails user) {
+	public ResponseEntity<ApiResponse<Void>> saveReply(@PathVariable(name = "reviewNo") Long reviewNo, @RequestBody ReviewReplyDTO reply, @AuthenticationPrincipal CustomUserDetails user) {
 		
 		log.info("진입 확인");
 		
 		reply.setReplyWriter(String.valueOf(user.getMemberNo()));
 		
-		reviewService.insertReply(reviewNo ,reply);
+		reviewService.saveReply(reviewNo ,reply);
 		
 		return ApiResponse.created("댓글 등록에 성공했습니다.");
+	}
+	
+	@PostMapping("/{reviewNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> saveLike(@PathVariable(name= "reviewNo") Long reviewNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		
+		reviewService.saveLike(reviewNo, user.getMemberNo());
+		
+		return ApiResponse.created("좋아요 등록에 성공하였습니다.");
+	}
+	
+	@DeleteMapping("/{reviewNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> deleteLike(@PathVariable(name= "reviewNo") Long reviewNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		reviewService.deleteLike(reviewNo, user.getMemberNo());
+		
+		return ApiResponse.created("좋아요를 취소하셨습니다.");
 	}
 	
 }

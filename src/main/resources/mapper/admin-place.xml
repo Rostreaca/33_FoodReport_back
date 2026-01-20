@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.place.model.dao.AdminPlaceMapper">
+
+	<select id="countByPlace">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_PLACE
+	</select>
+	
+	<select id="findAllPlace"
+		resultType="AdminPlaceDTO" parameterType="map">
+		SELECT
+			   PlACE.PlACE_NO placeNo
+			 , PlACE.PlACE_TITLE placeTitle
+			 , PlACE.PlACE_CONTENT placeContent
+			 , PlACE.CREATE_DATE createDate
+			 , PlACE.STATUS status
+			 , PlACE.VIEW_COUNT viewCount
+			 , PlACE.UPDATE_DATE updateDate
+			 , PlACE.DELETE_DATE deleteDate
+			 , PlACE.MEMBER_NO refMemberNo
+			 , (SELECT 
+			 		   COUNT(*)
+			 	  FROM
+			 	  	   FR_PlACE_LIKE
+			 	 WHERE
+			 	 	   PlACE_NO = FR_PlACE_LIKE.PlACE_NO) AS LIKES
+		  FROM
+		  	   FR_PlACE PlACE
+		  ORDER BY PlACE_NO DESC
+		  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="countByPlaceTitle"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_PLACE
+		WHERE
+			  PLACE_TITLE LIKE '%' || #{placeTitle} || '%'
+	</select>
+	
+	<select id="findByPlaceTitle"
+		resultType="AdminPlaceDTO" parameterType="map">
+		SELECT
+			   PLACE.PLACE_NO placeNo
+			 , PLACE.PLACE_TITLE placeTitle
+			 , PLACE.PLACE_CONTENT placeContent
+			 , PLACE.CREATE_DATE createDate
+			 , PLACE.STATUS status
+			 , PLACE.VIEW_COUNT viewCount
+			 , PLACE.UPDATE_DATE updateDate
+			 , PLACE.DELETE_DATE deleteDate
+			 , PLACE.MEMBER_NO refMemberNo
+			 , (SELECT 
+			  	       COUNT(*)
+			  	  FROM
+			  	  	   FR_PLACE_LIKE
+			  	 WHERE
+			  	 	   PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+		  FROM 
+		       FR_PLACE PLACE
+		 WHERE
+		 	   PLACE_TITLE LIKE '%' || #{placeTitle} || '%'
+		 ORDER
+		 	BY
+		 	   PLACE_NO DESC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<update id="deletePlace">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   DELETE_DATE = SYSDATE
+		   	 , STATUS = 'N'
+		 WHERE
+		 	   STATUS = 'Y'
+		   AND
+			   PLACE_NO = #{placeNo}
+	</update>
+	
+	<update id="updatePlace">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   UPDATE_DATE = SYSDATE
+		   	 , STATUS = 'Y'
+		 WHERE
+		 	   STATUS = 'N'
+		   AND
+			   PLACE_NO = #{placeNo}
+	</update>
+	
+</mapper>

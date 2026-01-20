@@ -13,6 +13,6 @@ public interface MemberService {
 	
 	void deleteByPassword(String password);
 	
-	void saveImage(MemberDTO member, MultipartFile image);
+	void saveImage(Long memberNo, MultipartFile image);
 
 }

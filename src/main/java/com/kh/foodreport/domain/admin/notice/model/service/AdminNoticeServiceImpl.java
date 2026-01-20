@@ -12,6 +12,7 @@ import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.exception.NoticeCreationException;
@@ -20,7 +21,6 @@ import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
-import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,7 +86,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findAllNotices(pages);
 		
-		return createResponse(notices, pages);
+		return createFindResponse(notices, pages);
 	}
 	
 	@Override
@@ -105,11 +105,11 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		List<AdminNoticeDTO> notices = noticeMapper.findByNoticeTitle(pages);
 		
-		return createResponse(notices, pages);
+		return createFindResponse(notices, pages);
 	}
 	
 	// 중복 메소드 분리 
-	private AdminNoticeResponse createResponse(List<AdminNoticeDTO> notices, Map<String, Object> pages) {
+	private AdminNoticeResponse createFindResponse(List<AdminNoticeDTO> notices, Map<String, Object> pages) {
 		AdminNoticeResponse response = new AdminNoticeResponse();
 		
 		response.setAdminNotice(notices);
@@ -123,14 +123,15 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		GlobalValidator.validateNo(noticeNo , "0보다 큰 값을 넣어주시길바랍니다.");
 		
-		// 1. 이미지 테이블 접근 1행 반환시 변경됨, 0행 반환시 변경안되거나 없음.
-		int imageResult = noticeMapper.deleteNoticeImage(noticeNo);
+		noticeMapper.deleteNoticeImage(noticeNo);
 		
 		// 2. 다음 공지사항 테이블 접근 1행 반환시 잘반환됨, 0행 반환시 삭제가 안된거기때문에 예외발생
 		int deleteResult = noticeMapper.deleteNotice(noticeNo);
 		
 		// 이미 삭제됐거나, 없는 데이터
-		GlobalValidator.validateNo(deleteResult , "일치하는 번호가 존재하지 않습니다.");
+		if(deleteResult == 0) {
+			throw new BoardDeleteException("게시물 삭제에 실패하였습니다.");
+		}
 	}
 
 	@Override

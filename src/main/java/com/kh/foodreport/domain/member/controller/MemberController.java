@@ -3,6 +3,7 @@ package com.kh.foodreport.domain.member.controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.service.MemberService;
@@ -50,6 +52,7 @@ public class MemberController {
 		return ApiResponse.created("비밀번호가 변경되었습니다.");
 	}
 	
+	
 	@DeleteMapping // 회원 탈퇴
 	public ResponseEntity<ApiResponse<String>> deleteByPassword(@RequestBody Map<String, String> request){
 		log.info("확인 {}", request);
@@ -58,9 +61,8 @@ public class MemberController {
 	}
 	
 	@PostMapping("/images") // 프로필 이미지 등록
-	public ResponseEntity<ApiResponse<String>> saveImage(@ModelAttribute MemberDTO member
-										,@RequestParam(name="image", required = false) MultipartFile image) {		
-		memberService.saveImage(member, image);		
+	public ResponseEntity<ApiResponse<String>> saveImage(@RequestParam(name="image", required = false) MultipartFile image, @AuthenticationPrincipal CustomUserDetails user) {		
+		memberService.saveImage(user.getMemberNo(), image);		
 		return ApiResponse.created("프로필 사진 등록에 성공하였습니다.");
 	
 	}

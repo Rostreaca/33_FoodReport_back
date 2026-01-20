@@ -291,6 +291,45 @@
 		       )
 	</insert>
 	
+	<select id="countLikeByMember" parameterType="ReviewLike">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="ReviewLike">
+		INSERT
+		  INTO
+		       FR_REVIEW_LIKE
+		       (
+		       MEMBER_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
+	<delete id="deleteLike" parameterType="ReviewLike">
+		DELETE
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</delete>
+	
 	
 	
 </mapper>

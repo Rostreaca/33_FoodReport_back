@@ -133,7 +133,7 @@ public class MemberServiceImpl implements MemberService {
 		
 	}
 	
-	public void saveImage(MemberDTO member, MultipartFile image) {
+	public void saveImage(Long memberNo, MultipartFile image) {
 
 		if(image == null || image.isEmpty()) {
 			return;
@@ -144,8 +144,10 @@ public class MemberServiceImpl implements MemberService {
 			// Mapper에 전달할 이미지 정보 memberImage 객체 생성
 			MemberImage memberImage = MemberImage.builder()
 					.originName(image.getOriginalFilename())
-					.changeName(changeName).refMemberNo(member.getMemberNo()).build();
+					.changeName(changeName).refMemberNo(memberNo).build();
 
+			log.info("{}", memberImage);
+			
 			int result = memberMapper.saveImage(memberImage);
 
 			if(result == 0) {

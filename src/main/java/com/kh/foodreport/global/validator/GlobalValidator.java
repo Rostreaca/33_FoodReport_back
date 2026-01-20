@@ -1,6 +1,6 @@
 package com.kh.foodreport.global.validator;
 
-import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.exception.InvalidValueException;
 
 public class GlobalValidator {
 
@@ -10,13 +10,14 @@ public class GlobalValidator {
 	
 	public static void validateNo(int number,String message) {
 		if (number <= 0) {
-			throw new PageNotFoundException(message);
+			throw new InvalidValueException(message);
 		}
 	}
 	
 	public static void validateNo(Long number,String message) {
 		if (number <= 0) {
-			throw new PageNotFoundException(message);
+			throw new InvalidValueException(message);
 		}
 	}
+	
 }

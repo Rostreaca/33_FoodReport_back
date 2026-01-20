@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.foodreport.domain.admin.review.model.dao.AdminReviewMapper;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewDTO;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewResponse;
+import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -34,12 +37,51 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		List<AdminReviewDTO> reviews = reviewMapper.findAllReviews(pages);
 		
+		return createFindResponse(reviews ,pages);
+	}
+
+	@Override
+	public AdminReviewResponse findByReviewTitle(int page, String reviewTitle) {
+		
+		GlobalValidator.validateNo(page, "page번호가 0보단 작을순 없습니다.");
+		
+		if(reviewTitle == null || "".equals(reviewTitle.trim())) {
+			throw new InvalidKeywordException("키워드를 입력해주세요.");
+		}
+		
+		// 부분 개수 조회
+		int listCount = reviewMapper.countByReviewTitle(reviewTitle);
+		
+		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
+		
+		pages.put("reviewTitle", reviewTitle);
+		
+		List<AdminReviewDTO> reviews = reviewMapper.findByReviewTitle(pages);
+		
+		return createFindResponse(reviews, pages);
+	}
+	
+	// 중복 메소드 제거(응답 데이터 만드는 메소드)
+	private AdminReviewResponse createFindResponse(List<AdminReviewDTO> reviews
+											  ,Map<String, Object> pages) {
 		AdminReviewResponse response = new AdminReviewResponse();
 		
 		response.setAdminReviews(reviews);
 		response.setPages((PageInfo)pages.get("pageInfo"));
 		
 		return response;
+	}
+
+	@Override
+	public void deleteReview(Long reviewNo) {
+		
+		GlobalValidator.validateNo(reviewNo, "없는 리뷰 번호입니다.");
+		
+		int reviewResult = reviewMapper.deleteReview(reviewNo);
+		
+		if(reviewResult == 0) {
+			throw new BoardDeleteException("삭제에 실패하였습니다.");
+		}
 	}
 
 }
