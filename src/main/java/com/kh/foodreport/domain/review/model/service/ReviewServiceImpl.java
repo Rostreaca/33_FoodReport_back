@@ -225,7 +225,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public void insertReply(Long reviewNo, ReviewReplyDTO reply) {
+	public void saveReply(Long reviewNo, ReviewReplyDTO reply) {
 		
 		GlobalValidator.validateNo(reviewNo, "존재하지 않는 페이지입니다.");
 		
@@ -241,6 +241,11 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
 		}
 		
+		
+	}
+
+	@Override
+	public void saveLike(Long reviewNo, Long memberNo) {
 		
 	}
 	
