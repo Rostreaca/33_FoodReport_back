@@ -45,7 +45,7 @@ public class SecurityConfigure {
 					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET).permitAll();
 					// 비로그인 허용(POST)
-					requests.requestMatchers(HttpMethod.POST, "/api/reviews/*/replies").authenticated();
+					requests.requestMatchers(HttpMethod.POST, "/api/reviews/*/replies", "api/reviews/**").authenticated();
 //					requests.requestMatchers(HttpMethod.POST).permitAll();
 					// 로그인 필요(GET)
 					requests.requestMatchers(HttpMethod.PUT).permitAll(); // 나중에 삭제해야함.
