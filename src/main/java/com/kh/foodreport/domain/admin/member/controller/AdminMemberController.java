@@ -43,6 +43,8 @@ public class AdminMemberController {
 	@DeleteMapping("/{memberNo}")
 	public ResponseEntity<ApiResponse<Void>> deleteMember(@PathVariable(name="memberNo")Long memberNo) {
 		
+		memberService.deleteMember(memberNo);
+		
 		return ApiResponse.noContent();
 	}
 }

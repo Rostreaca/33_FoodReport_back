@@ -7,4 +7,6 @@ public interface AdminMemberService {
 	AdminMemberResponse findAllMember(int page);
 
 	AdminMemberResponse findByNickname(int page, String nickname);
+	
+	void deleteMember(Long memberNO);
 }

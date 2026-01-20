@@ -17,4 +17,6 @@ public interface AdminMemberMapper {
 	int countByNickname(String nickname);
 	
 	List<AdminMemberDTO> findByNickname(Map<String, Object> pages);
+
+	int deleteMember(Long memberNo);
 }
