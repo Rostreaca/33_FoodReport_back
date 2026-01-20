@@ -74,4 +74,16 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<update id="deleteMember">
+		UPDATE
+			   FR_MEMBER
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   STATUS = 'Y'
+		   AND
+		   	   MEMBER_NO = #{memberNo}
+	</update>
+	
 </mapper>

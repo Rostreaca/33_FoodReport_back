@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.admin.member.model.dao.AdminMemberMapper;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberDTO;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
+import com.kh.foodreport.global.exception.MemberDeleteException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -60,6 +61,18 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		List<AdminMemberDTO> members = memberMapper.findByNickname(pages);
 		
 		return createFindResponse(members,pages);
+	}
+
+	@Override
+	public void deleteMember(Long memberNo) {
+		
+		GlobalValidator.validateNo(memberNo, "0보다 작은 값은 들어올 수 없습니다.");
+		
+		int deleteResult = memberMapper.deleteMember(memberNo);
+		
+		if(deleteResult == 0) {
+			throw new MemberDeleteException("회원 삭제에 실패하였습니다.");
+		}
 	}
 	
 }

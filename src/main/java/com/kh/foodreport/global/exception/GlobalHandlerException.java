@@ -169,4 +169,9 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleReplyLikeFailedException(ReplyLikeFailedException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(MemberDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleMemberDeleteException(MemberDeleteException e) {
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }
