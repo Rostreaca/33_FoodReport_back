@@ -19,21 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewReplyServiceImpl implements ReviewReplyService{
 
 	private final ReviewReplyMapper reviewReplyMapper;
-
-	private void validateReplyNo(Long replyNo) {
-		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
-	}
-	
-
 	
 	@Override
-	public void updateReply(Long replyNo, ReviewReplyDTO reviewReply, CustomUserDetails user) {
+	public void updateReply(Long replyNo, ReviewReplyDTO reviewReply, Long memberNo) {
 		
-		validateReplyNo(replyNo);
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
 		
 		reviewReply.setReplyNo(replyNo);
 		
-		reviewReply.setReplyWriter(String.valueOf(user.getMemberNo()));
+		reviewReply.setReplyWriter(String.valueOf(memberNo));
 		
 		int result = reviewReplyMapper.updateReply(reviewReply);
 		
@@ -44,11 +38,11 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 	}
 
 	@Override
-	public void deleteReply(Long replyNo, CustomUserDetails user) {
+	public void deleteReply(Long replyNo, Long memberNo) {
+
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
 		
-		validateReplyNo(replyNo);
-		
-		ReviewReply reviewReply = ReviewReply.builder().replyNo(replyNo).replyWriter(String.valueOf(user.getMemberNo())).build();
+		ReviewReply reviewReply = ReviewReply.builder().replyNo(replyNo).replyWriter(String.valueOf(memberNo)).build();
 		
 		int result = reviewReplyMapper.deleteReply(reviewReply);
 		
