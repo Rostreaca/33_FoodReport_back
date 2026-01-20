@@ -1,6 +1,10 @@
 package com.kh.foodreport.domain.member.model.dto;
 
 import java.util.Date;
+import java.util.List;
+
+import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,4 +40,7 @@ public class MemberDTO {
 	private String status;
 	private String role;
 
+	private MemberImageDTO memberImages;
+	private RestaurantDTO restaurants;
+	
 }

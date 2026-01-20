@@ -42,6 +42,9 @@ public interface MemberMapper {
 	// 회원 정보 수정
 	int updateMember(MemberDTO member);
 	
+	// 내 정보 조회
+	MemberDTO findByMemberNo(Long memberNo);
+	
 
 
 

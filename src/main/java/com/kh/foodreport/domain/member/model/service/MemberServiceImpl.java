@@ -19,13 +19,16 @@ import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -155,9 +158,17 @@ public class MemberServiceImpl implements MemberService {
 				throw new FileUploadException("이미지 업로드에 실패했습니다.");
 			}
 	}
-
 	
-	
-	
+	@Override
+	public MemberDTO findByMemberNo(Long memberNo) {
 		
+		GlobalValidator.validateNo(memberNo, "유효하지 않은 회원 번호입니다.");
+		
+		MemberDTO member = memberMapper.findByMemberNo(memberNo);
+		
+		if(member == null) {
+			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");		
+		}
+		return member;
+	}
 }
