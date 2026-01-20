@@ -36,4 +36,42 @@
 	       MEMBER_NO ASC
 	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+	
+	<select id="countByNickname"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_MEMBER
+		 WHERE
+		 	   NICKNAME LIKE '%' || #{nickname} || '%'
+	</select>
+	
+	<select id="findByNickname"
+		resultType="AdminMemberDTO" parameterType="map">
+		SELECT 
+			   MEMBER_NO memberNo,
+			   SUBSTR(EMAIL, 0, 2) 
+		       || RPAD('*', INSTR(EMAIL, '@') - 3, '*') 
+		       || SUBSTR(EMAIL, INSTR(EMAIL, '@')) email,
+			   NICKNAME nickname,
+		       SUBSTR(PHONE, 1, INSTR(PHONE, '-'))
+		       || RPAD('*', INSTR(PHONE, '-', 1, 2) - INSTR(PHONE, '-') - 1, '*')
+		       || SUBSTR(PHONE, INSTR(PHONE, '-', 1, 2)) phone,
+			   INTRODUCE introduce,
+			   CREATE_DATE createDate,
+			   UPDATE_DATE updateDate,
+			   DELETE_DATE deleteDate,
+			   STATUS status,
+			   ROLE role
+		  FROM
+			   FR_MEMBER
+		 WHERE
+			   NICKNAME LIKE '%' || #{nickname} || '%'
+		 ORDER
+		    BY
+		       MEMBER_NO ASC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
 </mapper>

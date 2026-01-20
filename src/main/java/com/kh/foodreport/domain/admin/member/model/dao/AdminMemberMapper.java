@@ -13,4 +13,8 @@ public interface AdminMemberMapper {
 	int countByMembers();
 	
 	List<AdminMemberDTO> findAllMember(Map<String, Object> pages);
+	
+	int countByNickname(String nickname);
+	
+	List<AdminMemberDTO> findByNickname(Map<String, Object> pages);
 }
