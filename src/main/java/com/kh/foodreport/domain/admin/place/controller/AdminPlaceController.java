@@ -29,4 +29,13 @@ public class AdminPlaceController {
 		return ApiResponse.ok(response, "업장 전체 조회 성공!");
 	}
 	
+	@GetMapping("/keyword")
+	public ResponseEntity<ApiResponse<AdminPlaceResponse>> findByPlaceTitle(@RequestParam(name="placeTitle")String placeTitle,
+																			@RequestParam(name="page") int page) {
+		
+		AdminPlaceResponse response = placeService.findByPlaceTitle(page, placeTitle);
+		
+		return ApiResponse.ok(response, "업장 제목 조회 성공!");
+	}
+	
 }

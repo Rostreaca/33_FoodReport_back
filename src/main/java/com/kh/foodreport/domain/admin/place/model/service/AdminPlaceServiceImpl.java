@@ -47,5 +47,20 @@ public class AdminPlaceServiceImpl implements AdminPlaceService {
 		return createFindResponse(places, pages);
 	}
 
-
+	@Override
+	public AdminPlaceResponse findByPlaceTitle(int page, String placeTitle) {
+		
+		GlobalValidator.validateNo(page, "0보다 큰값을 넣어주시길 바랍니다.");
+		
+		int listCount = placeMapper.countByPlaceTitle(placeTitle);
+		
+		Map<String, Object> pages = pageNation.getPageRequest(listCount, page, 10);
+		
+		pages.put("placeTitle", placeTitle);
+		
+		List<AdminPlaceDTO> places = placeMapper.findByPlaceTitle(pages);
+		
+		return createFindResponse(places, pages);
+	}
+	
 }

@@ -13,4 +13,8 @@ public interface AdminPlaceMapper {
 	int countByPlace();
 
 	List<AdminPlaceDTO> findAllPlace(Map<String, Object> pages);
+	
+	int countByPlaceTitle(String placeTitle);
+	
+	List<AdminPlaceDTO> findByPlaceTitle(Map<String, Object> pages);
 }
