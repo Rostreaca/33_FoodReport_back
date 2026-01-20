@@ -95,7 +95,7 @@
 	
 	<!-- 프로필 이미지 저장 -->
 	<insert id="saveImage" 
-				parameterType="MemberImage">
+			parameterType="MemberImage">
 		INSERT
 		  INTO
 		       FR_MEMBER_IMAGE
@@ -151,7 +151,7 @@
 		UPDATE 
 			   FR_MEMBER
 		   SET 
-		   	   NICKNAME = #{nackname}
+		   	   NICKNAME = #{nickname}
 		   	 , PHONE = #{phone}
 		   	 , INTRODUCE = #{introduce}
 		   	 , UPDATE_DATE = SYSDATE
@@ -159,6 +159,60 @@
 		 	   MEMBER_NO = #{memberNo}		
 		
 	</update>
+	
+	<resultMap id="findByMemberNo" type="memberDTO">
+		<id column="memberNo" property="memberNo"/>
+		<result column="nickname" property="nickname"/>
+		<result column="phone" property="phone"/>
+		<result column="introduce" property="introduce" />
+		<result column="memberCreateDate" property="createDate"/>
+		<collection property="memberImages" ofType="MemberImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageCreateDate" property="createDate" />
+		</collection>
+		<collection property="restaurants" ofType="RestaurantDTO">
+			<id column="restaurantNo" property="restaurantNo"/>
+			<result column="restautantName" property="restaurantName"/>
+			<result column="address" property="address"/>
+			<result column="restaurantCreateDate" property="createDate"/>
+		</collection>	
+	</resultMap>
+	
+	<!-- 내 정보 조회 -->
+	<select id="findByMemberNo" 
+			resultMap="findByMemberNo" 
+			parameterType="long">
+		SELECT
+		       EMAIL email
+		     , NICKNAME nickname
+		     , PHONE phone
+		     , INTRODUCE introduce
+		     , MEMBER.CREATE_DATE memberCreateDate
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.CREATE_DATE imageCreateDate
+		     , IMG.STATUS imageStatus
+		     , RESTAURANT.RESTAURANT_NO restaurantNo
+		     , RESTAURANT.RESTAURANT_NAME restaurantName
+		     , RESTAURANT.ADDRESS address
+		     , RESTAURANT.CREATE_DATE restaurantCreateDate
+		  FROM
+		       FR_MEMBER MEMBER
+		  LEFT
+		  JOIN
+		       FR_RESTAURANT RESTAURANT ON (MEMBER.MEMBER_NO = RESTAURANT.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE IMG ON (IMG.MEMBER_NO = MEMBER.MEMBER_NO AND IMG.STATUS = 'Y')
+		 WHERE
+		       MEMBER.STATUS = 'Y'
+		   AND
+		       MEMBER.MEMBER_NO = #{memberNo}
+		 ORDER
+		    BY
+		       IMG.CREATE_DATE ASC
+	</select>	
 
 	
 	
