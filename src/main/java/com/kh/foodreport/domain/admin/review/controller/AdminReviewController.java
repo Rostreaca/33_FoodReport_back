@@ -49,4 +49,12 @@ public class AdminReviewController {
 		return ApiResponse.noContent();
 	}
 	
+	@PutMapping("/{reviewNo}")
+	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name="reviewNo")Long reviewNo) {
+		
+		reviewService.updateReview(reviewNo);
+		
+		return ApiResponse.ok(null, "업데이트에 성공하였습니다.");
+	}
+	
 }

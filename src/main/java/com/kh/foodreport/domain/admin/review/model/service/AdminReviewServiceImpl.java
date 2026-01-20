@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.foodreport.domain.admin.review.model.dao.AdminReviewMapper;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewDTO;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewResponse;
 import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -81,6 +81,18 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		if(reviewResult == 0) {
 			throw new BoardDeleteException("삭제에 실패하였습니다.");
+		}
+	}
+
+	@Override
+	public void updateReview(Long reviewNo) {
+		
+		GlobalValidator.validateNo(reviewNo, "없는 리뷰 번호입니다.");
+
+		int updateResult = reviewMapper.updateReview(reviewNo);
+		
+		if(updateResult == 0) {
+			throw new BoardUpdateException("업데이트 실패하였습니다.");
 		}
 	}
 
