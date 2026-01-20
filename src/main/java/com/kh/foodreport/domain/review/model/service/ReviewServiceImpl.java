@@ -25,6 +25,7 @@ import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -142,12 +143,20 @@ public class ReviewServiceImpl implements ReviewService {
 
 		reviewMapper.updateViewCount(reviewNo);
 
-		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
+		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
 
 		if (review == null) {
 			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
 		}
 
+		List<ReviewReplyDTO> reviewReplies = reviewMapper.findRepliesByReviewNo(reviewNo);
+		
+		List<TagDTO> tags = reviewMapper.findTagByReviewNo(reviewNo);
+		
+		review.setReviewReplies(reviewReplies);
+		
+		review.setTags(tags);
+		
 		return review;
 	}
 
@@ -205,7 +214,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
-		ReviewDTO review = reviewMapper.findByReviewNo(reviewNo);
+		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
 		
 		if(review == null) {
 			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");

@@ -1,4 +1,4 @@
-package com.kh.foodreport.domain.review.model.dto;
+package com.kh.foodreport.global.tag.model.dto;
 
 import java.util.Date;
 
@@ -13,15 +13,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ReviewReplyDTO {
-
-	private Long replyNo;
-	private String replyContent;
-	private String replyWriter;
-	private int likes;
+public class TagDTO {
+	private Long tagNo;
+	private String tagTitle;
+	private String tagContent;
+	private String status;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
-	private String status;
-	private Long refReviewNo;
 }
