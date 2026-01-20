@@ -19,4 +19,6 @@ public interface AdminMemberMapper {
 	List<AdminMemberDTO> findByNickname(Map<String, Object> pages);
 
 	int deleteMember(Long memberNo);
+	
+	int updateMember(Map<String, Object> params);
 }

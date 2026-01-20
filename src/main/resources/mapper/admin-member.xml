@@ -86,4 +86,16 @@
 		   	   MEMBER_NO = #{memberNo}
 	</update>
 	
+	<update id="updateMember">
+		UPDATE
+			   FR_MEMBER
+		   SET
+		   	   ROLE = #{role}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{memberNo}
+		   AND
+		   	   STATUS = 'Y'
+	</update>
+	
 </mapper>
