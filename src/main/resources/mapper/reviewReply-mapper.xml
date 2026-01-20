@@ -33,6 +33,22 @@
 		
 	</update>
 	
+	<insert id="saveReplyLike" parameterType="ReviewReplyLike">
+		INSERT
+		  INTO
+		       FR_REVIEW_REPLY_LIKE
+		       (
+		       REVIEW_NO
+		     , MEMBER_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{reviewNo}
+		     , #{memberNo}
+		     , SYSDATE
+		       )
+	</insert>
 	
 	
 </mapper>

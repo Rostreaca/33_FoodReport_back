@@ -112,7 +112,7 @@ public class ReviewController {
 		
 		reviewService.deleteLike(reviewNo, user.getMemberNo());
 		
-		return ApiResponse.created("좋아요를 취소하셨습니다.");
+		return ApiResponse.ok(null,"좋아요를 취소하셨습니다.");
 	}
 	
 }
