@@ -7,4 +7,6 @@ public interface AdminPlaceService {
 	AdminPlaceResponse findAllPlace(int page);
 	
 	AdminPlaceResponse findByPlaceTitle(int page, String placeTitle);
+	
+	void deletePlace(Long placeNo);
 }

@@ -78,7 +78,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		int reviewResult = reviewMapper.deleteReview(reviewNo);
 		
-		GlobalValidator.validateNo(reviewResult , "일치하는 번호가 존재하지 않습니다.");
+		GlobalValidator.validateNo(reviewResult , "없거나 이미 지워진 번호입니다.");
 	}
 
 }
