@@ -12,6 +12,7 @@ public class ReviewReply {
 	private Long replyNo;
 	private String replyContent;
 	private String replyWriter;
+	private int likes;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
