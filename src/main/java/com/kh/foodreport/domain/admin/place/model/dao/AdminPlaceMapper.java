@@ -17,4 +17,6 @@ public interface AdminPlaceMapper {
 	int countByPlaceTitle(String placeTitle);
 	
 	List<AdminPlaceDTO> findByPlaceTitle(Map<String, Object> pages);
+	
+	int deletePlace(Long placeNo);
 }

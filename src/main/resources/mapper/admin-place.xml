@@ -73,4 +73,16 @@
 		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<update id="deletePlace">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   DELETE_DATE = SYSDATE
+		   	 , STATUS = 'N'
+		 WHERE
+		 	   STATUS = 'Y'
+		   AND
+			   PLACE_NO = #{placeNo}
+	</update>
+	
 </mapper>

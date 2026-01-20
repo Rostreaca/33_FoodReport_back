@@ -1,7 +1,9 @@
 package com.kh.foodreport.domain.admin.place.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +38,14 @@ public class AdminPlaceController {
 		AdminPlaceResponse response = placeService.findByPlaceTitle(page, placeTitle);
 		
 		return ApiResponse.ok(response, "업장 제목 조회 성공!");
+	}
+	
+	@DeleteMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<Void>> deletePlace(@PathVariable(name="placeNo")Long placeNo) {
+		
+		placeService.deletePlace(placeNo);
+		
+		return ApiResponse.noContent();
 	}
 	
 }

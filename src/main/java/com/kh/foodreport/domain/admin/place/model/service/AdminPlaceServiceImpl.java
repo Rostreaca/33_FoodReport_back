@@ -62,5 +62,15 @@ public class AdminPlaceServiceImpl implements AdminPlaceService {
 		
 		return createFindResponse(places, pages);
 	}
+
+	@Override
+	public void deletePlace(Long placeNo) {
+		
+		GlobalValidator.validateNo(placeNo, "0보다 큰 값을 넣어주시길 바랍니다.");
+
+		int deleteResult = placeMapper.deletePlace(placeNo);
+		
+		GlobalValidator.validateNo(deleteResult, "없거나 이미 지워진 번호입니다.");
+	}
 	
 }
