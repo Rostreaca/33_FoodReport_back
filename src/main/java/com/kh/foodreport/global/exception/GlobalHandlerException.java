@@ -159,4 +159,9 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleInvalidValueException(InvalidValueException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(BoardUpdateException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBoardUpdateException(BoardUpdateException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.admin.place.model.dao.AdminPlaceMapper;
 import com.kh.foodreport.domain.admin.place.model.dto.AdminPlaceDTO;
 import com.kh.foodreport.domain.admin.place.model.dto.AdminPlaceResponse;
+import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -70,7 +72,22 @@ public class AdminPlaceServiceImpl implements AdminPlaceService {
 
 		int deleteResult = placeMapper.deletePlace(placeNo);
 		
-		GlobalValidator.validateNo(deleteResult, "없거나 이미 지워진 번호입니다.");
+		if(deleteResult == 0) {
+			throw new BoardDeleteException("삭제에 실패하였습니다.");
+		}
+	}
+
+	@Override
+	public void updatePlace(Long placeNo) {
+		
+		GlobalValidator.validateNo(placeNo, "0보다 큰 값을 넣어주시길 바랍니다.");
+		
+		int updateResult = placeMapper.updatePlace(placeNo);
+		
+		if(updateResult == 0) {
+			throw new BoardUpdateException("업데이트에 실패하였습니다.");
+		}
+		
 	}
 	
 }
