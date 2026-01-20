@@ -6,12 +6,12 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.admin.tag.model.dao.AdminTagMapper;
-import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagResponse;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.exception.TagUpdateException;
 import com.kh.foodreport.global.tag.Tag;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -27,7 +27,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 	private final Pagenation pagenation;
 
 	@Override
-	public void saveTag(AdminTagDTO tag) {
+	public void saveTag(TagDTO tag) {
 		
 		Tag newTag = Tag.createTag(null ,tag.getTagTitle(), tag.getTagContent());
 		
@@ -47,7 +47,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
 		
-		List<AdminTagDTO> tags = tagMapper.findAllTag(pages);
+		List<TagDTO> tags = tagMapper.findAllTag(pages);
 		
 		AdminTagResponse response = new AdminTagResponse();
 		response.setAdminTag(tags);
@@ -58,7 +58,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 	}
 
 	@Override
-	public void updateTag(Long tagNo, AdminTagDTO tagDTO) {
+	public void updateTag(Long tagNo, TagDTO tagDTO) {
 		
 		GlobalValidator.validateNo(tagNo,"일치하는 번호가 없습니다.");
 		

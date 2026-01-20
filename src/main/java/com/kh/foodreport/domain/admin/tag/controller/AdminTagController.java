@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagResponse;
 import com.kh.foodreport.domain.admin.tag.model.service.AdminTagService;
 import com.kh.foodreport.global.common.ApiResponse;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class AdminTagController {
 	private final AdminTagService tagService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> createTag(@RequestBody AdminTagDTO tag) {
+	public ResponseEntity<ApiResponse<Void>> createTag(@RequestBody TagDTO tag) {
 		
 		tagService.saveTag(tag);
 		
@@ -45,7 +45,7 @@ public class AdminTagController {
 	
 	@PutMapping("/{tagNo}")
 	public ResponseEntity<ApiResponse<Void>> updateTag(@PathVariable(name="tagNo")Long tagNo 
-												   ,@RequestBody AdminTagDTO tag) {
+												   ,@RequestBody TagDTO tag) {
 		
 		tagService.updateTag(tagNo,tag);
 		
