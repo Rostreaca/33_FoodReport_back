@@ -250,8 +250,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public void saveLike(Long reviewNo, Long memberNo) {
 		
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
-		
-		ReviewLike reviewLike = ReviewLike.builder().reviewNo(reviewNo).memberNo(memberNo).build();
+
+		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
 		
 		// Postman 등으로 좋아요를 여러번 요청했을 경우 예외 발생용 코드
 		int likeCount = reviewMapper.countLikeByMember(reviewLike);
@@ -264,6 +264,27 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		if(result == 0) {
 			throw new BoardLikeFailedException("좋아요 등록에 실패했습니다.");
+		}
+		
+	}
+
+	@Override
+	public void deleteLike(Long reviewNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
+		
+		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
+		
+		int likeCount = reviewMapper.countLikeByMember(reviewLike);
+		
+		if(likeCount == 0) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = reviewMapper.deleteLike(reviewLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 취소에 실패했습니다.");
 		}
 		
 	}

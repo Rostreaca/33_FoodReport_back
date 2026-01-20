@@ -320,6 +320,16 @@
 		
 	</insert>
 	
+	<delete id="deleteLike" parameterType="ReviewLike">
+		DELETE
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</delete>
+	
 	
 	
 </mapper>
