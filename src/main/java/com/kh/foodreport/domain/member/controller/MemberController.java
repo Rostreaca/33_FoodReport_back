@@ -49,7 +49,7 @@ public class MemberController {
 		// 3. 새 비밀번호에 대한 암호화
 		// 4. 새 비밀번호로 변경
 		memberService.changePassword(password);
-		return ApiResponse.created("비밀번호가 변경되었습니다.");
+		return ApiResponse.ok(null, "비밀번호가 변경되었습니다.");
 	}
 	
 	
@@ -57,7 +57,7 @@ public class MemberController {
 	public ResponseEntity<ApiResponse<String>> deleteByPassword(@RequestBody Map<String, String> request){
 		log.info("확인 {}", request);
 		memberService.deleteByPassword(request.get("password"));
-		return ApiResponse.created("회원 탈퇴가 정상적으로 처리되었습니다.");
+		return ApiResponse.ok(null, "회원 탈퇴가 정상적으로 처리되었습니다.");
 	}
 	
 	@PostMapping("/images") // 프로필 이미지 등록
