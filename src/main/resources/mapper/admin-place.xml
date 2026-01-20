@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.place.model.dao.AdminPlaceMapper">
+
+	<select id="countByPlace">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_PLACE
+	</select>
+	
+	<select id="findAllPlace"
+		resultType="map">
+		SELECT
+			   PlACE.PlACE_NO reviewNo
+			 , PlACE.PlACE_TITLE reviewTitle
+			 , PlACE.PlACE_CONTENT reviewContent
+			 , PlACE.CREATE_DATE createDate
+			 , PlACE.STATUS status
+			 , PlACE.VIEW_COUNT viewCount
+			 , PlACE.UPDATE_DATE updateDate
+			 , PlACE.DELETE_DATE deleteDate
+			 , PlACE.MEMBER_NO refMemberNo
+			 , (SELECT 
+			 		   COUNT(*)
+			 	  FROM
+			 	  	   FR_PlACE_LIKE
+			 	 WHERE
+			 	 	   PlACE_NO = FR_PlACE_LIKE.PlACE_NO) AS LIKES
+		  FROM
+		  	   FR_PlACE PlACE
+		  ORDER BY PlACE_NO DESC
+		  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+</mapper>
