@@ -1,7 +1,9 @@
 package com.kh.foodreport.domain.admin.member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +38,11 @@ public class AdminMemberController {
 		AdminMemberResponse response = memberService.findByNickname(page, nickname);
 		
 		return ApiResponse.ok(response, "유저 이름 조회에 성공하였습니다.");
+	}
+	
+	@DeleteMapping("/{memberNo}")
+	public ResponseEntity<ApiResponse<Void>> deleteMember(@PathVariable(name="memberNo")Long memberNo) {
+		
+		return ApiResponse.noContent();
 	}
 }

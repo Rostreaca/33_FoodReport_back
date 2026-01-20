@@ -2,7 +2,7 @@ package com.kh.foodreport.domain.admin.tag.model.dto;
 
 import java.util.List;
 
-import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +17,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class AdminTagResponse {
-	private List<AdminTagDTO> adminTag;
+	private List<TagDTO> adminTag;
 	private PageInfo pageInfo;
 }

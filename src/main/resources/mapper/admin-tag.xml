@@ -33,7 +33,7 @@
 	</select>
 	
 	<select id="findAllTag"
-		resultType="AdminTagDTO" parameterType="map">
+		resultType="TagDTO" parameterType="map">
 		SELECT 
 			   TAG_NO tagNo
 			 , TAG_TITLE tagTitle

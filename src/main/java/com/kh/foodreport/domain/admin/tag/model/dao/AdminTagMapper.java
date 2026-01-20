@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagDTO;
 import com.kh.foodreport.global.tag.Tag;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 @Mapper
 public interface AdminTagMapper {
@@ -15,7 +15,7 @@ public interface AdminTagMapper {
 	
 	int countByTags();
 	
-	List<AdminTagDTO> findAllTag(Map<String, Object> pages);
+	List<TagDTO> findAllTag(Map<String, Object> pages);
 	
 	int updateTag(Tag tag);
 	
