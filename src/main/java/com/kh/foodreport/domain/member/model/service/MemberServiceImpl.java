@@ -1,6 +1,8 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -8,17 +10,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
+import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
+import com.kh.foodreport.global.file.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +38,8 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberMapper memberMapper;
 	private final TokenMapper tokenMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final FileService fileService;
+
 
 	@Override
 	public void signUp(MemberDTO member) {
@@ -64,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void changePassword(ChangePasswordDTO password) {
+	public void updatePassword(ChangePasswordDTO password) {
 		
 		// 현재 비밀번호가 맞는지 검증
 		// Authentication에서 현재 인증된 사용자의 정보 뽑아오기
@@ -86,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
 		Map<String, String> changeRequest = Map.of("email", user.getUsername(),
 												   "newPassword", newPassword);
 		
-		memberMapper.changePassword(changeRequest);
+		memberMapper.updatePassword(changeRequest);
 		
 	}
 
@@ -123,5 +132,32 @@ public class MemberServiceImpl implements MemberService {
 	return user;
 		
 	}
+	
+	public void saveImage(Long memberNo, MultipartFile image) {
 
+		if(image == null || image.isEmpty()) {
+			return;
+		}
+
+		String changeName = fileService.store(image);
+		
+			// Mapper에 전달할 이미지 정보 memberImage 객체 생성
+			MemberImage memberImage = MemberImage.builder()
+					.originName(image.getOriginalFilename())
+					.changeName(changeName).refMemberNo(memberNo).build();
+
+			log.info("{}", memberImage);
+			
+			int result = memberMapper.saveImage(memberImage);
+
+			if(result == 0) {
+				fileService.deleteStoredFile(changeName);
+				throw new FileUploadException("이미지 업로드에 실패했습니다.");
+			}
+	}
+
+	
+	
+	
+		
 }
