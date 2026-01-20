@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 
 public interface MemberService {
 	
@@ -14,5 +15,7 @@ public interface MemberService {
 	void deleteByPassword(String password);
 	
 	void saveImage(Long memberNo, MultipartFile image);
+	
+	MemberDTO findByMemberNo(Long memverNo);
 
 }

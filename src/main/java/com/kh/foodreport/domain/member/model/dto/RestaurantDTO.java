@@ -13,15 +13,16 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MemberImageDTO {
+public class RestaurantDTO {
 	
-	private Long imageNo;
-	private String originName;
-	private String changeName;
+	private Long restaurantNo;
+	private String restaurantName;
+	private String address;
 	private String status;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
 	private Long refMemberNo;
 
+	
 }
