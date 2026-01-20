@@ -46,6 +46,8 @@ public class ReviewReplyController {
 	@PostMapping("/{replyNo}/likes")
 	public ResponseEntity<ApiResponse<Void>> saveReplyLike(@PathVariable(name = "replyNo") Long replyNo, @AuthenticationPrincipal CustomUserDetails user){
 		
+		reviewReplyService.saveReplyLike(replyNo, user.getMemberNo());
+		
 		return ApiResponse.created("댓글 좋아요 등록에 성공하셨습니다.");
 		
 	}

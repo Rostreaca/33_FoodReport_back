@@ -8,4 +8,6 @@ public interface ReviewReplyService {
 
 	void deleteReply(Long replyNo, Long memberNo);
 
+	void saveReplyLike(Long replyNo, Long memberNo);
+
 }

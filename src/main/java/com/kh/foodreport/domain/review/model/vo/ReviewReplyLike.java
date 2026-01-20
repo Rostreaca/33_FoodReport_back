@@ -6,13 +6,13 @@ import lombok.Value;
 @Value
 @Builder
 public class ReviewReplyLike {
-	private Long reviewNo;
+	private Long replyNo;
 	private Long memberNo;
 	
-	public static ReviewReplyLike createReviewLike(Long reviewNo, Long memberNo) {
+	public static ReviewReplyLike createReviewLike(Long replyNo, Long memberNo) {
 		
 		return ReviewReplyLike.builder()
-						 .reviewNo(reviewNo)
+						 .replyNo(replyNo)
 						 .memberNo(memberNo)
 						 .build();
 	}

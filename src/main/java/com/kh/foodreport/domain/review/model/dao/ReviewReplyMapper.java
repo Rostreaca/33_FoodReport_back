@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.vo.ReviewReply;
+import com.kh.foodreport.domain.review.model.vo.ReviewReplyLike;
 
 @Mapper
 public interface ReviewReplyMapper {
@@ -11,5 +12,9 @@ public interface ReviewReplyMapper {
 	int updateReply(ReviewReplyDTO reviewReply);
 
 	int deleteReply(ReviewReply reviewReply);
+
+	int countReplyLikeByMember(ReviewReplyLike reviewReply);
+
+	int saveReplyLike(ReviewReplyLike reviewReply);
 
 }
