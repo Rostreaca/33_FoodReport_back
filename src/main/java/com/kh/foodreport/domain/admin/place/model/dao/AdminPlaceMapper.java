@@ -19,4 +19,6 @@ public interface AdminPlaceMapper {
 	List<AdminPlaceDTO> findByPlaceTitle(Map<String, Object> pages);
 	
 	int deletePlace(Long placeNo);
+	
+	int updatePlace(Long placeNo);
 }

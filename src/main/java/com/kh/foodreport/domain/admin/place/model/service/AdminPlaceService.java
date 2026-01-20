@@ -9,4 +9,6 @@ public interface AdminPlaceService {
 	AdminPlaceResponse findByPlaceTitle(int page, String placeTitle);
 	
 	void deletePlace(Long placeNo);
+	
+	void updatePlace(Long placeNo);
 }
