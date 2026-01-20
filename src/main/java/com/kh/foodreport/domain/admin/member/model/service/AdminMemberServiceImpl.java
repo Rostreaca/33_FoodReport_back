@@ -40,7 +40,7 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		int listCount = memberMapper.countByMembers();
 		
 		Map<String, Object> pages = pageNation.getPageRequest(listCount, page, 10);
-		log.info("pages{}",pages);
+
 		List<AdminMemberDTO> members = memberMapper.findAllMember(pages);
 		
 		return createFindResponse(members, pages);

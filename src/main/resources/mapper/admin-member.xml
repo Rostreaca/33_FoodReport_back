@@ -28,7 +28,7 @@
 		   UPDATE_DATE updateDate,
 		   DELETE_DATE deleteDate,
 		   STATUS status,
-		   ROLE ROLE
+		   ROLE role
 	  FROM
 		   FR_MEMBER
 	 ORDER
