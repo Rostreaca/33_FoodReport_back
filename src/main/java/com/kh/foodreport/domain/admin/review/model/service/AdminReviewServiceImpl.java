@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.foodreport.domain.admin.review.model.dao.AdminReviewMapper;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewDTO;
 import com.kh.foodreport.domain.admin.review.model.dto.AdminReviewResponse;
+import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.InvalidKeywordException;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -78,7 +79,9 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		
 		int reviewResult = reviewMapper.deleteReview(reviewNo);
 		
-		GlobalValidator.validateNo(reviewResult , "없거나 이미 지워진 번호입니다.");
+		if(reviewResult == 0) {
+			throw new BoardDeleteException("삭제에 실패하였습니다.");
+		}
 	}
 
 }
