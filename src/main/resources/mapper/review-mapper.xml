@@ -136,7 +136,7 @@
 		       REVIEW_NO = #{reviewNo}
 	</update>
 	
-	<resultMap id="findByReviewNo" type="ReviewDTO">
+	<resultMap id="findReviewByReviewNo" type="ReviewDTO">
 		<id column="reviewNo" property="reviewNo"/>
 		<result column="reviewTitle" property="reviewTitle"/>
 		<result column="reviewContent" property="reviewContent"/>
@@ -149,16 +149,10 @@
 			<result column="changeName" property="changeName"/>
 			<result column="imageCreateDate" property="createDate" />
 		</collection>
-		<collection property="reviewReplies" ofType="ReviewReplyDTO">
-			<id column="replyNo" property="replyNo"/>
-			<result column="replyContent" property="replyContent"/>
-			<result column="replyCreateDate" property="createDate"/>
-			<result column="replyWriter" property="replyWriter"/>
-		</collection>
 		
 	</resultMap>
 	
-	<select id="findByReviewNo" resultMap="findByReviewNo" parameterType="long">
+	<select id="findReviewByReviewNo" resultMap="findReviewByReviewNo" parameterType="long">
 		SELECT
 			   REVIEW.REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
@@ -170,16 +164,12 @@
 		          FROM
 		               FR_REVIEW_LIKE
 		         WHERE
-		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE reviewCreateDate
 		     , IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName
 		     , IMG.CREATE_DATE imageCreateDate
 		     , IMG.STATUS imageStatus
-		     , REPLY.REPLY_NO replyNo
-		     , REPLY.REPLY_CONTENT replyContent
-		     , REPLY.CREATE_DATE replyCreateDate
-		     , REPLYMEMBER.NICKNAME replyNickname
 		  FROM
 		       FR_REVIEW REVIEW
 		  JOIN
@@ -187,22 +177,52 @@
 		  LEFT
 		  JOIN
 		       FR_REVIEW_IMAGE IMG ON (IMG.REVIEW_NO = REVIEW.REVIEW_NO AND IMG.STATUS = 'Y')
-		  LEFT
-		  JOIN
-		       FR_REVIEW_REPLY REPLY ON (REPLY.REVIEW_NO = IMG.REVIEW_NO AND REPLY.STATUS = 'Y')
-		  LEFT
-		  JOIN
-		       FR_MEMBER REPLYMEMBER ON (REPLYMEMBER.MEMBER_NO = REPLY.MEMBER_NO)
 		 WHERE
 		       REVIEW.STATUS = 'Y'
 		   AND
 		       REVIEW.REVIEW_NO = #{reviewNo}
 		 ORDER
 		    BY
-		       IMG.IMAGE_LEVEL ASC,IMG.CREATE_DATE ASC,REPLY.CREATE_DATE DESC
+		       IMG.IMAGE_LEVEL ASC,IMG.CREATE_DATE ASC
 		       
-		
-		
+	</select>
+	
+	<select id="findTagByReviewNo" parameterType="long" resultType="TagDTO">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG USING (TAG_NO)
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+	</select>
+	
+	<select id="findRepliesByReviewNo" parameterType="long" resultType="ReviewReplyDTO">
+		SELECT
+		       REPLY_NO replyNo
+		     , REPLY_CONTENT replyContent
+		     , NICKNAME replyWriter
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_REPLY_LIKE
+		         WHERE
+		               REPLY.REPLY_NO = FR_REVIEW_REPLY_LIKE.REPLY_NO) AS likes
+		     , REPLY.CREATE_DATE createDate
+		  FROM
+		       FR_REVIEW_REPLY REPLY
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		 WHERE
+		       REPLY.STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
 	</select>
 	
 	<update id="updateReview" parameterType="ReviewDTO">
