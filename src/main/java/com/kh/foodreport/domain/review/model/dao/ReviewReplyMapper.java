@@ -17,4 +17,6 @@ public interface ReviewReplyMapper {
 
 	int saveReplyLike(ReviewReplyLike reviewReply);
 
+	int deleteReplyLike(ReviewReplyLike reviewReply);
+
 }

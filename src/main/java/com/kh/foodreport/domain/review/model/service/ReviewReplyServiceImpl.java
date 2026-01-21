@@ -75,6 +75,27 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 		}
 		
 	}
+
+	@Override
+	public void deleteReplyLike(Long replyNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		ReviewReplyLike reviewReply = ReviewReplyLike.createReviewLike(replyNo, memberNo);
+		
+		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReply);
+		
+		if(likeCount == 0) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = reviewReplyMapper.deleteReplyLike(reviewReply);
+		
+		if(result == 0) {
+			throw new ReplyLikeFailedException("좋아요 취소에 실패했습니다.");
+		}
+		
+	}
 	
 	
 	

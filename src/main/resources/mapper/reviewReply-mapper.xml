@@ -61,5 +61,15 @@
 		       )
 	</insert>
 	
+	<delete id="deleteReplyLike" parameterType="ReviewReplyLike">
+		DELETE
+		  FROM
+		       FR_REVIEW_REPLY_LIKE
+		 WHERE
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+	</delete>
+	
 	
 </mapper>
