@@ -27,7 +27,10 @@ public class CustomUserDetails implements UserDetails {
 	private String status;
 	private String role;
 	private Collection<? extends GrantedAuthority> authorities;
+	
+	
 
+	
 
 
 
