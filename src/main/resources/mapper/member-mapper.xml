@@ -145,20 +145,7 @@
 		       STATUS = 'Y'
 	</update>
 
-	<!-- 회원 정보 수정 -->
-	<update id="updateMember">
-		
-		UPDATE 
-			   FR_MEMBER
-		   SET 
-		   	   NICKNAME = #{nickname}
-		   	 , PHONE = #{phone}
-		   	 , INTRODUCE = #{introduce}
-		   	 , UPDATE_DATE = SYSDATE
-		 WHERE
-		 	   MEMBER_NO = #{memberNo}		
-		
-	</update>
+
 	
 	<resultMap id="findByMemberNo" type="memberDTO">
 		<id column="memberNo" property="memberNo"/>
@@ -179,7 +166,7 @@
 		</collection>	
 	</resultMap>
 	
-	<!-- 내 정보 조회 -->
+	<!-- 회원 정보 조회 -->
 	<select id="findByMemberNo" 
 			resultMap="findByMemberNo" 
 			parameterType="long">
@@ -213,7 +200,39 @@
 		    BY
 		       IMG.CREATE_DATE ASC
 	</select>	
-
 	
+	<!-- 프로필 이미지가 있는지 조회 -->
+	<select id="findUrlByMemberNo"
+		resultType="String">
+		SELECT
+			   I.CHANGE_NAME memberImages
+		  FROM 
+		  	   FR_MEMBER M
+		  LEFT 
+		  JOIN 
+		  	   FR_MEMBER_IMAGE I
+		  	ON 
+		  	   I.MEMBER_NO = M.MEMBER_NO 
+		   AND 
+		       I.STATUS = 'Y'
+		 WHERE 
+		  	   M.MEMBER_NO = #{memberNo}
+		   AND 
+		  	   M.STATUS = 'Y'
+	</select>
+	
+	<!-- 회원 정보 수정 -->
+	<update id="updateMember">
+		UPDATE 
+			   FR_MEMBER
+		   SET 
+		   	   NICKNAME = #{nickname}
+		   	 , PHONE = #{phone}
+		   	 , INTRODUCE = #{introduce}
+		   	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{memberNo}
+	</update>
+
 	
 </mapper>

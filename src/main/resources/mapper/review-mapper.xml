@@ -100,7 +100,7 @@
 		          FROM
 		               FR_REVIEW_LIKE
 		         WHERE
-		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE reviewCreateDate
 		     , IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName

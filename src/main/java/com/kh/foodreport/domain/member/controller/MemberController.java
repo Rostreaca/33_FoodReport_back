@@ -1,12 +1,12 @@
 package com.kh.foodreport.domain.member.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,8 +20,6 @@ import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.service.MemberService;
-import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
-import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -76,6 +74,15 @@ public class MemberController {
 		
 		return ApiResponse.ok(response, "내 정보 조회 성공");
 		
+	}
+	
+	@PutMapping("/{memberNo}") // 마이페이지 - 내정보 수정
+	public ResponseEntity<ApiResponse<String>> updateMember(@PathVariable(name="memberNo") Long memberNo
+														   ,@ModelAttribute MemberDTO memberDTO
+														   ,@RequestParam(name="file" , required = false) MultipartFile image){
+		
+		memberService.updateMember(memberNo, memberDTO, image);
+		return ApiResponse.ok(null, "회원 정보가 변경되었습니다.");
 	}
 	
 
