@@ -51,5 +51,7 @@ public interface ReviewMapper {
 
 	public List<TagDTO> findTagByReviewNo(Long reviewNo);
 
+	public int saveTagByReviewNo(Map<String, Object> params);
+
 	
 }

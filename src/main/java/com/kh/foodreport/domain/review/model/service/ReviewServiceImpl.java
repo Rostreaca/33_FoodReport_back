@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.review.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import com.kh.foodreport.global.exception.BoardLikeFailedException;
 import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.InvalidRequestException;
+import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
@@ -98,14 +100,25 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public void saveReview(ReviewDTO review, List<MultipartFile> images) {
-
+	public void saveReview(ReviewDTO review, List<Long> tagNums,List<MultipartFile> images) {
+		
+		Map<String, Object> params = new HashMap<>();
+		
 		// DB에 리뷰 내용 저장 및 resultSet으로 ReviewDTO의 reviewNo 필드에 값 대입
 		int result = reviewMapper.saveReview(review);
 
 		// 리뷰 INSERT 실패 시 예외 발생
 		if (result == 0) {
 			throw new ReviewCreationException("리뷰 생성에 실패하였습니다.");
+		}
+		
+		params.put("reviewNo", review.getReviewNo());
+		params.put("tagNums", tagNums);
+		
+		int tagResult = reviewMapper.saveTagByReviewNo(params);
+		
+		if(tagResult == 0) {
+			throw new ObjectCreationException("리뷰에 태그를 추가하는 과정에서 문제가 발생했습니다.");
 		}
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
