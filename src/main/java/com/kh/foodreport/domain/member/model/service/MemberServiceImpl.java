@@ -1,8 +1,6 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -19,11 +17,11 @@ import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
-import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.MemberUpdateException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
@@ -171,4 +169,43 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return member;
 	}
+	
+	@Override
+	public void updateMember(Long memberNo, MemberDTO member, MultipartFile image) {
+		
+		
+		GlobalValidator.validateNo(memberNo, "0보다 큰 값을 넣어주시기 바랍니다.");
+		
+		String url = memberMapper.findUrlByMemberNo(memberNo);
+		member.setMemberNo(memberNo);
+		
+		int memberResult = memberMapper.updateMember(member);
+		if(memberResult == 0) {
+			throw new MemberUpdateException ("페이지가 존재하지 않거나 수정에 실패했습니다.");
+		}
+		if(url != null && !"".equals(url)) { // 기존 파일 존재
+			if(image != null && !image.isEmpty()) { // 새 파일 존재
+				String imageUrl = fileService.store(image);
+				MemberImage profile = MemberImage.builder()
+						.originName(image.getOriginalFilename())
+						.changeName(imageUrl)
+						.refMemberNo(memberNo).build();
+				int imageResult = memberMapper.updateImage(profile);
+				if(imageResult > 0) {
+					fileService.deleteStoredFile(url);
+				} else {
+					fileService.deleteStoredFile(imageUrl);
+					throw new FileUploadException("파일 업로드에 실패했습니다.");
+				}
+			}
+		} else { // 기존 파일 없음
+			if(image != null && !image.isEmpty()) { // 새 파일 존재
+				saveImage(memberNo, image);
+			}
+		}
+		
+		
+	}
+	
+
 }

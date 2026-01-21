@@ -34,16 +34,20 @@ public interface MemberMapper {
 	int saveImage(MemberImage image);
 	
 	// 프로필 이미지 수정
-	int updateImage(MemberImage image);
+	int updateImage(MemberImage memberImage);
 	
 	// 프로필 이미지 삭제
 	int deleteImage(Long imageNo);
 	
-	// 회원 정보 수정
-	int updateMember(MemberDTO member);
-	
 	// 내 정보 조회
 	MemberDTO findByMemberNo(Long memberNo);
+	
+	// 내 정보 수정
+	int updateMember(MemberDTO updateMember);
+	
+	// 프로필 이미지 조회
+	String findUrlByMemberNo(Long memberNo);
+
 	
 
 
