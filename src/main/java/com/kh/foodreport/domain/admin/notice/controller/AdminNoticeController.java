@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.admin.notice.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeDTO;
 import com.kh.foodreport.domain.admin.notice.model.dto.AdminNoticeResponse;
 import com.kh.foodreport.domain.admin.notice.model.service.AdminNoticeService;
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;

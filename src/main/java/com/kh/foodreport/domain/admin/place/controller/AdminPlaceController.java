@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.admin.place.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.foodreport.domain.admin.place.model.dto.AdminPlaceResponse;
 import com.kh.foodreport.domain.admin.place.model.service.AdminPlaceService;
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
