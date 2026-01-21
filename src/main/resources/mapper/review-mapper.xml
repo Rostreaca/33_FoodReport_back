@@ -30,6 +30,29 @@
 		       )		
 	</insert>
 	
+	<insert id="saveTagByReviewNo" parameterType="map">
+		INSERT ALL
+		 <foreach collection="tagNums" item="tagNo">
+		  INTO
+		       FR_REVIEW_TAG
+		       (
+		       TAG_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{tagNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+		</foreach>
+		SELECT
+		       *
+		  FROM
+		       DUAL
+	</insert>
+	
 	<insert id="saveImage" parameterType="ReviewImage">
 		INSERT
 		  INTO
