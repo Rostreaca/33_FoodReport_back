@@ -22,7 +22,12 @@
 			 , PlACE.VIEW_COUNT viewCount
 			 , PlACE.UPDATE_DATE updateDate
 			 , PlACE.DELETE_DATE deleteDate
-			 , PlACE.MEMBER_NO refMemberNo
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = PLACE.MEMBER_NO ) AS NICKNAME
 			 , (SELECT 
 			 		   COUNT(*)
 			 	  FROM
@@ -56,7 +61,12 @@
 			 , PLACE.VIEW_COUNT viewCount
 			 , PLACE.UPDATE_DATE updateDate
 			 , PLACE.DELETE_DATE deleteDate
-			 , PLACE.MEMBER_NO refMemberNo
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = PLACE.MEMBER_NO ) AS NICKNAME
 			 , (SELECT 
 			  	       COUNT(*)
 			  	  FROM

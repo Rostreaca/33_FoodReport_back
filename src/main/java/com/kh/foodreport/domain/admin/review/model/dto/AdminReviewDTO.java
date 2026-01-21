@@ -21,7 +21,7 @@ public class AdminReviewDTO {
 	private String viewCount;
 	private String updateDate;
 	private String deleteDate;
-	private Long refMemberNo;
+	private String nickname;
 	private int likes; 
 	
 }
