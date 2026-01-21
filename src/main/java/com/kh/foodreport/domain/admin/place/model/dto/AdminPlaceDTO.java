@@ -23,6 +23,6 @@ public class AdminPlaceDTO {
 	private String status;
 	private Date updateDate;
 	private Date deleteDate;
-	private Long refMemberNo;
+	private String nickname;
 	
 }

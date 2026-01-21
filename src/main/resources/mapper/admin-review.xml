@@ -14,7 +14,7 @@
 
 	<select id="findAllReviews"
 		parameterType="map">
-		SELECT
+ 		SELECT
 			   REVIEW.REVIEW_NO reviewNo
 			 , REVIEW.REVIEW_TITLE reviewTitle
 			 , REVIEW.REVIEW_CONTENT reviewContent
@@ -23,7 +23,12 @@
 			 , REVIEW.VIEW_COUNT viewCount
 			 , REVIEW.UPDATE_DATE updateDate
 			 , REVIEW.DELETE_DATE deleteDate
-			 , REVIEW.MEMBER_NO refMemberNo
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = REVIEW.MEMBER_NO ) AS NICKNAME
 			 , (SELECT 
 			 		   COUNT(*)
 			 	  FROM
@@ -57,7 +62,12 @@
 			 , REVIEW.VIEW_COUNT viewCount
 			 , REVIEW.UPDATE_DATE updateDate
 			 , REVIEW.DELETE_DATE deleteDate
-			 , REVIEW.MEMBER_NO refMemberNo
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = REVIEW.MEMBER_NO ) AS NICKNAME
 			 , (SELECT 
 			 		   COUNT(*)
 			 	  FROM
