@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceResponse;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
 import com.kh.foodreport.domain.admin.member.model.service.AdminMemberService;
 import com.kh.foodreport.global.common.ApiResponse;
@@ -59,5 +60,13 @@ public class AdminMemberController {
 		memberService.updateMember(memberNo, role.get("role"));
 		
 		return ApiResponse.ok(null, "회원 역할 변경에 성공하였습니다");
+	}
+	
+	@GetMapping("/place") // 회원 업장 등록된거 확인하는 메소드
+	public ResponseEntity<ApiResponse<AdminMemberPlaceResponse>> findByMemberPlace(@RequestParam(name="page", defaultValue = "1")int page) {
+		
+		AdminMemberPlaceResponse response = memberService.findByMemberPlace(page);
+		
+		return ApiResponse.ok(response, "업장 조회에 성공하였습니다.");
 	}
 }
