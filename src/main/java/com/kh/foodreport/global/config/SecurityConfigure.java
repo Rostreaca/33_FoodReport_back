@@ -10,6 +10,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableMethodSecurity
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
 	
@@ -44,6 +46,8 @@ public class SecurityConfigure {
 					// 비로그인 허용
 					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET).permitAll();
+					
+
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST, "/api/reviews/*/replies", "api/reviews/**","/api/members/images").authenticated();
 					
@@ -52,7 +56,7 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.PUT).permitAll(); // 나중에 삭제해야함.
 					requests.requestMatchers(HttpMethod.DELETE).permitAll(); // 나중에 삭제해야함.
 					
-					requests.requestMatchers(HttpMethod.GET).authenticated();
+					//requests.requestMatchers(HttpMethod.GET).authenticated();
 					// 로그인 필요(POST)
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members").permitAll();
 					// 로그인 필요(PUT)
@@ -61,10 +65,7 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.DELETE, "/api/members").authenticated();
 					
 					// 관리자
-					requests.requestMatchers(HttpMethod.GET).hasAuthority("");
-					requests.requestMatchers(HttpMethod.POST).hasAuthority("");
-					requests.requestMatchers(HttpMethod.PUT).hasAuthority("");
-					requests.requestMatchers(HttpMethod.DELETE).hasAuthority("");
+					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 				})
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

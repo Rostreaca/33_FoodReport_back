@@ -1,9 +1,14 @@
 package com.kh.foodreport.global.config.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -77,9 +82,8 @@ public class JwtFilter extends OncePerRequestFilter {
 					 								  .deleteDate(member.getDeleteDate())
 					 								  .status(member.getStatus())
 					 								  .role(member.getRole())
+					 								  .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
 					 								  .build();
-					 								  
-													
 			
 			// log.info("DB에서 조회해온 user정보 : {}", user);
 			UsernamePasswordAuthenticationToken authentication
@@ -96,12 +100,16 @@ public class JwtFilter extends OncePerRequestFilter {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write("토큰 만료");
+			e.printStackTrace();
 			return;
 		} catch(JwtException e) {
 			// log.info("서버에서 만들어진 토큰이 아님");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().write("유효하지 않은 토큰입니다.");
+			e.printStackTrace();
 			return;
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		filterChain.doFilter(request, response);
 	}

@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.admin.tag.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.foodreport.domain.admin.tag.model.dto.AdminTagResponse;
 import com.kh.foodreport.domain.admin.tag.model.service.AdminTagService;
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.global.common.ApiResponse;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
