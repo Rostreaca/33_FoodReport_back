@@ -52,5 +52,13 @@ public class ReviewReplyController {
 		
 	}
 	
+	@DeleteMapping("/{replyNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> deleteReplyLike(@PathVariable(name = "replyNo") Long replyNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		reviewReplyService.deleteReplyLike(replyNo, user.getMemberNo());
+		
+		return ApiResponse.ok(null, "해당 댓글에 좋아요를 취소하셨습니다.");
+	}
+	
 	
 }
