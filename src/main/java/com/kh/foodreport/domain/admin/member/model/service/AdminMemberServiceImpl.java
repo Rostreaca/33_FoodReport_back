@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.admin.member.model.dao.AdminMemberMapper;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberDTO;
+import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceDTO;
+import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceResponse;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
 import com.kh.foodreport.global.exception.MemberDeleteException;
 import com.kh.foodreport.global.exception.MemberUpdateException;
@@ -91,5 +93,25 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 			throw new MemberUpdateException("회원 역할변경에 실패하였습니다.");
 		}
 	}
+
+	@Override
+	public AdminMemberPlaceResponse findByMemberPlace(int page) {
+		
+		GlobalValidator.validateNo(page, "0보다 작은 값은 들어갈 수 없습니다.");
+		
+		int listCount = memberMapper.countByMemberPlace();
+		
+		Map<String ,Object> pages= pageNation.getPageRequest(listCount, page, 10);
+		
+		List<AdminMemberPlaceDTO> places = memberMapper.findByMemberPlace(pages);
+		
+		AdminMemberPlaceResponse response = new AdminMemberPlaceResponse();
+		response.setRestaurant(places);
+		response.setPageInfo((PageInfo)pages.get("pageInfo"));
+		
+		return response;
+	}
+	
+	
 	
 }

@@ -98,4 +98,33 @@
 		   	   STATUS = 'Y'
 	</update>
 	
+	<select id="countByMemberPlace"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_RESTAURANT
+	</select>
+	
+	<select id="findByMemberPlace"
+		resultType="AdminMemberPlaceDTO" parameterType="map">
+		SELECT 
+			   RESTAURANT_NO restaurantNo
+			 , (SELECT
+			 	 	   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	WHERE 
+			 		  MEMBER_NO = FR_RESTAURANT.MEMBER_NO) AS NICKNAME
+			 , RESTAURANT_NAME restaurantName
+			 , ADDRESS address
+			 , STATUS status
+			 , CREATE_DATE createDate
+			 , UPDATE_DATE updateDate
+			 , DELETE_DATE deletDate
+		  FROM
+		  	   FR_RESTAURANT
+		ORDER BY RESTAURANT_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
 </mapper>

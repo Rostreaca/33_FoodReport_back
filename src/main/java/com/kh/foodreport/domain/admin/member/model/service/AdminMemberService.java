@@ -1,5 +1,6 @@
 package com.kh.foodreport.domain.admin.member.model.service;
 
+import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceResponse;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
 
 public interface AdminMemberService {
@@ -11,4 +12,6 @@ public interface AdminMemberService {
 	void deleteMember(Long memberNO);
 	
 	void updateMember(Long memberNo,String role);
+	
+	AdminMemberPlaceResponse findByMemberPlace(int page);
 }
