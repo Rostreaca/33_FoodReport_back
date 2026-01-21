@@ -181,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
 		
 		int memberResult = memberMapper.updateMember(member);
 		if(memberResult == 0) {
-			throw new MemberUpdateException ("페이지가 존재하지 않거나 수정에 실패했습니다.");
+			throw new MemberUpdateException ("회원 정보 수정에 실패했습니다.");
 		}
 		if(url != null && !"".equals(url)) { // 기존 파일 존재
 			if(image != null && !image.isEmpty()) { // 새 파일 존재
