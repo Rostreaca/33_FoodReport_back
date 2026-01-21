@@ -25,7 +25,6 @@ import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.domain.review.model.service.ReviewService;
 import com.kh.foodreport.global.common.ApiResponse;
 
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,7 +48,7 @@ public class ReviewController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order){
 		
-		Map<String, Object> params = new HashMap();
+		Map<String, Object> params = new HashMap<>();
 		
 		params.put("keyword", keyword);
 		params.put("order", order);

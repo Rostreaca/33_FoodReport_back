@@ -118,6 +118,8 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public ReviewResponse findAllReviews(int page, Map<String, Object> params) {
 
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
+		
 		// 페이징 처리용 게시글 개수 SELECT
 		int listCount = reviewMapper.countByReviews(params);
 
@@ -129,13 +131,13 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// DB에서 전체 리뷰 목록 조회
 		List<ReviewDTO> reviews = reviewMapper.findAllReviews(params);
-
+		
 		// 응답 값을 ReviewResponse에 담아 반환
 		ReviewResponse response = new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
 
 		return response;
 	}
-
+	
 	@Override
 	public ReviewDTO findByReviewNo(Long reviewNo) {
 
