@@ -129,13 +129,13 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// DB에서 전체 리뷰 목록 조회
 		List<ReviewDTO> reviews = reviewMapper.findAllReviews(params);
-
+		
 		// 응답 값을 ReviewResponse에 담아 반환
 		ReviewResponse response = new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
 
 		return response;
 	}
-
+	
 	@Override
 	public ReviewDTO findByReviewNo(Long reviewNo) {
 

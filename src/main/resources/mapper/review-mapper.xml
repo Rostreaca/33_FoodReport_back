@@ -69,50 +69,92 @@
     </select>
 	
 	<resultMap id="findAllReviews" type="ReviewDTO">
-		<id column="REVIEW_NO" property="reviewNo"/>
-		<result column="REVIEW_TITLE" property="reviewTitle"/>
-		<result column="REVIEW_CONTENT" property="reviewContent"/>
-		<result column="MEMBER_NO" property="reviewWriter" />
-		<result column="VIEW_COUNT" property="viewCount"/>
-		<result column="LIKES" property="likes" />
-		<result column="CREATE_DATE" property="createDate" />
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="reviewWriter" property="reviewWriter" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="reviewCreateDate" property="createDate" />
 		<collection property="reviewImages" ofType="ReviewImageDTO">
-			<id column="IMAGE_NO" property="imageNo"/>
-			<result column="CHANGE_NAME" property="changeName"/>
-			<result column="IMAGE_LEVEL" property="imageLevel"/>
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
 		</collection>
 	</resultMap>
 	
 	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
 		SELECT
-		       REVIEW_NO
-		     , REVIEW_TITLE
-		     , REVIEW_CONTENT
-		     , MEMBER_NO
-		     , VIEW_COUNT
+		       REVIEW.REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , NICKNAME reviewWriter
+		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
 		          FROM
 		               FR_REVIEW_LIKE
 		         WHERE
-		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
-		     , REVIEW.CREATE_DATE
-		     , IMAGE_NO
-		     , IMG.CHANGE_NAME
-		     , IMG.IMAGE_LEVEL
+		               REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE reviewCreateDate
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
 		  FROM
-		       FR_REVIEW REVIEW
+		  	   (
+		  	   SELECT 
+		  	          REVIEW_NO
+				    , REVIEW_TITLE
+				    , REVIEW_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_REVIEW_LIKE
+				        WHERE
+				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				    , CREATE_DATE
+		  	     FROM
+		  	          FR_REVIEW
+		  	    WHERE
+		              STATUS = 'Y'
+				 	<if test="keyword != ''">
+				  AND
+				       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+					</if>
+		   		ORDER
+				   BY 
+				 <choose>
+					<when test="order == 'likes'">
+					  LIKES DESC
+					</when>
+					 <otherwise>
+				       CREATE_DATE DESC
+					 </otherwise>
+				 </choose>
+			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
+		  	   ) REVIEW
 		  LEFT
 		  JOIN
-		       FR_REVIEW_IMAGE IMG USING (REVIEW_NO)
-		 WHERE
-		       REVIEW.STATUS = 'Y'
-		   AND
-		       IMAGE_LEVEL = 0
-		 	<if test="keyword != ''">
-		   AND
-		       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
-			</if>
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (REVIEWTAG.TAG_NO = TAG.TAG_NO)
 		 ORDER
 		    BY 
 		    <choose>
@@ -122,8 +164,7 @@
 			    <otherwise>
 		       REVIEW.CREATE_DATE DESC
 				</otherwise>
-			</choose>
-		
+			</choose>	
 		
 	</select>
 	
