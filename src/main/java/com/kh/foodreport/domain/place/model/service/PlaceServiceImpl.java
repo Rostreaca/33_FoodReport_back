@@ -92,8 +92,6 @@ public class PlaceServiceImpl implements PlaceService{
 	}
 	
 	private void saveImages(Long placeNo, List<MultipartFile> images) {
-		
-		int result = 1;
 
 		List<String> imageUrls = new ArrayList<>();
 
@@ -101,8 +99,7 @@ public class PlaceServiceImpl implements PlaceService{
 
 			// 이미지가 존재하지 않을 경우 반복문 탈출 후 예외 발생
 			if (images.get(i) == null || images.get(i).isEmpty()) {
-				result = 0;
-				break;
+				deleteImagesFromS3(imageUrls);
 			}
 
 			// 썸네일 여부를 저장할 변수
@@ -125,14 +122,16 @@ public class PlaceServiceImpl implements PlaceService{
 														.imageLevel(imageLevel)
 														.build();
 
-			result = result * placeMapper.saveImage(placeImage);
+			int result = placeMapper.saveImage(placeImage);
 
+			// 이미지 INSERT를 하나라도 실패했을 경우 S3에 저장한 모든 이미지 삭제 후 예외 
+			if (result == 0) {
+				deleteImagesFromS3(imageUrls);
+			}
+			
 		}
 
-		// 이미지 INSERT를 하나라도 실패했을 경우 S3에 저장한 모든 이미지 삭제 후 예외 
-		if (result == 0) {
-			deleteImagesFromS3(imageUrls);
-		}
+
 	}
 	
 	private void deleteImagesFromS3(List<String> imageUrls) {
