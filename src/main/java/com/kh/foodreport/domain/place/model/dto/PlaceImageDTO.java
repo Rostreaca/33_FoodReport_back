@@ -22,7 +22,7 @@ public class PlaceImageDTO {
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
-	private Long refReviewNo;
+	private Long refPlaceNo;
 	private int imageLevel;
 	
 }
