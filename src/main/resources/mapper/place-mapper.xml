@@ -149,7 +149,7 @@
 	</insert>
 	
 	<insert id="saveTagsByPlaceNo" parameterType="map">
-		INSERT ALL
+	INSERT ALL
 		 <foreach collection="tagNums" item="tagNo">
 		  INTO
 		       FR_PLACE_TAG
@@ -174,19 +174,19 @@
 	<insert id="saveImage" parameterType="PlaceImage">
 		INSERT
 		  INTO
-		       FR_REVIEW_IMAGE
+		       FR_PLACE_IMAGE
 		       (
 		       IMAGE_NO
 		     , ORIGIN_NAME
 		     , CHANGE_NAME
-		     , REVIEW_NO
+		     , PLACE_NO
 		     , CREATE_DATE
 		     , STATUS
 		     , IMAGE_LEVEL
 		       )
 		VALUES
 		       (
-		       SEQ_REVIEW_IMAGE_NO.NEXTVAL
+		       SEQ_PLACE_IMAGE_NO.NEXTVAL
 		     , #{originName}
 		     , #{changeName}
 		     , #{refPlaceNo}

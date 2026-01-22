@@ -15,7 +15,7 @@ public interface PlaceMapper {
 
 	List<PlaceDTO> findAllPlaces(Map<String, Object> params);
 
-	int saveImage(PlaceImage reviewImage);
+	int saveImage(PlaceImage placeImage);
 
 	int saveTagsByPlaceNo(Map<String, Object> params);
 
