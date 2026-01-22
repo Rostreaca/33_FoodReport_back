@@ -94,5 +94,7 @@ public class MemberController {
 		
 		return ApiResponse.ok(reviews, "리뷰 전체 조회 성공");
 	}
+	
+	
 
 }

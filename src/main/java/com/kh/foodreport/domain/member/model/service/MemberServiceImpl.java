@@ -226,5 +226,7 @@ public class MemberServiceImpl implements MemberService {
 		return new MemberReviewResponse(reviews ,(PageInfo)params.get("pageInfo"));
 	}
 	
+	
+	
 
 }

@@ -13,5 +13,8 @@ public interface TokenMapper {
 	
 	// 토큰 삭제
 	int deleteToken(Long memberNo);
+	
+	// 토큰 조회
+	RefreshToken findByToken(String refreshToken);
 
 }

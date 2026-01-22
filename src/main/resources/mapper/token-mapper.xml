@@ -20,14 +20,26 @@
 	</insert>
 	
 	<!-- 토큰 삭제 -->
-	<update id="deleteToken"
+	<delete id="deleteToken"
 			parameterType="long">	
 		DELETE 
 		  FROM 
 		  	   FR_TOKEN
 		 WHERE 
 		 	   MEMBER_NO = #{memberNo}
-	</update>
+	</delete>
+	
+	<select id="findByToken"
+			parameterType="String">
+		SELECT 
+			   TOKEN 
+			   MEMBER_NO memberNo 
+			   EXPIRATION 
+		  FROM 
+		  	   FR_TOKEN 
+		 WHERE 
+		 	   #{refreshToken}"
+	</select>
 	
 	
 </mapper>

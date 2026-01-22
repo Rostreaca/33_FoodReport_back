@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 public interface AuthService {
 	
 	Map<String, String> login(@Valid MemberDTO member);
+	
+	void logout(Long memberNo);
 
 
 }

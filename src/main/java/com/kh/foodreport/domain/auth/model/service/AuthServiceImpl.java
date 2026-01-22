@@ -26,9 +26,7 @@ public class AuthServiceImpl implements AuthService {
 	private final TokenService tokenService;
 
 	@Override
-	public Map<String, String> login(MemberDTO member) {
-		// 로그인 구현
-
+	public Map<String, String> login(MemberDTO member) { // 로그인 구현
 		// 사용자 인증
 		Authentication auth = null;
 		try {
@@ -51,6 +49,15 @@ public class AuthServiceImpl implements AuthService {
 		loginResponse.put("role", user.getAuthorities().toString());
 		
 		return loginResponse;
+	}
+
+	@Override
+	public void logout(Long memberNo) { // 로그아웃
+	    // RefreshToken 삭제
+	    tokenService.deleteToken(memberNo);
+	    log.info("로그아웃 성공 - memberNo: {}", memberNo);
+		
+		
 	}
 
 }

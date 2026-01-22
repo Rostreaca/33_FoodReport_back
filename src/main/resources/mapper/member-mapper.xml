@@ -262,24 +262,24 @@
 			 , REVIEW.DELETE_DATE deleteDate
 			 , MEMBER.NICKNAME nickname
 			 , (SELECT 
-			 		   COUNT(*)
-			 	  FROM
-			 	  	   FR_REVIEW_LIKE
-			 	 WHERE
-			 	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
-			 	  FROM 
-		  	   		   FR_REVIEW REVIEW
-		       	  LEFT 
-		  	      JOIN 
-		  	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
-			 	 WHERE 
-			 	       REVIEW.MEMBER_NO = #{memberNo} 
-				   AND 
-		       		   REVIEW.STATUS = 'Y'  	           
-		  	  	 ORDER 
-		  	        BY 
-		  	  		   REVIEW_NO DESC
-		 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+			    	   COUNT(*)
+			  	  FROM
+			  	  	   FR_REVIEW_LIKE
+			  	 WHERE
+			  	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+	 	  FROM 
+	   	       FR_REVIEW REVIEW
+	   	  LEFT 
+	      JOIN 
+	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+	     WHERE 
+	 	       REVIEW.MEMBER_NO = #{memberNo} 
+		   AND 
+	   		   REVIEW.STATUS = 'Y'  	           
+	  	 ORDER 
+	        BY 
+	  	       REVIEW_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 			   
 		       
