@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.place.model.dao.PlaceMapper">
+	
+	<select id="countByPlaces" resultType="_int" parameterType="string">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE
+	     WHERE
+	           STATUS = 'Y'
+		  <if test="keyword != ''">
+		   AND
+	           PLACE_TITLE LIKE '%' || #{keyword} || '%'
+		  </if>
+		
+	</select>
+	
+	<resultMap id="findAllPlaces" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="placeWriter" property="placeWriter" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="placeCreateDate" property="createDate" />
+		<collection property="placeImages" ofType="PlaceImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	
+	<select id="findAllPlaces" resultMap="findAllPlaces" parameterType="map">
+		SELECT
+		       PLACE.PLACE_NO placeNo
+		     , PLACE_TITLE placeTitle
+		     , PLACE_CONTENT placeContent
+		     , NICKNAME placeWriter
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
+		     , PLACE.CREATE_DATE placeCreateDate
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          PLACE_NO
+				    , PLACE_TITLE
+				    , PLACE_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_PLACE_LIKE
+				        WHERE
+				              PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+				    , CREATE_DATE
+		  	     FROM
+		  	          FR_PLACE
+		  	    WHERE
+		              STATUS = 'Y'
+				 	<if test="keyword != ''">
+				  AND
+				       PLACE_TITLE LIKE '%' || #{keyword} || '%'
+					</if>
+		   		ORDER
+				   BY 
+				 <choose>
+					<when test="order == 'likes'">
+					  LIKES DESC
+					</when>
+					 <otherwise>
+				       CREATE_DATE DESC
+					 </otherwise>
+				 </choose>
+			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
+		  	   ) PLACE
+		  LEFT
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (PLACETAG.TAG_NO = TAG.TAG_NO)
+		 ORDER
+		    BY 
+		    <choose>
+				<when test="order == 'likes'">
+			   LIKES DESC
+				</when>
+			    <otherwise>
+		       PLACE.CREATE_DATE DESC
+				</otherwise>
+			</choose>
+		
+		
+		
+	</select>
+	
+	
+</mapper>
