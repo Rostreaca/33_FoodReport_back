@@ -41,10 +41,10 @@ public class AuthController {
 	}
 	
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refresh(@RequestBody Map<String, String> token){
+	public ResponseEntity<ApiResponse<Map<String,String>>> refresh(@RequestBody Map<String, String> token){
 		String refreshToken = token.get("refreshToken");
 		Map<String, String> tokens = tokenService.validateToken(refreshToken);
-		return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
+		return ApiResponse.created("토큰 재발급 성공했습니다.",tokens);
 	}
 	
 	@DeleteMapping("/logout")
