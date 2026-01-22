@@ -39,7 +39,7 @@ public class Pagenation {
 		
 		PageInfo pageInfo = getPageInfo(listCount, page, 5, boardLimit);
 		
-		if(page > pageInfo.getMaxPage()) {
+		if(listCount != 0 && page > pageInfo.getMaxPage() ) {
 			throw new PageNotFoundException("존재하지 않는 페이지입니다.");
 		}
 		
