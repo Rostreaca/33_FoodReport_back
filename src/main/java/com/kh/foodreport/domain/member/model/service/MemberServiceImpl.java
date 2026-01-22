@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -10,11 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.foodreport.domain.admin.notice.model.vo.AdminNoticeImage;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
+import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
@@ -26,6 +28,8 @@ import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.util.PageInfo;
+import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +44,8 @@ public class MemberServiceImpl implements MemberService {
 	private final TokenMapper tokenMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final FileService fileService;
+	private final Pagenation pagenation;
+
 
 
 	@Override
@@ -202,9 +208,22 @@ public class MemberServiceImpl implements MemberService {
 			if(image != null && !image.isEmpty()) { // 새 파일 존재
 				saveImage(memberNo, image);
 			}
-		}
-		
-		
+		}		
+	}
+	
+	@Override
+	public MemberReviewResponse findAllReviews(int page,Long memberNo) {
+
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
+		// 페이징 처리용
+		int listCount = memberMapper.countByReviews(memberNo);
+		// 페이징 처리 메소드 호출
+		Map<String, Object> params = pagenation.getPageRequest(listCount, page, 4);
+		params.put("memberNo", memberNo);
+		// DB에서 회원이 작성한 리뷰 목록 조회
+		List<MemberReviewDTO> reviews = memberMapper.findAllReviews(params);
+		// log.info("조회된 결과 : {}", reviews);
+		return new MemberReviewResponse(reviews ,(PageInfo)params.get("pageInfo"));
 	}
 	
 
