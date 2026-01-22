@@ -77,7 +77,7 @@ public class MemberController {
 		
 	}
 	
-	@PutMapping("/updateInfo") // 마이페이지 - 회원 정보 수정
+	@PutMapping("/info") // 마이페이지 - 회원 정보 수정
 	public ResponseEntity<ApiResponse<String>> updateMember(@AuthenticationPrincipal CustomUserDetails user
 														   ,@ModelAttribute MemberDTO memberDTO
 														   ,@RequestParam(name="file" , required = false) MultipartFile image){
