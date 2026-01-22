@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.foodreport.domain.auth.model.service.AuthService;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.token.model.dto.RefreshTokenDTO;
 import com.kh.foodreport.domain.token.model.service.TokenService;
 import com.kh.foodreport.global.common.ApiResponse;
 
@@ -47,8 +48,11 @@ public class AuthController {
 	}
 	
 	@DeleteMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails user){
-		authService.logout(user.getMemberNo());
+	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserDetails user
+												  , @RequestBody RefreshTokenDTO refreshToken){		
+		refreshToken.setMemberNo(String.valueOf(user.getMemberNo()));
+		
+		authService.logout(refreshToken);
 		return ApiResponse.ok(null, "로그아웃 성공했습니다");
 		
 	}

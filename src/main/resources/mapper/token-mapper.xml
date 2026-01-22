@@ -19,7 +19,7 @@
 			   )
 	</insert>
 	
-	<!-- 토큰 삭제 -->
+	<!-- 토큰 삭제(회원 탈퇴)-->
 	<delete id="deleteToken"
 			parameterType="long">	
 		DELETE 
@@ -27,6 +27,18 @@
 		  	   FR_TOKEN
 		 WHERE 
 		 	   MEMBER_NO = #{memberNo}
+	</delete>
+	
+	<!-- 토큰 삭제(로그아웃) -->
+	<delete id="deleteTokenByRefreshTokenDTO"
+			parameterType="RefreshTokenDTO">	
+		DELETE 
+		  FROM 
+		  	   FR_TOKEN
+		 WHERE 
+		 	   MEMBER_NO = #{memberNo}
+		   AND 
+		       TOKEN = #{token}
 	</delete>
 	
 	<!-- 토큰 조회 -->

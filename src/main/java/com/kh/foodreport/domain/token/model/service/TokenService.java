@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.domain.token.model.dto.RefreshTokenDTO;
 import com.kh.foodreport.domain.token.model.vo.RefreshToken;
 import com.kh.foodreport.domain.token.util.JwtUtil;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
@@ -62,6 +63,10 @@ public class TokenService {
 	
 	public int deleteToken(Long memberNo) {
 	    return tokenMapper.deleteToken(memberNo);
+	}
+
+	public void deleteTokenByRefreshTokenDTO(RefreshTokenDTO refreshToken) {
+	    tokenMapper.deleteTokenByRefreshTokenDTO(refreshToken);
 	}
 	
 	

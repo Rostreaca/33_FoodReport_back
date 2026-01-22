@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
-import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.domain.token.model.dto.RefreshTokenDTO;
 import com.kh.foodreport.domain.token.model.service.TokenService;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 
@@ -52,10 +52,9 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void logout(Long memberNo) { // 로그아웃
+	public void logout(RefreshTokenDTO refreshToken) { // 로그아웃
 	    // RefreshToken 삭제
-	    tokenService.deleteToken(memberNo);
-	    log.info("로그아웃 성공 - memberNo: {}", memberNo);
+	    tokenService.deleteTokenByRefreshTokenDTO(refreshToken);
 	}
 
 }
