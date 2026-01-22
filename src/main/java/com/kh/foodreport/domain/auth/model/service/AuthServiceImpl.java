@@ -56,8 +56,6 @@ public class AuthServiceImpl implements AuthService {
 	    // RefreshToken 삭제
 	    tokenService.deleteToken(memberNo);
 	    log.info("로그아웃 성공 - memberNo: {}", memberNo);
-		
-		
 	}
 
 }

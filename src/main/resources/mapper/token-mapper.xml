@@ -29,6 +29,7 @@
 		 	   MEMBER_NO = #{memberNo}
 	</delete>
 	
+	<!-- 토큰 조회 -->
 	<select id="findByToken"
 			parameterType="String">
 		SELECT 
@@ -38,7 +39,7 @@
 		  FROM 
 		  	   FR_TOKEN 
 		 WHERE 
-		 	   #{refreshToken}"
+		 	   #{refreshToken}
 	</select>
 	
 	
