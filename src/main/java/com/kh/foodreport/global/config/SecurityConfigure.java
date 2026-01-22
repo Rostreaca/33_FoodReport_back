@@ -64,6 +64,11 @@ public class SecurityConfigure {
 					// 로그인 필요(DELETE)
 					requests.requestMatchers(HttpMethod.DELETE, "/api/members").authenticated();
 					
+					// 사장님
+					requests.requestMatchers(HttpMethod.POST,"/api/places/**").hasAuthority("ROLE_OWNER");
+					requests.requestMatchers(HttpMethod.PUT,"/api/places/**").hasAuthority("ROLE_OWNER");
+					requests.requestMatchers(HttpMethod.DELETE,"/api/places/**").hasAuthority("ROLE_OWNER");
+					
 					// 관리자
 					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 				})
