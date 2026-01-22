@@ -249,7 +249,8 @@
     
     <!-- 회원 리뷰 전체 조회 -->
     <select id="findAllReviews"
-    		parameterType="map">
+    		parameterType="map"
+    		resultType="MemberReviewDTO">
  		SELECT
 			   REVIEW.REVIEW_NO reviewNo
 			 , REVIEW.REVIEW_TITLE reviewTitle
@@ -259,12 +260,7 @@
 			 , REVIEW.VIEW_COUNT viewCount
 			 , REVIEW.UPDATE_DATE updateDate
 			 , REVIEW.DELETE_DATE deleteDate
-			 , (SELECT
-			 		   NICKNAME
-			 	  FROM
-			 	  	   FR_MEMBER
-			 	 WHERE
-			 	 	   MEMBER_NO = REVIEW.MEMBER_NO ) AS NICKNAME
+			 , MEMBER.NICKNAME nickname
 			 , (SELECT 
 			 		   COUNT(*)
 			 	  FROM
@@ -273,10 +269,13 @@
 			 	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
 			 	  FROM 
 		  	   		   FR_REVIEW REVIEW
+		       	  LEFT 
+		  	      JOIN 
+		  	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
 			 	 WHERE 
-			 	       MEMBER_NO = #{memberNo} 
+			 	       REVIEW.MEMBER_NO = #{memberNo} 
 				   AND 
-		       		   REVIEW.STATUS = 'Y'
+		       		   REVIEW.STATUS = 'Y'  	           
 		  	  	 ORDER 
 		  	        BY 
 		  	  		   REVIEW_NO DESC

@@ -53,7 +53,7 @@ public interface MemberMapper {
 	int countByReviews(Long memberNo);
 	
 	// 회원 리뷰 전체 조회
-	List<MemberReviewDTO> findAllReviews(Map<String, Object> pages);
+	List<MemberReviewDTO> findAllReviews(Map<String, Object> params);
 
 
 
