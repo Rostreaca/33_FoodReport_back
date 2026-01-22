@@ -97,7 +97,7 @@ public class PlaceServiceImpl implements PlaceService{
 
 		for (int i = 0; i < images.size(); i++) {
 
-			// 이미지가 존재하지 않을 경우 반복문 탈출 후 예외 발생
+			// 이미지가 존재하지 않을 경우 예외 발생
 			if (images.get(i) == null || images.get(i).isEmpty()) {
 				deleteImagesFromS3(imageUrls);
 			}
