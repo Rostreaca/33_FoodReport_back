@@ -1,12 +1,15 @@
 package com.kh.foodreport.global.file.service;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.file.util.RenamePolicy;
 
 import lombok.RequiredArgsConstructor;
@@ -23,9 +26,9 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService{
-
-	private final RenamePolicy renamePolicy;
 	
+	private final RenamePolicy renamePolicy;
+
 	private final S3Client s3Client;
 	
 	@Value("${cloud.aws.s3.bucket}")
@@ -33,9 +36,18 @@ public class FileServiceImpl implements FileService{
 	@Value("${cloud.aws.region.static}")
 	private String region;
 	
+	private static final List<String> ALLOW_EXTENSION_LIST = List.of("jpg","jpeg","png","webp");
+	
 	public String store(MultipartFile file) {
 		
 		String originalFilename = file.getOriginalFilename();
+		
+		String extesion = originalFilename.substring(originalFilename.lastIndexOf(".")+1);
+		
+		if(!ALLOW_EXTENSION_LIST.contains(extesion)) {
+			throw new InvalidValueException("유효하지 않은 확장자명입니다.");
+		}
+		
 		
 		String changeFilename = renamePolicy.rename(originalFilename);
 		

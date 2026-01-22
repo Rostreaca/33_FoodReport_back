@@ -160,6 +160,12 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 게시글 생성 실패 시 예외
+	@ExceptionHandler(BoardCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBoardCreationException(BoardCreationException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(BoardUpdateException.class)
 	public ResponseEntity<ApiResponse<Object>> handleBoardUpdateException(BoardUpdateException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);

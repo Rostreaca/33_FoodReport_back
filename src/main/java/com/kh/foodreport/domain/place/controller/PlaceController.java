@@ -1,14 +1,21 @@
 package com.kh.foodreport.domain.place.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.service.PlaceService;
 import com.kh.foodreport.global.common.ApiResponse;
@@ -26,7 +33,8 @@ public class PlaceController {
 	
 	@GetMapping
 	public ResponseEntity<ApiResponse<PlaceResponse>> findAllPlaces(@RequestParam(name="page", defaultValue = "1") int page
-																  , @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order){
+																  , @RequestParam(name="keyword", defaultValue = "") String keyword
+																  , @RequestParam(name="order", defaultValue = "createDate") String order){
 		
 		Map<String, Object> params = new HashMap<>();
 		
@@ -38,6 +46,17 @@ public class PlaceController {
 		return ApiResponse.ok(response, "전체 조회에 성공했습니다.");
 	}
 	
-	
+	@PostMapping
+	public ResponseEntity<ApiResponse<Void>> savePlace(@ModelAttribute PlaceDTO place
+													 , @RequestParam(name = "tagNums") List<Long> tagNums
+													 , @RequestParam(name="images", required = false) List<MultipartFile> images
+													 , @AuthenticationPrincipal CustomUserDetails user){
+		
+		place.setPlaceWriter(String.valueOf(user.getMemberNo()));
+		
+		placeService.savePlace(place, tagNums, images);
+		
+		return ApiResponse.created("맛집 게시글 작성 성공");
+	}
 	
 }
