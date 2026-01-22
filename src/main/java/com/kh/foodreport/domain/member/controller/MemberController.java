@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
 import com.kh.foodreport.domain.member.model.service.MemberService;
 import com.kh.foodreport.global.common.ApiResponse;
 
@@ -67,23 +68,31 @@ public class MemberController {
 		return ApiResponse.created("프로필 사진 등록에 성공하였습니다.");	
 	}
 	
-	@GetMapping("/{memberNo}") // 마이페이지 - 내정보 조회
-	public ResponseEntity<ApiResponse<String>> findByMemberNo(@PathVariable(name="memberNo") Long memberNo){
+	@GetMapping("/info") // 마이페이지 - 회원 정보 조회
+	public ResponseEntity<ApiResponse<String>> findByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
 		
-		MemberDTO response = memberService.findByMemberNo(memberNo);
+		MemberDTO response = memberService.findByMemberNo(user.getMemberNo());
 		
 		return ApiResponse.ok(response, "내 정보 조회 성공");
 		
 	}
 	
-	@PutMapping("/{memberNo}") // 마이페이지 - 내정보 수정
-	public ResponseEntity<ApiResponse<String>> updateMember(@PathVariable(name="memberNo") Long memberNo
+	@PutMapping("/info") // 마이페이지 - 회원 정보 수정
+	public ResponseEntity<ApiResponse<String>> updateMember(@AuthenticationPrincipal CustomUserDetails user
 														   ,@ModelAttribute MemberDTO memberDTO
 														   ,@RequestParam(name="file" , required = false) MultipartFile image){
 		
-		memberService.updateMember(memberNo, memberDTO, image);
+		memberService.updateMember(user.getMemberNo(), memberDTO, image);
 		return ApiResponse.ok(null, "회원 정보가 변경되었습니다.");
 	}
 	
+	@GetMapping("/reviews") // 마이페이지 - 회원 리뷰 전체 조회
+	public ResponseEntity<ApiResponse<MemberReviewResponse>> findAllReviews(@AuthenticationPrincipal CustomUserDetails user
+																		   ,@RequestParam(name="page", defaultValue ="1") int page) {
+		
+		MemberReviewResponse reviews = memberService.findAllReviews(page, user.getMemberNo());
+		
+		return ApiResponse.ok(reviews, "리뷰 전체 조회 성공");
+	}
 
 }
