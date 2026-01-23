@@ -18,4 +18,6 @@ public interface PlaceService {
 
 	void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images);
 
+	void deletePlace(Long placeNo);
+
 }

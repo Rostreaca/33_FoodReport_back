@@ -15,13 +15,11 @@ import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
-import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.global.exception.BoardCreationException;
+import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
-import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
-import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
@@ -234,7 +232,7 @@ public class PlaceServiceImpl implements PlaceService{
 		int result = placeMapper.deleteImage(image.getImageNo());
 
 		if (result == 0) {
-			throw new FileDeleteException("이미지를 변경하는 과정에서 문제가 발생했습니다.");
+			throw new FileDeleteException("이미지 처리 과정 중 문제가 발생했습니다.");
 		}
 
 		// S3에서 파일 삭제
@@ -256,8 +254,32 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		int result = placeMapper.deleteTags(placeNo);
 		
-		if(result ==0) {
-			throw new TagDeleteException("태그를 변경하는 과정에서 문제가 발생했습니다.");
+		if(result == 0) {
+			throw new TagDeleteException("태그 처리 과정 중 문제가 발생했습니다.");
+		}
+		
+	}
+
+	@Transactional
+	@Override
+	public void deletePlace(Long placeNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		
+		int result = placeMapper.deletePlace(placeNo);
+		
+		if(result == 0) {
+			throw new BoardDeleteException("게시글 삭제에 실패했습니다.");
+		}
+		
+		List<PlaceImageDTO> images = placeMapper.findImagesByPlaceNo(placeNo);
+		
+		if(images != null && !images.isEmpty()) {
+			
+			images.forEach(image -> {
+				deleteImage(image);
+			});
+			
 		}
 		
 	}
