@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
-import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.domain.token.model.dto.RefreshTokenDTO;
 import com.kh.foodreport.domain.token.model.service.TokenService;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 
@@ -26,9 +26,7 @@ public class AuthServiceImpl implements AuthService {
 	private final TokenService tokenService;
 
 	@Override
-	public Map<String, String> login(MemberDTO member) {
-		// 로그인 구현
-
+	public Map<String, String> login(MemberDTO member) { // 로그인 구현
 		// 사용자 인증
 		Authentication auth = null;
 		try {
@@ -51,6 +49,12 @@ public class AuthServiceImpl implements AuthService {
 		loginResponse.put("role", user.getAuthorities().toString());
 		
 		return loginResponse;
+	}
+
+	@Override
+	public void logout(RefreshTokenDTO refreshToken) { // 로그아웃
+	    // RefreshToken 삭제
+	    tokenService.deleteTokenByRefreshTokenDTO(refreshToken);
 	}
 
 }

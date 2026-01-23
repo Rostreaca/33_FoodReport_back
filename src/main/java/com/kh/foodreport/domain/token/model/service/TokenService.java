@@ -6,10 +6,12 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.domain.token.model.dto.RefreshTokenDTO;
 import com.kh.foodreport.domain.token.model.vo.RefreshToken;
 import com.kh.foodreport.domain.token.util.JwtUtil;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +49,24 @@ public class TokenService {
 		if(result == 0) {
 			throw new CustomAuthenticationException("토큰 저장 실패");
 		}
+	}
+	
+	public Map<String, String> validateToken(String refreshToken) {
+		RefreshToken token = tokenMapper.findByToken(refreshToken);
+		if(token == null || token.getExpiration() < System.currentTimeMillis()) {
+			throw new CustomAuthenticationException("CustomAuthenticationException");
+		}
+		Claims claims = tokenUtil.parseJwt(refreshToken);
+		String memberNo = claims.getSubject();
+		return createTokens(memberNo);
+	}
+	
+	public int deleteToken(Long memberNo) {
+	    return tokenMapper.deleteToken(memberNo);
+	}
+
+	public void deleteTokenByRefreshTokenDTO(RefreshTokenDTO refreshToken) {
+	    tokenMapper.deleteTokenByRefreshTokenDTO(refreshToken);
 	}
 	
 	

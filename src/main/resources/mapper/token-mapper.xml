@@ -19,15 +19,40 @@
 			   )
 	</insert>
 	
-	<!-- 토큰 삭제 -->
-	<update id="deleteToken"
+	<!-- 토큰 삭제(회원 탈퇴)-->
+	<delete id="deleteToken"
 			parameterType="long">	
 		DELETE 
 		  FROM 
 		  	   FR_TOKEN
 		 WHERE 
 		 	   MEMBER_NO = #{memberNo}
-	</update>
+	</delete>
+	
+	<!-- 토큰 삭제(로그아웃) -->
+	<delete id="deleteTokenByRefreshTokenDTO"
+			parameterType="RefreshTokenDTO">	
+		DELETE 
+		  FROM 
+		  	   FR_TOKEN
+		 WHERE 
+		 	   MEMBER_NO = #{memberNo}
+		   AND 
+		       TOKEN = #{token}
+	</delete>
+	
+	<!-- 토큰 조회 -->
+	<select id="findByToken"
+			parameterType="String">
+		SELECT 
+			   TOKEN 
+			   MEMBER_NO memberNo 
+			   EXPIRATION 
+		  FROM 
+		  	   FR_TOKEN 
+		 WHERE 
+		 	   #{refreshToken}
+	</select>
 	
 	
 </mapper>

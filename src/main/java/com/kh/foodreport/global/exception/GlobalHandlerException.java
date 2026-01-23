@@ -41,9 +41,21 @@ public class GlobalHandlerException {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	// 사업자번호 중복 예외
+	@ExceptionHandler(BusinessNoDuplicateException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBusinessNoDuplicateException(BusinessNoDuplicateException e) {
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 	// 회원가입 실패 예외
 	@ExceptionHandler(SignUpFailedException.class)
 	public ResponseEntity<ApiResponse<Object>> handleSignUpFailedException(SignUpFailedException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 사장님 등록 실패 예외
+	@ExceptionHandler(SavePlaceFailedException.class)
+	public ResponseEntity<ApiResponse<Object>> handleSavePlaceFailedException(SavePlaceFailedException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
@@ -157,6 +169,12 @@ public class GlobalHandlerException {
 	
 	@ExceptionHandler(InvalidValueException.class)
 	public ResponseEntity<ApiResponse<Object>> handleInvalidValueException(InvalidValueException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
+	// 게시글 생성 실패 시 예외
+	@ExceptionHandler(BoardCreationException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBoardCreationException(BoardCreationException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	

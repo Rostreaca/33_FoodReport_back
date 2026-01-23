@@ -262,25 +262,66 @@
 			 , REVIEW.DELETE_DATE deleteDate
 			 , MEMBER.NICKNAME nickname
 			 , (SELECT 
-			 		   COUNT(*)
-			 	  FROM
-			 	  	   FR_REVIEW_LIKE
-			 	 WHERE
-			 	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
-			 	  FROM 
-		  	   		   FR_REVIEW REVIEW
-		       	  LEFT 
-		  	      JOIN 
-		  	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
-			 	 WHERE 
-			 	       REVIEW.MEMBER_NO = #{memberNo} 
-				   AND 
-		       		   REVIEW.STATUS = 'Y'  	           
-		  	  	 ORDER 
-		  	        BY 
-		  	  		   REVIEW_NO DESC
-		 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+			    	   COUNT(*)
+			  	  FROM
+			  	  	   FR_REVIEW_LIKE
+			  	 WHERE
+			  	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+	 	  FROM 
+	   	       FR_REVIEW REVIEW
+	   	  LEFT 
+	      JOIN 
+	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+	     WHERE 
+	 	       REVIEW.MEMBER_NO = #{memberNo} 
+		   AND 
+	   		   REVIEW.STATUS = 'Y'  	           
+	  	 ORDER 
+	        BY 
+	  	       REVIEW_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+	
+	<!-- 사업자번호 중복 확인 -->
+	<select id="countByBusinessNo"
+			resultType="int" parameterType="string">		
+		SELECT 
+		       COUNT(*) 
+		  FROM 
+		  	   FR_RESTAURANT
+		 WHERE 
+		 	   BUSINESS_NO = #{businessNo}
+	</select>
+	
+		<!-- 사업자 등록 -->
+	<insert id="saveOwner"
+			parameterType="RestaurantVO">
+		INSERT 
+		  INTO 
+		       FR_RESTAURANT
+		       (
+		       RESTAURANT_NO
+		     , BUSINESS_NO
+		     , RESTAURANT_NAME
+		     , ADDRESS
+		     , STATUS
+		     , CREATE_DATE
+		     , MEMBER_NO
+		       )
+		VALUES 
+		       (
+		       SEQ_RESTAURANT_NO.NEXTVAL
+		     , #{businessNo}
+		     , #{restaurantName}
+		     , #{address}
+		     , 'Y'
+		     , SYSDATE
+		     , #{refMemberNo}
+		       )
+	</insert>
+	
+	
+	
 			   
 		       
     
