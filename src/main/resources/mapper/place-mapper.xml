@@ -196,7 +196,97 @@
 		       )
 	</insert>
 	
+	<update id="updateViewCount" parameterType="long">
+		UPDATE
+		       FR_PLACE
+		   SET
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		
+		
+	</update>
 	
+	<select id="findPlaceByPlaceNo" resultType="PlaceDTO" parameterType="long">
+		SELECT
+			   PLACE_NO placeNo
+			 , PLACE_TITLE placeTitle
+			 , PLACE_CONTENT placeContent
+			 , NICKNAME placeWriter
+			 , VIEW_COUNT viewCount
+			 , PLACE.CREATE_DATE createDate
+		  FROM
+		       FR_PLACE PLACE
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		 WHERE
+		       PLACE_NO = #{placeNo}
+		   AND
+		       PLACE.STATUS = 'Y'
+	</select>
+	
+	<select id="findImagesByPlaceNo" resultType="PlaceImageDTO" parameterType="long">
+		SELECT
+		       IMAGE_NO imageNo
+		     , ORIGIN_NAME originName
+		     , CHANGE_NAME changeName
+		     , IMAGE_LEVEL imageLevel
+		  FROM
+		       FR_PLACE_IMAGE 
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+	</select>
+	
+	<select id="findTagsByPlaceNo" resultType="TagDTO" parameterType="long">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG USING (TAG_NO)
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       TAG_NO ASC
+	</select>
+	
+	<select id="findRepliesByPlaceNo" resultType="PlaceReplyDTO" parameterType="long">
+		SELECT
+		       REPLY_NO replyNo
+		     , REPLY_CONTENT replyContent
+		     , NICKNAME replyWriter
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_REPLY_LIKE
+		         WHERE
+		               REPLY.REPLY_NO = FR_PLACE_REPLY_LIKE.REPLY_NO) AS likes
+		     , REPLY.CREATE_DATE createDate
+		  FROM
+		       FR_PLACE_REPLY REPLY
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		 WHERE
+		       REPLY.STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       REPLY.CREATE_DATE DESC
+	</select>
 	
 	
 	

@@ -14,4 +14,6 @@ public interface PlaceService {
 
 	void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images);
 
+	PlaceDTO findPlaceByPlaceNo(Long placeNo);
+
 }
