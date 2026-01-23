@@ -51,10 +51,7 @@ public class SecurityConfigure {
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST, "/api/reviews/*/replies", "api/reviews/**","/api/members/images").authenticated();
 					
-//					requests.requestMatchers(HttpMethod.POST).permitAll();
 					// 로그인 필요(GET)
-					requests.requestMatchers(HttpMethod.PUT).permitAll(); // 나중에 삭제해야함.
-					requests.requestMatchers(HttpMethod.DELETE).permitAll(); // 나중에 삭제해야함.
 					
 					//requests.requestMatchers(HttpMethod.GET).authenticated();
 					// 로그인 필요(POST)

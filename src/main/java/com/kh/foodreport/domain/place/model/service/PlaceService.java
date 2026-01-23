@@ -16,4 +16,6 @@ public interface PlaceService {
 
 	PlaceDTO findPlaceByPlaceNo(Long placeNo);
 
+	void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images);
+
 }

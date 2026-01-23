@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +67,23 @@ public class PlaceController {
 		PlaceDTO place = placeService.findPlaceByPlaceNo(placeNo);
 		
 		return ApiResponse.ok(place, "상세 조회에 성공했습니다.");
+	}
+	
+	@PutMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<Void>> updatePlace(@PathVariable(name = "placeNo") Long placeNo
+													   , @ModelAttribute PlaceDTO place
+													   , @RequestParam(name = "tagNums") List<Long> tagNums
+													   , @RequestParam(name = "images", required = false) List<MultipartFile> images
+													   , @AuthenticationPrincipal CustomUserDetails user){
+		
+		place.setPlaceNo(placeNo);
+		
+		place.setPlaceWriter(String.valueOf(user.getMemberNo()));
+		
+		placeService.updatePlace(place, tagNums, images);
+		
+		return ApiResponse.ok(null, "맛집 게시글 수정에 성공했습니다.");
+		
 	}
 	
 }
