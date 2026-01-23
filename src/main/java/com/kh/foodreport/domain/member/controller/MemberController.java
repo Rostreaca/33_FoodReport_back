@@ -87,7 +87,7 @@ public class MemberController {
 		return ApiResponse.ok(reviews, "리뷰 전체 조회 성공");
 	}
 	
-	@PostMapping("/info") // 사장님 등록
+	@PostMapping("/owner") // 사장님 등록
 	public ResponseEntity<ApiResponse<String>> saveOwner(@Valid @RequestBody RestaurantDTO restaurant
 														,@AuthenticationPrincipal CustomUserDetails user){
 		memberService.saveOwner(restaurant, user.getMemberNo());
