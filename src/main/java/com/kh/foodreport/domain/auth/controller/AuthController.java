@@ -54,7 +54,6 @@ public class AuthController {
 		
 		authService.logout(refreshToken);
 		return ApiResponse.ok(null, "로그아웃 성공했습니다");
-		
 	}
 	
 
