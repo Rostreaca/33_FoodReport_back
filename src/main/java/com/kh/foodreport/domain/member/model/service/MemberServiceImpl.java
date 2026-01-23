@@ -17,14 +17,18 @@ import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
+import com.kh.foodreport.domain.member.model.dto.RestaurantDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.domain.member.model.vo.RestaurantVO;
 import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.global.exception.BusinessNoDuplicateException;
 import com.kh.foodreport.global.exception.CustomAuthenticationException;
 import com.kh.foodreport.global.exception.EmailDuplicateException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.MemberUpdateException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.exception.SavePlaceFailedException;
 import com.kh.foodreport.global.exception.SignUpFailedException;
 import com.kh.foodreport.global.exception.TokenDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
@@ -225,8 +229,28 @@ public class MemberServiceImpl implements MemberService {
 		// log.info("조회된 결과 : {}", reviews);
 		return new MemberReviewResponse(reviews ,(PageInfo)params.get("pageInfo"));
 	}
-	
-	
-	
+
+	@Override
+	public void saveOwner(RestaurantDTO restaurant, Long memberNo) {
+		// 사업자번호 중복 검사
+		int count = memberMapper.countByBusinessNo(restaurant.getBusinessNo());
+		if(1 == count) {
+			throw new BusinessNoDuplicateException("이미 존재하는 사업자번호입니다.");
+		}
+		
+		RestaurantVO restaurantBuilder = RestaurantVO.builder()
+										 .businessNo(restaurant.getBusinessNo())
+										 .restaurantName(restaurant.getRestaurantName())
+										 .address(restaurant.getAddress())
+										 .status(restaurant.getStatus())
+										 .refMemberNo(memberNo)
+										 .build();
+		// 매퍼 호출
+		int result = memberMapper.saveOwner(restaurantBuilder);
+		// log.info("사장님 등록 성공 : {} ", restaurantBuilder);
+		if(0 == result) {
+			throw new SavePlaceFailedException("사장님 등록에 실패했습니다.");
+		}
+	}
 
 }

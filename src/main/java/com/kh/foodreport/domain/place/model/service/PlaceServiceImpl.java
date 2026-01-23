@@ -18,6 +18,7 @@ import com.kh.foodreport.domain.place.model.vo.PlaceImage;
 import com.kh.foodreport.domain.review.model.dto.ReviewImageDTO;
 import com.kh.foodreport.global.exception.BoardCreationException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
+import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
@@ -205,20 +206,18 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
 		
-		if (placeImages == null || placeImages.isEmpty()) { // 기존 이미지 X
-			if (images != null && !images.isEmpty()) {
-				saveImages(placeNo, images);
-			}
-		} else { // 기존 이미지 O
-			if (images != null && !images.isEmpty()) { // 새 파일 저장
-				saveImages(placeNo, images);
-			}
-
+		if (placeImages != null && !placeImages.isEmpty()) { // 기존 게시글에 이미지가 존재하면 우선 DELETE 함
 			placeImages.forEach(image -> { // 반복
 				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
 			});
-
 		}
+		
+		// 요청받은 이미지가 존재하면 INSERT
+		if (images != null && !images.isEmpty()) {
+			saveImages(placeNo, images);
+		}
+		
+
 	}
 	
 	// 이미지 삭제 메소드
@@ -228,7 +227,7 @@ public class PlaceServiceImpl implements PlaceService{
 		int result = placeMapper.deleteImage(image.getImageNo());
 
 		if (result == 0) {
-			throw new FileManipulateException("기존 이미지 삭제에 실패했습니다.");
+			throw new FileDeleteException("이미지를 변경하는 과정에서 문제가 발생했습니다.");
 		}
 
 		// S3에서 파일 삭제
@@ -241,7 +240,7 @@ public class PlaceServiceImpl implements PlaceService{
 		// 게시글의 태그 한번에 삭제
 		deleteTags(placeNo);
 		
-		// 새 태그 추가
+		// 요청받은 태그 추가
 		saveTags(placeNo, tagNums);
 		
 	}
@@ -251,7 +250,7 @@ public class PlaceServiceImpl implements PlaceService{
 		int result = placeMapper.deleteTags(placeNo);
 		
 		if(result ==0) {
-			throw new TagDeleteException("태그 삭제");
+			throw new TagDeleteException("태그를 변경하는 과정에서 문제가 발생했습니다.");
 		}
 		
 	}
