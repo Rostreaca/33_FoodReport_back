@@ -21,6 +21,7 @@ import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileManipulateException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
@@ -57,18 +58,25 @@ public class PlaceServiceImpl implements PlaceService{
 		return new PlaceResponse(places, ((PageInfo) params.get("pageInfo")));
 	}
 
-	private void validatePlace(PlaceDTO place) {
+	private void validatePlace(PlaceDTO place, List<Long> tagNums) {
 		
 		GlobalValidator.checkNull(place, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
 		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 제목은 비어있을 수 없습니다.");
-		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");		
+		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");	
+		validateTags(tagNums);
+	}
+	
+	private void validateTags(List<Long> tagNums) {
+		if(tagNums == null || tagNums.isEmpty()) {
+			throw new InvalidValueException("태그를 선택해주십시오.");
+		}
 	}
 	
 	@Transactional
 	@Override
 	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
-		validatePlace(place);
+		validatePlace(place, tagNums);
 		
 		int result = placeMapper.savePlace(place);
 
@@ -181,13 +189,13 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		return place;
 	}
-
+	
 	@Transactional
 	@Override
 	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
-		validatePlace(place);
+		validatePlace(place, tagNums);
 		
 		int result = placeMapper.updatePlace(place);
 		
