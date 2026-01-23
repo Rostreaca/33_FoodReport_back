@@ -11,12 +11,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.place.model.dao.PlaceMapper;
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
 import com.kh.foodreport.global.exception.BoardCreationException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
@@ -143,6 +146,35 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 
 		throw new FileUploadException("이미지 업로드 실패");
+	}
+
+	@Override
+	public PlaceDTO findPlaceByPlaceNo(Long placeNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		
+		PlaceDTO place = placeMapper.findPlaceByPlaceNo(placeNo); 
+		
+		// 게시글이 존재하지 않을 경우 예외 발생
+		GlobalValidator.checkNull(place, "게시글이 존재하지 않습니다.");
+		
+		placeMapper.updateViewCount(placeNo);
+		
+		// 이미지 - 태그 - 댓글은 여러 개 존재할 수 있음 -> 행 조회룰 최소화(데이터 절약)하기 위해 전부 분리해줌 
+		// 이미지, 태그, 댓글은 존재하지 않을 수 있으므로 따로 예외 발생 코드가 없음 
+		List<PlaceImageDTO> images = placeMapper.findImagesByPlaceNo(placeNo);
+		
+		place.setPlaceImages(images);
+		
+		List<TagDTO> tags = placeMapper.findTagsByPlaceNo(placeNo);
+		
+		place.setTags(tags);
+		
+		List<PlaceReplyDTO> replies = placeMapper.findRepliesByPlaceNo(placeNo);
+		
+		place.setPlaceReplies(replies);
+		
+		return place;
 	}
 
 }

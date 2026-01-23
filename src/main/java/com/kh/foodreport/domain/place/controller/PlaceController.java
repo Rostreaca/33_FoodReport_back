@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,6 +58,14 @@ public class PlaceController {
 		placeService.savePlace(place, tagNums, images);
 		
 		return ApiResponse.created("맛집 게시글 작성 성공");
+	}
+	
+	@GetMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<PlaceDTO>> findPlaceByPlaceNo(@PathVariable(name="placeNo") Long placeNo){
+		
+		PlaceDTO place = placeService.findPlaceByPlaceNo(placeNo);
+		
+		return ApiResponse.ok(place, "상세 조회에 성공했습니다.");
 	}
 	
 }
