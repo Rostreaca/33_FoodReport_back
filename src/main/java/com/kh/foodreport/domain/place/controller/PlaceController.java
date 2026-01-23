@@ -50,7 +50,7 @@ public class PlaceController {
 	
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> savePlace(@ModelAttribute PlaceDTO place
-													 , @RequestParam(name = "tagNums") List<Long> tagNums
+													 , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 													 , @RequestParam(name="images", required = false) List<MultipartFile> images
 													 , @AuthenticationPrincipal CustomUserDetails user){
 		
@@ -72,7 +72,7 @@ public class PlaceController {
 	@PutMapping("/{placeNo}")
 	public ResponseEntity<ApiResponse<Void>> updatePlace(@PathVariable(name = "placeNo") Long placeNo
 													   , @ModelAttribute PlaceDTO place
-													   , @RequestParam(name = "tagNums") List<Long> tagNums
+													   , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 													   , @RequestParam(name = "images", required = false) List<MultipartFile> images
 													   , @AuthenticationPrincipal CustomUserDetails user){
 		

@@ -58,25 +58,19 @@ public class PlaceServiceImpl implements PlaceService{
 		return new PlaceResponse(places, ((PageInfo) params.get("pageInfo")));
 	}
 
-	private void validatePlace(PlaceDTO place, List<Long> tagNums) {
+	private void validatePlace(PlaceDTO place) {
 		
 		GlobalValidator.checkNull(place, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
 		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 제목은 비어있을 수 없습니다.");
 		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");	
-		validateTags(tagNums);
 	}
 	
-	private void validateTags(List<Long> tagNums) {
-		if(tagNums == null || tagNums.isEmpty()) {
-			throw new InvalidValueException("태그를 선택해주십시오.");
-		}
-	}
 	
 	@Transactional
 	@Override
 	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
-		validatePlace(place, tagNums);
+		validatePlace(place);
 		
 		int result = placeMapper.savePlace(place);
 
@@ -84,7 +78,9 @@ public class PlaceServiceImpl implements PlaceService{
 			throw new BoardCreationException("맛집 게시글 작성에 실패하였습니다.");
 		}
 		
-		saveTags(place.getPlaceNo(), tagNums);
+		if(tagNums != null && !tagNums.isEmpty()) {
+			saveTags(place.getPlaceNo(), tagNums);			
+		}
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
 		if (images != null && !images.isEmpty()) {
@@ -195,17 +191,23 @@ public class PlaceServiceImpl implements PlaceService{
 	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
-		validatePlace(place, tagNums);
+		validatePlace(place);
 		
 		int result = placeMapper.updatePlace(place);
 		
 		if(result == 0) {
 			throw new BoardUpdateException("맛집 게시글 수정에 실패했습니다.");
 		}
+
+		// 이미지가 존재하면 이미지 update
+		if(images != null && !images.isEmpty()) {
+			updateImage(place.getPlaceNo(), images);
+		}
 		
-		updateImage(place.getPlaceNo(), images);
-		
-		updateTags(place.getPlaceNo(),tagNums);
+		// 태그가 존재하면 태그 update
+		if(tagNums !=null && !tagNums.isEmpty()) {
+			updateTags(place.getPlaceNo(),tagNums);			
+		}
 		
 		
 	}
@@ -215,16 +217,13 @@ public class PlaceServiceImpl implements PlaceService{
 		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
 		
 		if (placeImages != null && !placeImages.isEmpty()) { // 기존 게시글에 이미지가 존재하면 우선 DELETE 함
-			placeImages.forEach(image -> { // 반복
+			placeImages.forEach(image -> { 
 				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
 			});
 		}
 		
 		// 요청받은 이미지가 존재하면 INSERT
-		if (images != null && !images.isEmpty()) {
-			saveImages(placeNo, images);
-		}
-		
+		saveImages(placeNo, images);
 
 	}
 	
