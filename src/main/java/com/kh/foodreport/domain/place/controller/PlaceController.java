@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +85,14 @@ public class PlaceController {
 		
 		return ApiResponse.ok(null, "맛집 게시글 수정에 성공했습니다.");
 		
+	}
+	
+	@DeleteMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<Void>> deletePlace(@PathVariable(name = "placeNo") Long placeNo){
+		
+		placeService.deletePlace(placeNo);
+		
+		return ApiResponse.ok(null, "맛집 게시글 삭제에 성공했습니다.");
 	}
 	
 }

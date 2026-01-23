@@ -40,4 +40,6 @@ public interface PlaceMapper {
 
 	int deleteTags(Long placeNo);
 
+	int deletePlace(Long placeNo);
+
 }

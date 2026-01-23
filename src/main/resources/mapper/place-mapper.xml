@@ -323,4 +323,17 @@
 		
 	</delete>
 	
+	<update id="deletePlace" parameterType="long">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		   
+	</update>
+	
 </mapper>
