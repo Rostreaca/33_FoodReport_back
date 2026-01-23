@@ -288,6 +288,39 @@
 		       REPLY.CREATE_DATE DESC
 	</select>
 	
+	<update id="updatePlace" parameterType="PlaceDTO">
+		UPDATE
+		       FR_PLACE
+		   SET
+		       PLACE_TITLE = #{placeTitle}
+		     , PLACE_CONTENT = #{placeContent}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		
+	</update>
 	
+	<update id="deleteImage" parameterType="long">
+		UPDATE
+		       FR_PLACE_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	<delete id="deleteTags" parameterType="long">
+		DELETE
+		  FROM
+		       FR_PLACE_TAG
+		 WHERE
+		       PLACE_NO = #{placeNo}
+		
+	</delete>
 	
 </mapper>

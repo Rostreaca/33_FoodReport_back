@@ -34,4 +34,10 @@ public interface PlaceMapper {
 
 	List<PlaceReplyDTO> findRepliesByPlaceNo(Long placeNo);
 
+	int updatePlace(PlaceDTO place);
+
+	int deleteImage(Long imageNo);
+
+	int deleteTags(Long placeNo);
+
 }
