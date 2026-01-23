@@ -1,20 +1,15 @@
-package com.kh.foodreport.domain.member.model.dto;
+package com.kh.foodreport.domain.member.model.vo;
 
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import lombok.Value;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public class RestaurantDTO {
-	
+@Value
+@Builder
+public class RestaurantVO {
 	private Long restaurantNo;
 	private String businessNo;
 	private String restaurantName;
@@ -24,6 +19,4 @@ public class RestaurantDTO {
 	private Date updateDate;
 	private Date deleteDate;
 	private Long refMemberNo;
-
-	
 }

@@ -9,6 +9,7 @@ import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.domain.member.model.vo.RestaurantVO;
 
 @Mapper
 public interface MemberMapper {
@@ -54,6 +55,12 @@ public interface MemberMapper {
 	
 	// 회원 리뷰 전체 조회
 	List<MemberReviewDTO> findAllReviews(Map<String, Object> params);
+	
+	// 사업자번호 중복 확인
+	int countByBusinessNo(String businessNo);
+	
+	// 사장님 등록
+	int saveOwner(RestaurantVO restaurantBuilder);
 
 
 
