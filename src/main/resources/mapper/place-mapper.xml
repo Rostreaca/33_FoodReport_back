@@ -299,6 +299,8 @@
 		       STATUS = 'Y'
 		   AND
 		       PLACE_NO = #{placeNo}
+		   AND
+		       MEMBER_NO = #{placeWriter}
 		
 	</update>
 	

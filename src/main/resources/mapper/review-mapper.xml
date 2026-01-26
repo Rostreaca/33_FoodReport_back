@@ -300,6 +300,8 @@
 		       REVIEW_NO = #{reviewNo}
 		   AND
 		       STATUS = 'Y'
+		   AND
+		       MEMBER_NO = #{reviewWriter}
 		
 	</update>
 	
