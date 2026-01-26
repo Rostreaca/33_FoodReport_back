@@ -108,4 +108,13 @@ public class PlaceController {
 		
 	}
 	
+	@PostMapping("/{placeNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> saveLike(@PathVariable(name="placeNo") Long placeNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		placeService.saveLike(placeNo, user.getMemberNo());
+		
+		return ApiResponse.created("게시글에 좋아요를 누르셨습니다.");
+		
+	}
+	
 }

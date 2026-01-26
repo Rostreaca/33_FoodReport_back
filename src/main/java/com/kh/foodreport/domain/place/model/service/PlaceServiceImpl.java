@@ -15,13 +15,15 @@ import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
+import com.kh.foodreport.domain.place.model.vo.PlaceLike;
 import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.global.exception.BoardCreationException;
 import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardLikeFailedException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
-import com.kh.foodreport.global.exception.InvalidValueException;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
@@ -319,6 +321,33 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		if(result == 0) {
 			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
+		}
+		
+	}
+
+	@Override
+	public void saveLike(Long placeNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+
+		PlaceLike placeLike = PlaceLike.createPlaceLike(placeNo, memberNo);
+		
+		int placeCount = placeMapper.countByPlaceNo(placeNo);
+		
+		if(placeCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = placeMapper.countLikeByMember(placeLike);
+		
+		if(likeCount == 1) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = placeMapper.saveLike(placeLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 등록에 실패했습니다.");
 		}
 		
 	}

@@ -9,6 +9,7 @@ import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
+import com.kh.foodreport.domain.place.model.vo.PlaceLike;
 import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
@@ -46,5 +47,9 @@ public interface PlaceMapper {
 	int saveReply(PlaceReply replyVO);
 
 	int countByPlaceNo(Long placeNo);
+
+	int countLikeByMember(PlaceLike placeLike);
+
+	int saveLike(PlaceLike placeLike);
 
 }
