@@ -21,7 +21,9 @@ import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
@@ -289,6 +291,13 @@ public class PlaceServiceImpl implements PlaceService{
 	private void validateReply(Long placeNo, PlaceReplyDTO reply) {
 
 		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		
+		int count = placeMapper.countByPlaceNo(placeNo);
+		
+		if(count == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
 		GlobalValidator.checkNull(reply, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
 		
 		GlobalValidator.checkBlank(reply.getReplyContent(), "댓글 내용은 비어있을 수 없습니다.");

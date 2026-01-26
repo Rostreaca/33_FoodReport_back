@@ -45,4 +45,6 @@ public interface PlaceMapper {
 
 	int saveReply(PlaceReply replyVO);
 
+	int countByPlaceNo(Long placeNo);
+
 }

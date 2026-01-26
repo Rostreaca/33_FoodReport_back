@@ -336,6 +336,17 @@
 		   
 	</update>
 	
+	<select id="countByPlaceNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+	</select>
+	
 	<insert id="saveReply" parameterType="PlaceReply">
 		INSERT
 		  INTO
