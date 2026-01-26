@@ -53,4 +53,12 @@ public class PlaceReplyController {
 		
 	}
 	
+	@DeleteMapping("/{replyNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> deleteReplyLike(@PathVariable(name = "replyNo") Long replyNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		placeReplyService.deleteReplyLike(replyNo, user.getMemberNo());
+		
+		return ApiResponse.ok(null, "댓글 좋아요 취소에 성공하셨습니다.");
+	}
+	
 }

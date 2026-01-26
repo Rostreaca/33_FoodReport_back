@@ -10,4 +10,6 @@ public interface PlaceReplyService {
 
 	void saveReplyLike(Long replyNo, Long memberNo);
 
+	void deleteReplyLike(Long replyNo, Long memberNo);
+
 }

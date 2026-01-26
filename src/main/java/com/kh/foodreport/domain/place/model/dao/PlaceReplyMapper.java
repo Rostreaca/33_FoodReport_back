@@ -17,4 +17,8 @@ public interface PlaceReplyMapper {
 
 	int saveReplyLike(PlaceReplyLike placeReplyLike);
 
+	int countByReplyNo(Long replyNo);
+
+	int deleteReplyLike(PlaceReplyLike placeReplyLike);
+
 }

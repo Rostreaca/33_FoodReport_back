@@ -61,4 +61,26 @@
 		       )
 	</insert>
 	
+	<select id="countByReplyNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_REPLY
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+	</select>
+	
+	<delete id="deleteReplyLike" parameterType="PlaceReplyLike">
+		DELETE
+		  FROM
+		       FR_PLACE_REPLY_LIKE
+		 WHERE
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+		
+	</delete>
+	
 </mapper>
