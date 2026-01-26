@@ -84,7 +84,7 @@ public class MemberController {
 	public ResponseEntity<ApiResponse<MemberReviewResponse>> findAllReviews(@AuthenticationPrincipal CustomUserDetails user
 																		   ,@RequestParam(name="page", defaultValue ="1") int page) {
 		MemberReviewResponse reviews = memberService.findAllReviews(page, user.getMemberNo());
-		return ApiResponse.ok(reviews, "리뷰 전체 조회 성공");
+		return ApiResponse.ok(reviews, "회원 리뷰 전체 조회 성공");
 	}
 	
 	@PostMapping("/owner") // 사장님 등록
@@ -94,7 +94,12 @@ public class MemberController {
 		return ApiResponse.created("사장님 등록에 성공했습니다.");
 	}
 	
-	
+	@GetMapping("/likes") // 마이페이지 - 회원 좋아요 목록 전체 조회
+	public ResponseEntity<ApiResponse<Void>> findAllLikes(@AuthenticationPrincipal CustomUserDetails user
+														 ,@RequestParam(name="page", defaultValue="1") int page){
+		memberService.findAllLikes(page, user.getMemberNo());
+		return ApiResponse.ok(null, "회원 좋아요 목록 전체 조회 성공");
+	}
 	
 
 }

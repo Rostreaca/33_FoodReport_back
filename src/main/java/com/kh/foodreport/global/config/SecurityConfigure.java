@@ -45,7 +45,10 @@ public class SecurityConfigure {
 				.authorizeHttpRequests(requests -> {
 					// 비로그인 허용
 					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
-
+					requests.requestMatchers(HttpMethod.GET).permitAll();
+					
+					requests.requestMatchers(HttpMethod.POST,"/api/members").permitAll(); // 회원가입 경로 누구나 접근 가능
+					
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST, "api/members/**", "/api/reviews/*/replies", "api/reviews/**","/api/members/images").authenticated();
 					

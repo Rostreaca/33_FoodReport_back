@@ -28,4 +28,6 @@ public interface MemberService {
 
 	void saveOwner( RestaurantDTO restaurant, Long memberNo);
 
+	void findAllLikes(int page, Long memberNo);
+
 }
