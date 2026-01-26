@@ -1,0 +1,37 @@
+package com.kh.foodreport.domain.place.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
+import com.kh.foodreport.domain.place.model.service.PlaceReplyService;
+import com.kh.foodreport.global.common.ApiResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/places/replies")
+@RequiredArgsConstructor
+public class PlaceReplyController {
+	
+	private final PlaceReplyService placeReplyService;
+	
+	
+	@PutMapping("/{replyNo}")
+	public ResponseEntity<ApiResponse<Void>> updateReply(@PathVariable(name="replyNo") Long replyNo,@RequestBody PlaceReplyDTO placeReply
+													   , @AuthenticationPrincipal CustomUserDetails user){
+		
+		placeReplyService.updateReply(replyNo ,placeReply, user.getMemberNo());
+		
+		return ApiResponse.ok(null, "댓글 수정에 성공하셨습니다.");
+	}
+	
+}
