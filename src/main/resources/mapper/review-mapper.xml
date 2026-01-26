@@ -414,6 +414,17 @@
 		       REVIEW_NO = #{reviewNo}
 	</delete>
 	
+	<select id="countByReviewNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
 	
 	
 </mapper>
