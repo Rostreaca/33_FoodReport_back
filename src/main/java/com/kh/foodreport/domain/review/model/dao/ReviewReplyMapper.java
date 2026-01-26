@@ -13,10 +13,10 @@ public interface ReviewReplyMapper {
 
 	int deleteReply(ReviewReply reviewReply);
 
-	int countReplyLikeByMember(ReviewReplyLike reviewReply);
+	int countReplyLikeByMember(ReviewReplyLike reviewReplyLike);
 
-	int saveReplyLike(ReviewReplyLike reviewReply);
+	int saveReplyLike(ReviewReplyLike reviewReplyLike);
 
-	int deleteReplyLike(ReviewReplyLike reviewReply);
+	int deleteReplyLike(ReviewReplyLike reviewReplyLike);
 
 }

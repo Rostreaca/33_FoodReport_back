@@ -9,7 +9,7 @@ public class ReviewReplyLike {
 	private Long replyNo;
 	private Long memberNo;
 	
-	public static ReviewReplyLike createReviewLike(Long replyNo, Long memberNo) {
+	public static ReviewReplyLike createReviewReplyLike(Long replyNo, Long memberNo) {
 		
 		return ReviewReplyLike.builder()
 						 .replyNo(replyNo)

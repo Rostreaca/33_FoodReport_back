@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import com.kh.foodreport.domain.place.model.dao.PlaceReplyMapper;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.vo.PlaceReply;
+import com.kh.foodreport.domain.place.model.vo.PlaceReplyLike;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.ReplyDeleteException;
+import com.kh.foodreport.global.exception.ReplyLikeFailedException;
 import com.kh.foodreport.global.exception.ReplyUpdateException;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
@@ -51,6 +54,28 @@ public class PlaceReplyServiceImpl implements PlaceReplyService{
 		
 		if(result == 0) {
 			throw new ReplyDeleteException("댓글 삭제에 실패했습니다.");
+		}
+		
+	}
+
+
+	@Override
+	public void saveReplyLike(Long replyNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		PlaceReplyLike placeReplyLike = PlaceReplyLike.createPlaceReplyLike(replyNo, memberNo);
+		
+		int likeCount = placeReplyMapper.countReplyLikeByMember(placeReplyLike);
+		
+		if(likeCount == 1 ) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = placeReplyMapper.saveReplyLike(placeReplyLike);
+		
+		if(result == 0) {
+			throw new ReplyLikeFailedException("좋아요 등록에 실패했습니다.");
 		}
 		
 	}

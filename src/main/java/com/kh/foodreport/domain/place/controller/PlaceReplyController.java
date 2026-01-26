@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,4 +43,14 @@ public class PlaceReplyController {
 		
 		return ApiResponse.ok(null, "댓글 삭제에 성공하셨습니다.");
 	}
+	
+	@PostMapping("/{replyNo}/likes")
+	public ResponseEntity<ApiResponse<Void>> saveReplyLike(@PathVariable(name = "replyNo") Long replyNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		placeReplyService.saveReplyLike(replyNo, user.getMemberNo());
+		
+		return ApiResponse.created("댓글 좋아요 등록에 성공하셨습니다.");
+		
+	}
+	
 }
