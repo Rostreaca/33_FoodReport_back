@@ -63,7 +63,7 @@ public class ReviewController {
 	@GetMapping("/{reviewNo}")
 	public ResponseEntity<ApiResponse<ReviewDTO>> findByReviewNo(@PathVariable(name = "reviewNo" ) Long reviewNo){
 		
-		ReviewDTO response = reviewService.findByReviewNo(reviewNo);
+		ReviewDTO response = reviewService.findReviewByReviewNo(reviewNo);
 		
 		return ApiResponse.ok(response, "상세 조회 성공");
 	}

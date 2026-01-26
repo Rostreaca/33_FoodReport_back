@@ -216,6 +216,12 @@
 			 , PLACE_CONTENT placeContent
 			 , NICKNAME placeWriter
 			 , VIEW_COUNT viewCount
+			 , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
 			 , PLACE.CREATE_DATE createDate
 		  FROM
 		       FR_PLACE PLACE
@@ -260,7 +266,7 @@
 		       PLACE_NO = #{placeNo}
 		 ORDER
 		    BY
-		       TAG_NO ASC
+		       TAG_TITLE ASC
 	</select>
 	
 	<select id="findRepliesByPlaceNo" resultType="PlaceReplyDTO" parameterType="long">

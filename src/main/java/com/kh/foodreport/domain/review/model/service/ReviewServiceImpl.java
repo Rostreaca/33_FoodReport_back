@@ -163,21 +163,23 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 	
 	@Override
-	public ReviewDTO findByReviewNo(Long reviewNo) {
+	public ReviewDTO findReviewByReviewNo(Long reviewNo) {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 
-		reviewMapper.updateViewCount(reviewNo);
-
 		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
 
-		if (review == null) {
-			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
-		}
-
+		GlobalValidator.checkNull(review, "게시글이 존재하지 않습니다.");
+		
+		reviewMapper.updateViewCount(reviewNo);
+		
+		List<ReviewImageDTO> images = reviewMapper.findImagesByReviewNo(reviewNo);
+		
 		List<ReviewReplyDTO> reviewReplies = reviewMapper.findRepliesByReviewNo(reviewNo);
 		
 		List<TagDTO> tags = reviewMapper.findTagByReviewNo(reviewNo);
+		
+		review.setReviewImages(images);
 		
 		review.setReviewReplies(reviewReplies);
 		
@@ -260,23 +262,21 @@ public class ReviewServiceImpl implements ReviewService {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
-		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
+		int result = reviewMapper.deleteReview(reviewNo);
 		
-		if(review == null) {
-			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
-		}
-		
-		int reviewResult = reviewMapper.deleteReview(reviewNo);
-		
-		if(reviewResult == 0) {
+		if(result == 0) {
 			throw new BoardDeleteException("리뷰 삭제에 실패했습니다.");
 		}
 
+		List<ReviewImageDTO> images = reviewMapper.findImagesByReviewNo(reviewNo);
+		
 		// 리뷰 삭제 성공 시 리뷰에 담겨있는 이미지 전부 같이 삭제 (S3로 삭제하므로 개별 삭제)
-		if (review.getReviewImages() != null && !review.getReviewImages().isEmpty()) {
-			review.getReviewImages().forEach(image -> {
+		if (images!= null && !images.isEmpty()) {
+			
+			images.forEach(image -> {
 				deleteImage(image); // 이미지 삭제 메소드 호출
 			});
+			
 		}
 		
 	}
