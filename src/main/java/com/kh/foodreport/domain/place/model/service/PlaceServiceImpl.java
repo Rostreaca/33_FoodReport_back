@@ -15,12 +15,14 @@ import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
+import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.global.exception.BoardCreationException;
 import com.kh.foodreport.global.exception.BoardDeleteException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
+import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
@@ -280,6 +282,34 @@ public class PlaceServiceImpl implements PlaceService{
 				deleteImage(image);
 			});
 			
+		}
+		
+	}
+
+	private void validateReply(Long placeNo, PlaceReplyDTO reply) {
+
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		GlobalValidator.checkNull(reply, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
+		
+		GlobalValidator.checkBlank(reply.getReplyContent(), "댓글 내용은 비어있을 수 없습니다.");
+		
+	}
+	
+	@Override
+	public void saveReply(Long placeNo, PlaceReplyDTO reply) {
+		
+		validateReply(placeNo, reply);
+		
+		PlaceReply replyVO = PlaceReply.builder()
+									   .replyContent(reply.getReplyContent())
+									   .replyWriter(reply.getReplyWriter())
+									   .refPlaceNo(placeNo)
+									   .build();
+		
+		int result = placeMapper.saveReply(replyVO);
+		
+		if(result == 0) {
+			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
 		}
 		
 	}

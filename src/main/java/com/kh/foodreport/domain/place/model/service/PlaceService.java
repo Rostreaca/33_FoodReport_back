@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 
 public interface PlaceService {
@@ -19,5 +20,7 @@ public interface PlaceService {
 	void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images);
 
 	void deletePlace(Long placeNo);
+
+	void saveReply(Long placeNo, PlaceReplyDTO reply);
 
 }
