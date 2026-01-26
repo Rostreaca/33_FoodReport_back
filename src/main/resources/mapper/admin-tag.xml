@@ -54,6 +54,7 @@
 		   SET
 		   	   TAG_TITLE = #{tagTitle}
 		   	 , TAG_CONTENT = #{tagContent}
+		   	 , STATUS = 'Y'
 		   	 , UPDATE_DATE = SYSDATE
 		WHERE
 			  TAG_NO = #{tagNo}
