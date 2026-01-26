@@ -11,7 +11,9 @@ import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.global.common.model.dao.GlobalMapper;
 import com.kh.foodreport.global.common.model.dto.BoardResponse;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.InvalidValueException;
+import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
@@ -92,6 +94,18 @@ public class GlobalServiceImpl implements GlobalService{
 		}
 		
 		return places;
+	}
+
+	@Override
+	public List<TagDTO> findAllTags() {
+		
+		List<TagDTO> tags = globalMapper.findAllTags();
+		
+		if(tags == null || tags.isEmpty()) { // 태그는 반드시 1개 이상 존재
+			throw new InvalidRequestException("태그 조회 중 오류가 발생했습니다.");
+		}
+		
+		return tags;
 	}
 	
 	
