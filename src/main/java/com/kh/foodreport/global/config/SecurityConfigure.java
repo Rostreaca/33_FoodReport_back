@@ -45,10 +45,6 @@ public class SecurityConfigure {
 				.authorizeHttpRequests(requests -> {
 					// 비로그인 허용
 					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
-					requests.requestMatchers(HttpMethod.GET).permitAll();
-					requests.requestMatchers(HttpMethod.POST).permitAll();					
-					requests.requestMatchers(HttpMethod.PUT).permitAll();
-					requests.requestMatchers(HttpMethod.DELETE).permitAll();
 
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST, "api/members/**", "/api/reviews/*/replies", "api/reviews/**","/api/members/images").authenticated();
@@ -67,6 +63,11 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.POST,"/api/places/**").hasAuthority("ROLE_OWNER");
 					requests.requestMatchers(HttpMethod.PUT,"/api/places/**").hasAuthority("ROLE_OWNER");
 					requests.requestMatchers(HttpMethod.DELETE,"/api/places/**").hasAuthority("ROLE_OWNER");
+					
+					requests.requestMatchers(HttpMethod.GET).permitAll();
+					requests.requestMatchers(HttpMethod.POST).permitAll();					
+					requests.requestMatchers(HttpMethod.PUT).permitAll();
+					requests.requestMatchers(HttpMethod.DELETE).permitAll();
 					
 					// 관리자
 					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");

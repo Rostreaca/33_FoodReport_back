@@ -23,4 +23,6 @@ public interface PlaceService {
 
 	void saveReply(Long placeNo, PlaceReplyDTO reply);
 
+	void saveLike(Long placeNo, Long memberNo);
+
 }

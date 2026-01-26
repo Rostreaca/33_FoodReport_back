@@ -368,4 +368,35 @@
 		       )
 	</insert>
 	
+	<select id="countLikeByMember" parameterType="PlaceLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="PlaceLike">
+		INSERT
+		  INTO
+		       FR_PLACE_LIKE
+		       (
+		       MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
+
+	
 </mapper>
