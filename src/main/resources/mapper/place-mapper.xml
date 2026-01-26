@@ -336,4 +336,36 @@
 		   
 	</update>
 	
+	<select id="countByPlaceNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveReply" parameterType="PlaceReply">
+		INSERT
+		  INTO
+		       FR_PLACE_REPLY
+		       (
+		       REPLY_NO
+		     , REPLY_CONTENT
+		     , MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       SEQ_PLACE_REPLY_NO.NEXTVAL
+		     , #{replyContent}
+		     , #{replyWriter}
+		     , #{refPlaceNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
 </mapper>

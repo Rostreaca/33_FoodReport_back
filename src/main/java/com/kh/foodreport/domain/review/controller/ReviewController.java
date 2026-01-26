@@ -90,8 +90,6 @@ public class ReviewController {
 	@PostMapping("/{reviewNo}/replies")
 	public ResponseEntity<ApiResponse<Void>> saveReply(@PathVariable(name = "reviewNo") Long reviewNo, @RequestBody ReviewReplyDTO reply, @AuthenticationPrincipal CustomUserDetails user) {
 		
-		log.info("진입 확인");
-		
 		reply.setReplyWriter(String.valueOf(user.getMemberNo()));
 		
 		reviewService.saveReply(reviewNo ,reply);
