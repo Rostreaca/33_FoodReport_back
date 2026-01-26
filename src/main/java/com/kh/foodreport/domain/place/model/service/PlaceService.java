@@ -25,4 +25,6 @@ public interface PlaceService {
 
 	void saveLike(Long placeNo, Long memberNo);
 
+	void deleteLike(Long placeNo, Long memberNo);
+
 }

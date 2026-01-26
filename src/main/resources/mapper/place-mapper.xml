@@ -397,6 +397,15 @@
 		
 	</insert>
 	
+	<delete id="deleteLike" parameterType="PlaceLike">
+		DELETE
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</delete>
 
 	
 </mapper>

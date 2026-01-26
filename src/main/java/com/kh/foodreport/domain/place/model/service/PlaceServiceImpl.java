@@ -351,5 +351,32 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 		
 	}
+
+	@Override
+	public void deleteLike(Long placeNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+
+		PlaceLike placeLike = PlaceLike.createPlaceLike(placeNo, memberNo);
+		
+		int placeCount = placeMapper.countByPlaceNo(placeNo);
+		
+		if(placeCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = placeMapper.countLikeByMember(placeLike);
+		
+		if(likeCount == 0) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = placeMapper.deleteLike(placeLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 취소에 실패했습니다.");
+		}
+		
+	}
 	
 }
