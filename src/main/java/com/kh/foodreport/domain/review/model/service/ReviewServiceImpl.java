@@ -41,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewMapper reviewMapper;
+	private final ReviewValidator reviewValidator;
 	private final FileService fileService;
 	private final Pagenation pagenation;
 
@@ -97,12 +98,28 @@ public class ReviewServiceImpl implements ReviewService {
 
 		throw new FileUploadException("이미지 업로드 실패");
 	}
+	
+	private void saveTags(Long reviewNo, List<Long> tagNums) {
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("reviewNo", reviewNo);
+		params.put("tagNums", tagNums);
+		
+		int tagResult = reviewMapper.saveTagByReviewNo(params);
+		
+		if(tagResult == 0) {
+			throw new ObjectCreationException("리뷰에 태그를 추가하는 과정에서 문제가 발생했습니다.");
+		}
+
+		
+	}
 
 	@Transactional
 	@Override
 	public void saveReview(ReviewDTO review, List<Long> tagNums,List<MultipartFile> images) {
 		
-		Map<String, Object> params = new HashMap<>();
+		reviewValidator.validateReview(review);
 		
 		// DB에 리뷰 내용 저장 및 resultSet으로 ReviewDTO의 reviewNo 필드에 값 대입
 		int result = reviewMapper.saveReview(review);
@@ -112,13 +129,8 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewCreationException("리뷰 생성에 실패하였습니다.");
 		}
 		
-		params.put("reviewNo", review.getReviewNo());
-		params.put("tagNums", tagNums);
-		
-		int tagResult = reviewMapper.saveTagByReviewNo(params);
-		
-		if(tagResult == 0) {
-			throw new ObjectCreationException("리뷰에 태그를 추가하는 과정에서 문제가 발생했습니다.");
+		if(tagNums != null && !tagNums.isEmpty()) {
+			saveTags(review.getReviewNo(), tagNums);
 		}
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
@@ -146,9 +158,7 @@ public class ReviewServiceImpl implements ReviewService {
 		List<ReviewDTO> reviews = reviewMapper.findAllReviews(params);
 		
 		// 응답 값을 ReviewResponse에 담아 반환
-		ReviewResponse response = new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
-
-		return response;
+		return new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
 	}
 	
 	@Override
@@ -180,7 +190,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images) {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
-
+		reviewValidator.validateReview(review);
+		
 		review.setReviewNo(reviewNo);
 
 		int result = reviewMapper.updateReview(review);

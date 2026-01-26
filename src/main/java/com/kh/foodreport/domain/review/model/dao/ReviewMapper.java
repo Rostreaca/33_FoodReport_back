@@ -53,5 +53,7 @@ public interface ReviewMapper {
 
 	public int saveTagByReviewNo(Map<String, Object> params);
 
+	public int countByReviewNo(Long reviewNo);
+
 	
 }
