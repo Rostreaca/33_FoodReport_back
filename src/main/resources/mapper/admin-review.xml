@@ -34,7 +34,13 @@
 			 	  FROM
 			 	  	   FR_REVIEW_LIKE
 			 	 WHERE
-			 	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 	 	   REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 ,  (SELECT 
+			 		    CHANGE_NAME
+          		   FROM 
+          		        FR_MEMBER_IMAGE
+         		  WHERE 
+         		  		MEMBER_NO = REVIEW.MEMBER_NO) AS profileImage
 		  FROM
 		  	   FR_REVIEW REVIEW
 		  ORDER BY REVIEW_NO DESC
@@ -73,7 +79,13 @@
 			 	  FROM
 			 	  	   FR_REVIEW_LIKE
 			 	 WHERE
-			 	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 	 	   REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 ,  (SELECT 
+			 		    CHANGE_NAME
+          		   FROM 
+          		        FR_MEMBER_IMAGE
+         		  WHERE 
+         		  		MEMBER_NO = REVIEW.MEMBER_NO) AS profileImage
 		  FROM
 		  	   FR_REVIEW REVIEW
 		  WHERE

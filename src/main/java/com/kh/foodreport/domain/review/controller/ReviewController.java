@@ -37,7 +37,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums") List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user){
 		
 		review.setReviewWriter(String.valueOf(user.getMemberNo()));
 		
@@ -63,17 +63,23 @@ public class ReviewController {
 	@GetMapping("/{reviewNo}")
 	public ResponseEntity<ApiResponse<ReviewDTO>> findByReviewNo(@PathVariable(name = "reviewNo" ) Long reviewNo){
 		
-		ReviewDTO response = reviewService.findByReviewNo(reviewNo);
+		ReviewDTO response = reviewService.findReviewByReviewNo(reviewNo);
 		
 		return ApiResponse.ok(response, "상세 조회 성공");
 	}
 	
 	@PutMapping("/{reviewNo}")
-	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo, @ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
+	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo
+														, @ModelAttribute ReviewDTO review
+														, @RequestParam(name = "tagNums", required = false) List<Long> tagNums
+														, @RequestParam(name = "images", required = false) List<MultipartFile> images
+														, @AuthenticationPrincipal CustomUserDetails user){
 		
 		review.setReviewNo(reviewNo);
 		
-		reviewService.updateReview(reviewNo, review, images);
+		review.setReviewWriter(String.valueOf(user.getMemberNo()));
+		
+		reviewService.updateReview(review,tagNums,images);
 		
 		return ApiResponse.ok(null, "리뷰 변경에 성공했습니다.");
 	}

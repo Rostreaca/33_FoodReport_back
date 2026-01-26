@@ -26,6 +26,7 @@ import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
+import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
@@ -41,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewMapper reviewMapper;
+	private final ReviewValidator reviewValidator;
 	private final FileService fileService;
 	private final Pagenation pagenation;
 
@@ -97,12 +99,28 @@ public class ReviewServiceImpl implements ReviewService {
 
 		throw new FileUploadException("이미지 업로드 실패");
 	}
+	
+	private void saveTags(Long reviewNo, List<Long> tagNums) {
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("reviewNo", reviewNo);
+		params.put("tagNums", tagNums);
+		
+		int tagResult = reviewMapper.saveTagByReviewNo(params);
+		
+		if(tagResult == 0) {
+			throw new ObjectCreationException("리뷰에 태그를 추가하는 과정에서 문제가 발생했습니다.");
+		}
+
+		
+	}
 
 	@Transactional
 	@Override
 	public void saveReview(ReviewDTO review, List<Long> tagNums,List<MultipartFile> images) {
 		
-		Map<String, Object> params = new HashMap<>();
+		reviewValidator.validateReview(review);
 		
 		// DB에 리뷰 내용 저장 및 resultSet으로 ReviewDTO의 reviewNo 필드에 값 대입
 		int result = reviewMapper.saveReview(review);
@@ -112,13 +130,8 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewCreationException("리뷰 생성에 실패하였습니다.");
 		}
 		
-		params.put("reviewNo", review.getReviewNo());
-		params.put("tagNums", tagNums);
-		
-		int tagResult = reviewMapper.saveTagByReviewNo(params);
-		
-		if(tagResult == 0) {
-			throw new ObjectCreationException("리뷰에 태그를 추가하는 과정에서 문제가 발생했습니다.");
+		if(tagNums != null && !tagNums.isEmpty()) {
+			saveTags(review.getReviewNo(), tagNums);
 		}
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
@@ -146,27 +159,27 @@ public class ReviewServiceImpl implements ReviewService {
 		List<ReviewDTO> reviews = reviewMapper.findAllReviews(params);
 		
 		// 응답 값을 ReviewResponse에 담아 반환
-		ReviewResponse response = new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
-
-		return response;
+		return new ReviewResponse(reviews, ((PageInfo) params.get("pageInfo")));
 	}
 	
 	@Override
-	public ReviewDTO findByReviewNo(Long reviewNo) {
+	public ReviewDTO findReviewByReviewNo(Long reviewNo) {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 
-		reviewMapper.updateViewCount(reviewNo);
-
 		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
 
-		if (review == null) {
-			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
-		}
-
+		GlobalValidator.checkNull(review, "게시글이 존재하지 않습니다.");
+		
+		reviewMapper.updateViewCount(reviewNo);
+		
+		List<ReviewImageDTO> images = reviewMapper.findImagesByReviewNo(reviewNo);
+		
 		List<ReviewReplyDTO> reviewReplies = reviewMapper.findRepliesByReviewNo(reviewNo);
 		
 		List<TagDTO> tags = reviewMapper.findTagByReviewNo(reviewNo);
+		
+		review.setReviewImages(images);
 		
 		review.setReviewReplies(reviewReplies);
 		
@@ -177,11 +190,10 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images) {
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images) {
 
-		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
-
-		review.setReviewNo(reviewNo);
+		GlobalValidator.validateNo(review.getReviewNo(), "유효하지 않은 게시글 번호입니다.");
+		reviewValidator.validateReview(review);
 
 		int result = reviewMapper.updateReview(review);
 
@@ -189,23 +201,44 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewCreationException("리뷰 내용 수정에 실패했습니다");
 		}
 
-		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
+		if(images != null && !images.isEmpty()) {
+			updateImages(review.getReviewNo(), images);
+		}
 
-		if (reviewImages == null || reviewImages.isEmpty()) { // 기존 이미지 X
-			if (images != null && !images.isEmpty()) {
-				saveImages(reviewNo, images);
-			}
-		} else { // 기존 이미지 O
-			if (images != null && !images.isEmpty()) { // 새 파일 저장
-				saveImages(reviewNo, images);
-			}
+		if(tagNums != null && !tagNums.isEmpty()) {
+			updateTags(review.getReviewNo(), tagNums);
+		}
+
+	}
+	
+	private void updateTags(Long reviewNo, List<Long> tagNums) {
+		deleteTags(reviewNo);
+		
+		saveTags(reviewNo, tagNums);
+	}
+	
+	private void deleteTags(Long reviewNo) {
+		int result = reviewMapper.deleteTags(reviewNo);
+		
+		if(result == 0) {
+			throw new TagDeleteException("태그 처리 과정 중 문제가 발생했습니다.");
+		}
+	}
+	
+	
+	private void updateImages(Long reviewNo, List<MultipartFile> images) {
+		
+		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
+		
+		if (reviewImages != null && !reviewImages.isEmpty()) { // 기존 이미지 X
 
 			reviewImages.forEach(image -> { // 반복
 				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
 			});
-
 		}
-
+		
+		saveImages(reviewNo, images);
+		
 	}
 
 	// 이미지 삭제 메소드
@@ -229,23 +262,21 @@ public class ReviewServiceImpl implements ReviewService {
 
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
-		ReviewDTO review = reviewMapper.findReviewByReviewNo(reviewNo);
+		int result = reviewMapper.deleteReview(reviewNo);
 		
-		if(review == null) {
-			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");
-		}
-		
-		int reviewResult = reviewMapper.deleteReview(reviewNo);
-		
-		if(reviewResult == 0) {
+		if(result == 0) {
 			throw new BoardDeleteException("리뷰 삭제에 실패했습니다.");
 		}
 
+		List<ReviewImageDTO> images = reviewMapper.findImagesByReviewNo(reviewNo);
+		
 		// 리뷰 삭제 성공 시 리뷰에 담겨있는 이미지 전부 같이 삭제 (S3로 삭제하므로 개별 삭제)
-		if (review.getReviewImages() != null && !review.getReviewImages().isEmpty()) {
-			review.getReviewImages().forEach(image -> {
+		if (images!= null && !images.isEmpty()) {
+			
+			images.forEach(image -> {
 				deleteImage(image); // 이미지 삭제 메소드 호출
 			});
+			
 		}
 		
 	}
@@ -253,7 +284,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void saveReply(Long reviewNo, ReviewReplyDTO reply) {
 		
-		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
+		reviewValidator.validateReply(reviewNo,reply);
 		
 		ReviewReply replyVO = ReviewReply.builder()
 											  .replyContent(reply.getReplyContent())
@@ -277,6 +308,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
 		
+		int reviewCount = reviewMapper.countByReviewNo(reviewNo);
+		
+		if(reviewCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
 		// Postman 등으로 좋아요를 여러번 요청했을 경우 예외 발생용 코드
 		int likeCount = reviewMapper.countLikeByMember(reviewLike);
 		
@@ -298,6 +335,12 @@ public class ReviewServiceImpl implements ReviewService {
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
 		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
+		
+		int reviewCount = reviewMapper.countByReviewNo(reviewNo);
+		
+		if(reviewCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
 		
 		int likeCount = reviewMapper.countLikeByMember(reviewLike);
 		

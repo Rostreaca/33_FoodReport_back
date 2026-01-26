@@ -56,7 +56,7 @@ public class AdminTagController {
 	
 	@DeleteMapping("/{tagNo}")
 	public ResponseEntity<ApiResponse<Void>> deleteTag(@PathVariable(name="tagNo")Long tagNo) {
-	
+		
 		tagService.deleteTag(tagNo);
 		
 		return ApiResponse.noContent();

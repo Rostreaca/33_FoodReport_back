@@ -15,9 +15,9 @@ public interface ReviewService {
 
 	public ReviewResponse findAllReviews(int page, Map<String, Object> params);
 
-	public ReviewDTO findByReviewNo(Long reviewNo);
+	public ReviewDTO findReviewByReviewNo(Long reviewNo);
 
-	public void updateReview(Long reviewNo, ReviewDTO review, List<MultipartFile> images);
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images);
 
 	public void deleteReview(Long reviewNo);
 

@@ -67,6 +67,11 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.PUT,"/api/places/**").hasAuthority("ROLE_OWNER");
 					requests.requestMatchers(HttpMethod.DELETE,"/api/places/**").hasAuthority("ROLE_OWNER");
 					
+					requests.requestMatchers(HttpMethod.GET).permitAll();
+					requests.requestMatchers(HttpMethod.POST).permitAll();					
+					requests.requestMatchers(HttpMethod.PUT).permitAll();
+					requests.requestMatchers(HttpMethod.DELETE).permitAll();
+					
 					// 관리자
 					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 				})

@@ -216,6 +216,12 @@
 			 , PLACE_CONTENT placeContent
 			 , NICKNAME placeWriter
 			 , VIEW_COUNT viewCount
+			 , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
 			 , PLACE.CREATE_DATE createDate
 		  FROM
 		       FR_PLACE PLACE
@@ -260,7 +266,7 @@
 		       PLACE_NO = #{placeNo}
 		 ORDER
 		    BY
-		       TAG_NO ASC
+		       TAG_TITLE ASC
 	</select>
 	
 	<select id="findRepliesByPlaceNo" resultType="PlaceReplyDTO" parameterType="long">
@@ -299,6 +305,8 @@
 		       STATUS = 'Y'
 		   AND
 		       PLACE_NO = #{placeNo}
+		   AND
+		       MEMBER_NO = #{placeWriter}
 		
 	</update>
 	
@@ -367,5 +375,45 @@
 		     , SYSDATE
 		       )
 	</insert>
+	
+	<select id="countLikeByMember" parameterType="PlaceLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="PlaceLike">
+		INSERT
+		  INTO
+		       FR_PLACE_LIKE
+		       (
+		       MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
+	<delete id="deleteLike" parameterType="PlaceLike">
+		DELETE
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</delete>
+
 	
 </mapper>

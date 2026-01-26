@@ -15,13 +15,15 @@ import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
+import com.kh.foodreport.domain.place.model.vo.PlaceLike;
 import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.global.exception.BoardCreationException;
 import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardLikeFailedException;
 import com.kh.foodreport.global.exception.BoardUpdateException;
 import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
-import com.kh.foodreport.global.exception.InvalidValueException;
+import com.kh.foodreport.global.exception.InvalidRequestException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
 import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyCreationException;
@@ -42,6 +44,7 @@ public class PlaceServiceImpl implements PlaceService{
 	
 	private final FileService fileService;
 	private final PlaceMapper placeMapper;
+	private final PlaceValidator placeValiator;
 	private final Pagenation pagenation;
 	
 	@Override
@@ -59,20 +62,13 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		return new PlaceResponse(places, ((PageInfo) params.get("pageInfo")));
 	}
-
-	private void validatePlace(PlaceDTO place) {
-		
-		GlobalValidator.checkNull(place, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
-		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 제목은 비어있을 수 없습니다.");
-		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");	
-	}
 	
 	
 	@Transactional
 	@Override
 	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
-		validatePlace(place);
+		placeValiator.validatePlace(place);
 		
 		int result = placeMapper.savePlace(place);
 
@@ -193,7 +189,7 @@ public class PlaceServiceImpl implements PlaceService{
 	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
-		validatePlace(place);
+		placeValiator.validatePlace(place);
 		
 		int result = placeMapper.updatePlace(place);
 		
@@ -203,7 +199,7 @@ public class PlaceServiceImpl implements PlaceService{
 
 		// 이미지가 존재하면 이미지 update
 		if(images != null && !images.isEmpty()) {
-			updateImage(place.getPlaceNo(), images);
+			updateImages(place.getPlaceNo(), images);
 		}
 		
 		// 태그가 존재하면 태그 update
@@ -214,7 +210,7 @@ public class PlaceServiceImpl implements PlaceService{
 		
 	}
 	
-	private void updateImage(Long placeNo, List<MultipartFile> images) {
+	private void updateImages(Long placeNo, List<MultipartFile> images) {
 		
 		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
 		
@@ -287,27 +283,11 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 		
 	}
-
-	private void validateReply(Long placeNo, PlaceReplyDTO reply) {
-
-		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
-		
-		int count = placeMapper.countByPlaceNo(placeNo);
-		
-		if(count == 0) {
-			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
-		}
-		
-		GlobalValidator.checkNull(reply, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
-		
-		GlobalValidator.checkBlank(reply.getReplyContent(), "댓글 내용은 비어있을 수 없습니다.");
-		
-	}
 	
 	@Override
 	public void saveReply(Long placeNo, PlaceReplyDTO reply) {
 		
-		validateReply(placeNo, reply);
+		placeValiator.validateReply(placeNo, reply);
 		
 		PlaceReply replyVO = PlaceReply.builder()
 									   .replyContent(reply.getReplyContent())
@@ -319,6 +299,60 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		if(result == 0) {
 			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
+		}
+		
+	}
+
+	@Override
+	public void saveLike(Long placeNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+
+		PlaceLike placeLike = PlaceLike.createPlaceLike(placeNo, memberNo);
+		
+		int placeCount = placeMapper.countByPlaceNo(placeNo);
+		
+		if(placeCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = placeMapper.countLikeByMember(placeLike);
+		
+		if(likeCount == 1) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = placeMapper.saveLike(placeLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 등록에 실패했습니다.");
+		}
+		
+	}
+
+	@Override
+	public void deleteLike(Long placeNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+
+		PlaceLike placeLike = PlaceLike.createPlaceLike(placeNo, memberNo);
+		
+		int placeCount = placeMapper.countByPlaceNo(placeNo);
+		
+		if(placeCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = placeMapper.countLikeByMember(placeLike);
+		
+		if(likeCount == 0) {
+			throw new InvalidRequestException("유효하지 않은 요청입니다.");
+		}
+		
+		int result = placeMapper.deleteLike(placeLike);
+		
+		if(result == 0) {
+			throw new BoardLikeFailedException("좋아요 취소에 실패했습니다.");
 		}
 		
 	}

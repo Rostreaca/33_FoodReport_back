@@ -33,7 +33,13 @@
 			 	  FROM
 			 	  	   FR_PlACE_LIKE
 			 	 WHERE
-			 	 	   PlACE_NO = FR_PlACE_LIKE.PlACE_NO) AS LIKES
+			 	 	   PLACE.PlACE_NO = FR_PlACE_LIKE.PlACE_NO) AS LIKES
+ 			 , (SELECT
+			 		   CHANGE_NAME
+			 	  FROM
+			 	  	   FR_MEMBER_IMAGE
+			 	 WHERE
+			 	 	   MEMBER_NO = PLACE.MEMBER_NO) AS profileImage
 		  FROM
 		  	   FR_PlACE PlACE
 		  ORDER BY PlACE_NO DESC
@@ -72,7 +78,13 @@
 			  	  FROM
 			  	  	   FR_PLACE_LIKE
 			  	 WHERE
-			  	 	   PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+			  	 	   PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+			 , (SELECT
+			 		   CHANGE_NAME
+			 	  FROM
+			 	  	   FR_MEMBER_IMAGE
+			 	 WHERE
+			 	 	   MEMBER_NO = PLACE.MEMBER_NO) AS profileImage
 		  FROM 
 		       FR_PLACE PLACE
 		 WHERE

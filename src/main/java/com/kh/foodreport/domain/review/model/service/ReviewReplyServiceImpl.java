@@ -21,11 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewReplyServiceImpl implements ReviewReplyService{
 
 	private final ReviewReplyMapper reviewReplyMapper;
+	private final ReviewValidator reviewValidator;
 	
 	@Override
 	public void updateReply(Long replyNo, ReviewReplyDTO reviewReply, Long memberNo) {
 		
 		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		reviewValidator.validateReply(reviewReply);
 		
 		reviewReply.setReplyNo(replyNo);
 		
@@ -60,15 +63,21 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 		
 		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
 		
-		ReviewReplyLike reviewReply = ReviewReplyLike.createReviewLike(replyNo, memberNo);
+		ReviewReplyLike reviewReplyLike = ReviewReplyLike.createReviewReplyLike(replyNo, memberNo);
 		
-		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReply);
+		int replyCount = reviewReplyMapper.countByReplyNo(replyNo);
+		
+		if(replyCount == 0) {
+			throw new InvalidRequestException("댓글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReplyLike);
 		
 		if(likeCount == 1 ) {
 			throw new InvalidRequestException("유효하지 않은 요청입니다.");
 		}
 		
-		int result = reviewReplyMapper.saveReplyLike(reviewReply);
+		int result = reviewReplyMapper.saveReplyLike(reviewReplyLike);
 		
 		if(result == 0) {
 			throw new ReplyLikeFailedException("좋아요 등록에 실패했습니다.");
@@ -81,15 +90,21 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 		
 		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
 		
-		ReviewReplyLike reviewReply = ReviewReplyLike.createReviewLike(replyNo, memberNo);
+		ReviewReplyLike reviewReplyLike = ReviewReplyLike.createReviewReplyLike(replyNo, memberNo);
 		
-		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReply);
+		int replyCount = reviewReplyMapper.countByReplyNo(replyNo);
+		
+		if(replyCount == 0) {
+			throw new InvalidRequestException("댓글이 존재하지 않습니다.");
+		}
+		
+		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReplyLike);
 		
 		if(likeCount == 0) {
 			throw new InvalidRequestException("유효하지 않은 요청입니다.");
 		}
 		
-		int result = reviewReplyMapper.deleteReplyLike(reviewReply);
+		int result = reviewReplyMapper.deleteReplyLike(reviewReplyLike);
 		
 		if(result == 0) {
 			throw new ReplyLikeFailedException("좋아요 취소에 실패했습니다.");

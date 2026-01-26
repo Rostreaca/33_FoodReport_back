@@ -23,5 +23,6 @@ public class AdminReviewDTO {
 	private String deleteDate;
 	private String nickname;
 	private int likes; 
+	private String profileImage;
 	
 }
