@@ -171,5 +171,19 @@
 		
 	</select>
 	
+	<select id="findAllTags" resultType="TagDTO">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		 WHERE
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
+	</select>
+	
 	
 </mapper>
