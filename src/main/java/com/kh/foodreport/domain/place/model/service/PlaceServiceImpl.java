@@ -44,6 +44,7 @@ public class PlaceServiceImpl implements PlaceService{
 	
 	private final FileService fileService;
 	private final PlaceMapper placeMapper;
+	private final PlaceValidator placeValiator;
 	private final Pagenation pagenation;
 	
 	@Override
@@ -61,20 +62,13 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		return new PlaceResponse(places, ((PageInfo) params.get("pageInfo")));
 	}
-
-	private void validatePlace(PlaceDTO place) {
-		
-		GlobalValidator.checkNull(place, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
-		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 제목은 비어있을 수 없습니다.");
-		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");	
-	}
 	
 	
 	@Transactional
 	@Override
 	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
-		validatePlace(place);
+		placeValiator.validatePlace(place);
 		
 		int result = placeMapper.savePlace(place);
 
@@ -195,7 +189,7 @@ public class PlaceServiceImpl implements PlaceService{
 	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
-		validatePlace(place);
+		placeValiator.validatePlace(place);
 		
 		int result = placeMapper.updatePlace(place);
 		
@@ -289,27 +283,11 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 		
 	}
-
-	private void validateReply(Long placeNo, PlaceReplyDTO reply) {
-
-		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
-		
-		int count = placeMapper.countByPlaceNo(placeNo);
-		
-		if(count == 0) {
-			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
-		}
-		
-		GlobalValidator.checkNull(reply, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
-		
-		GlobalValidator.checkBlank(reply.getReplyContent(), "댓글 내용은 비어있을 수 없습니다.");
-		
-	}
 	
 	@Override
 	public void saveReply(Long placeNo, PlaceReplyDTO reply) {
 		
-		validateReply(placeNo, reply);
+		placeValiator.validateReply(placeNo, reply);
 		
 		PlaceReply replyVO = PlaceReply.builder()
 									   .replyContent(reply.getReplyContent())
