@@ -284,7 +284,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void saveReply(Long reviewNo, ReviewReplyDTO reply) {
 		
-		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
+		reviewValidator.validateReply(reviewNo,reply);
 		
 		ReviewReply replyVO = ReviewReply.builder()
 											  .replyContent(reply.getReplyContent())
