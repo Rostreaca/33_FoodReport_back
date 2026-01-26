@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.service.PlaceService;
 import com.kh.foodreport.global.common.ApiResponse;
@@ -93,6 +95,17 @@ public class PlaceController {
 		placeService.deletePlace(placeNo);
 		
 		return ApiResponse.ok(null, "맛집 게시글 삭제에 성공했습니다.");
+	}
+	
+	@PostMapping("/{placeNo}/replies")
+	public ResponseEntity<ApiResponse<Void>> saveReply(@PathVariable(name = "placeNo") Long placeNo, @RequestBody PlaceReplyDTO reply, @AuthenticationPrincipal CustomUserDetails user){
+		
+		reply.setReplyWriter(String.valueOf(user.getMemberNo()));
+		
+		placeService.saveReply(placeNo, reply);
+		
+		return ApiResponse.created("댓글 작성에 성공했습니다.");
+		
 	}
 	
 }
