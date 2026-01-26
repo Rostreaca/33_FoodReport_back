@@ -24,5 +24,6 @@ public class AdminPlaceDTO {
 	private Date updateDate;
 	private Date deleteDate;
 	private String nickname;
+	private String profileImage;
 	
 }
