@@ -45,7 +45,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 		
 		int listCount = tagMapper.countByTags(); // 토탈 카운트 세어줌.
 		
-		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 10);
+		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 30);
 		
 		List<TagDTO> tags = tagMapper.findAllTag(pages);
 		
@@ -76,7 +76,7 @@ public class AdminTagServiceImpl implements AdminTagService {
 		
 		GlobalValidator.validateNo(tagNo, "일치하는 번호가 없습니다.");
 		
-		Tag tag = Tag.createTag(tagNo, null, null);
+		Tag tag = Tag.deleteTag(tagNo);
 		
 		int result = tagMapper.deleteTag(tag);
 		
