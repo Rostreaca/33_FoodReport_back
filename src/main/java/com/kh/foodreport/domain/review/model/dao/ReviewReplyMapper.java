@@ -19,4 +19,6 @@ public interface ReviewReplyMapper {
 
 	int deleteReplyLike(ReviewReplyLike reviewReplyLike);
 
+	int countByReplyNo(Long replyNo);
+
 }

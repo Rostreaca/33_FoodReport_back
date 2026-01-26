@@ -71,5 +71,15 @@
 		       MEMBER_NO = #{memberNo}
 	</delete>
 	
+		<select id="countByReplyNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_REPLY
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+	</select>
 	
 </mapper>

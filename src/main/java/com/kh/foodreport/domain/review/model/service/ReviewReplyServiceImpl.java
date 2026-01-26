@@ -62,6 +62,12 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 		
 		ReviewReplyLike reviewReplyLike = ReviewReplyLike.createReviewReplyLike(replyNo, memberNo);
 		
+		int replyCount = reviewReplyMapper.countByReplyNo(replyNo);
+		
+		if(replyCount == 0) {
+			throw new InvalidRequestException("댓글이 존재하지 않습니다.");
+		}
+		
 		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReplyLike);
 		
 		if(likeCount == 1 ) {
@@ -82,6 +88,12 @@ public class ReviewReplyServiceImpl implements ReviewReplyService{
 		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
 		
 		ReviewReplyLike reviewReplyLike = ReviewReplyLike.createReviewReplyLike(replyNo, memberNo);
+		
+		int replyCount = reviewReplyMapper.countByReplyNo(replyNo);
+		
+		if(replyCount == 0) {
+			throw new InvalidRequestException("댓글이 존재하지 않습니다.");
+		}
 		
 		int likeCount = reviewReplyMapper.countReplyLikeByMember(reviewReplyLike);
 		

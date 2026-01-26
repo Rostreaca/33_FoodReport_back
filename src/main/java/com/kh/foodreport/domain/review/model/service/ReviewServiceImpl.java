@@ -308,6 +308,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
 		
+		int reviewCount = reviewMapper.countByReviewNo(reviewNo);
+		
+		if(reviewCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
 		// Postman 등으로 좋아요를 여러번 요청했을 경우 예외 발생용 코드
 		int likeCount = reviewMapper.countLikeByMember(reviewLike);
 		
@@ -329,6 +335,12 @@ public class ReviewServiceImpl implements ReviewService {
 		GlobalValidator.validateNo(reviewNo, "유효하지 않은 게시글 번호입니다.");
 		
 		ReviewLike reviewLike = ReviewLike.createReviewLike(reviewNo, memberNo);
+		
+		int reviewCount = reviewMapper.countByReviewNo(reviewNo);
+		
+		if(reviewCount == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
 		
 		int likeCount = reviewMapper.countLikeByMember(reviewLike);
 		
