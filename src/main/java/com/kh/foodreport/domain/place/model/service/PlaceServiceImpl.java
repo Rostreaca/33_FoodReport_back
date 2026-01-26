@@ -199,7 +199,7 @@ public class PlaceServiceImpl implements PlaceService{
 
 		// 이미지가 존재하면 이미지 update
 		if(images != null && !images.isEmpty()) {
-			updateImage(place.getPlaceNo(), images);
+			updateImages(place.getPlaceNo(), images);
 		}
 		
 		// 태그가 존재하면 태그 update
@@ -210,7 +210,7 @@ public class PlaceServiceImpl implements PlaceService{
 		
 	}
 	
-	private void updateImage(Long placeNo, List<MultipartFile> images) {
+	private void updateImages(Long placeNo, List<MultipartFile> images) {
 		
 		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
 		

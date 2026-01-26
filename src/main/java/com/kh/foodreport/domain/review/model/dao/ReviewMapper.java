@@ -55,5 +55,7 @@ public interface ReviewMapper {
 
 	public int countByReviewNo(Long reviewNo);
 
+	public int deleteTags(Long reviewNo);
+
 	
 }

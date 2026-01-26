@@ -69,11 +69,17 @@ public class ReviewController {
 	}
 	
 	@PutMapping("/{reviewNo}")
-	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo, @ModelAttribute ReviewDTO review, @RequestParam(name = "images", required = false) List<MultipartFile> images){
+	public ResponseEntity<ApiResponse<Void>> updateReview(@PathVariable(name = "reviewNo") Long reviewNo
+														, @ModelAttribute ReviewDTO review
+														, @RequestParam(name = "tagNums", required = false) List<Long> tagNums
+														, @RequestParam(name = "images", required = false) List<MultipartFile> images
+														, @AuthenticationPrincipal CustomUserDetails user){
 		
 		review.setReviewNo(reviewNo);
 		
-		reviewService.updateReview(reviewNo, review, images);
+		review.setReviewWriter(String.valueOf(user.getMemberNo()));
+		
+		reviewService.updateReview(review,tagNums,images);
 		
 		return ApiResponse.ok(null, "리뷰 변경에 성공했습니다.");
 	}

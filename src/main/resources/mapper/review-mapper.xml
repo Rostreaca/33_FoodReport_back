@@ -300,6 +300,8 @@
 		       REVIEW_NO = #{reviewNo}
 		   AND
 		       STATUS = 'Y'
+		   AND
+		       MEMBER_NO = #{reviewWriter}
 		
 	</update>
 	
@@ -341,6 +343,14 @@
 		       REVIEW_NO = #{reviewNo}
 		
 	</update>
+	
+	<delete id="deleteTags" parameterType="long">
+		DELETE
+		  FROM
+		       FR_REVIEW_TAG
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+    </delete>
 	
 	<update id="deleteReplies" parameterType="long">
 		UPDATE
