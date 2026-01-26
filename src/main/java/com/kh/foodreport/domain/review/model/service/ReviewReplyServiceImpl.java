@@ -21,11 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewReplyServiceImpl implements ReviewReplyService{
 
 	private final ReviewReplyMapper reviewReplyMapper;
+	private final ReviewValidator reviewValidator;
 	
 	@Override
 	public void updateReply(Long replyNo, ReviewReplyDTO reviewReply, Long memberNo) {
 		
 		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		reviewValidator.validateReply(reviewReply);
 		
 		reviewReply.setReplyNo(replyNo);
 		
