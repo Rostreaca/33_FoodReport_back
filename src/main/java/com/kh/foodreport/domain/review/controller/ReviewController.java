@@ -37,7 +37,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums") List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user){
 		
 		review.setReviewWriter(String.valueOf(user.getMemberNo()));
 		
