@@ -39,6 +39,10 @@ public class Tag{
 					.build();
 	}
 	
+	public static Tag deleteTag(Long tagNo) {
+		return Tag.builder().tagNo(tagNo).build();
+	}
+	
 	private static void validateTrim(String tagTitle, String tagContent) {
 		if(tagTitle == null || tagTitle.trim().length() <= 0) {
 			throw new InvalidKeywordException("빈 문자열은 넣을 수 없습니다.");
