@@ -2,6 +2,7 @@ package com.kh.foodreport.domain.place.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,4 +35,11 @@ public class PlaceReplyController {
 		return ApiResponse.ok(null, "댓글 수정에 성공하셨습니다.");
 	}
 	
+	@DeleteMapping("/{replyNo}")
+	public ResponseEntity<ApiResponse<Void>> deleteReply(@PathVariable(name="replyNo") Long replyNo, @AuthenticationPrincipal CustomUserDetails user){
+		
+		placeReplyService.deleteReply(replyNo, user.getMemberNo());
+		
+		return ApiResponse.ok(null, "댓글 삭제에 성공하셨습니다.");
+	}
 }
