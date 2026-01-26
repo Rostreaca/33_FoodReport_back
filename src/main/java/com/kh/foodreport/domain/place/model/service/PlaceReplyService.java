@@ -6,4 +6,6 @@ public interface PlaceReplyService {
 
 	void updateReply(Long replyNo, PlaceReplyDTO placeReply, Long memberNo);
 
+	void deleteReply(Long replyNo, Long memberNo);
+
 }

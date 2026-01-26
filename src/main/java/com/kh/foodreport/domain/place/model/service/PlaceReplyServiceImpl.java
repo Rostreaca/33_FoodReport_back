@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.place.model.dao.PlaceReplyMapper;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
+import com.kh.foodreport.domain.place.model.vo.PlaceReply;
+import com.kh.foodreport.global.exception.ReplyDeleteException;
 import com.kh.foodreport.global.exception.ReplyUpdateException;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
@@ -35,6 +37,22 @@ public class PlaceReplyServiceImpl implements PlaceReplyService{
 		if(result == 0) {
 			throw new ReplyUpdateException("댓글 수정에 실패했습니다.");
 		}
+	}
+
+
+	@Override
+	public void deleteReply(Long replyNo, Long memberNo) {
+		
+		GlobalValidator.validateNo(replyNo, "존재하지 않는 댓글입니다.");
+		
+		PlaceReply placeReply = PlaceReply.builder().replyNo(replyNo).replyWriter(String.valueOf(memberNo)).build();
+		
+		int result = placeReplyMapper.deleteReply(placeReply);
+		
+		if(result == 0) {
+			throw new ReplyDeleteException("댓글 삭제에 실패했습니다.");
+		}
+		
 	}
 	
 }
