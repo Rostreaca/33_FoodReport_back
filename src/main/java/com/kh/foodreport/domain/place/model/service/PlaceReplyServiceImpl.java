@@ -7,8 +7,6 @@ import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.domain.place.model.vo.PlaceReplyLike;
 import com.kh.foodreport.global.exception.InvalidRequestException;
-import com.kh.foodreport.global.exception.InvalidValueException;
-import com.kh.foodreport.global.exception.PageNotFoundException;
 import com.kh.foodreport.global.exception.ReplyDeleteException;
 import com.kh.foodreport.global.exception.ReplyLikeFailedException;
 import com.kh.foodreport.global.exception.ReplyUpdateException;

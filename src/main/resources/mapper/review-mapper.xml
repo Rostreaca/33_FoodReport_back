@@ -218,10 +218,10 @@
 	
 	<select id="findReviewByReviewNo" resultMap="findReviewByReviewNo" parameterType="long">
 		SELECT
-			   REVIEW.REVIEW_NO reviewNo
+			   REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
-		     , MEMBER.NICKNAME reviewWriter
+		     , NICKNAME reviewWriter
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -230,24 +230,14 @@
 		         WHERE
 		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE reviewCreateDate
-		     , IMAGE_NO imageNo
-		     , IMG.CHANGE_NAME changeName
-		     , IMG.CREATE_DATE imageCreateDate
-		     , IMG.STATUS imageStatus
 		  FROM
 		       FR_REVIEW REVIEW
 		  JOIN
-		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
-		  LEFT
-		  JOIN
-		       FR_REVIEW_IMAGE IMG ON (IMG.REVIEW_NO = REVIEW.REVIEW_NO AND IMG.STATUS = 'Y')
+		       FR_MEMBER USING (MEMBER_NO)
 		 WHERE
 		       REVIEW.STATUS = 'Y'
 		   AND
 		       REVIEW.REVIEW_NO = #{reviewNo}
-		 ORDER
-		    BY
-		       IMG.IMAGE_LEVEL ASC,IMG.CREATE_DATE ASC
 		       
 	</select>
 	
@@ -265,6 +255,9 @@
 		       REVIEW_NO = #{reviewNo}
 		   AND
 		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
 	</select>
 	
 	<select id="findRepliesByReviewNo" parameterType="long" resultType="ReviewReplyDTO">
@@ -287,6 +280,9 @@
 		       REPLY.STATUS = 'Y'
 		   AND
 		       REVIEW_NO = #{reviewNo}
+		 ORDER
+		    BY
+		       REPLY.CREATE_DATE DESC
 	</select>
 	
 	<update id="updateReview" parameterType="ReviewDTO">
@@ -310,12 +306,16 @@
 		       IMAGE_NO imageNo
 		     , ORIGIN_NAME originName
 		     , CHANGE_NAME changeName
+		     , IMAGE_LEVEL imageLevel
 		  FROM
 		       FR_REVIEW_IMAGE
 		 WHERE
 		       REVIEW_NO = #{reviewNo}
 		   AND
 		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       IMAGE_LEVEL ASC, CREATE_DATE DESC
 	</select>
 	
 	<update id="deleteImage" parameterType="long">
