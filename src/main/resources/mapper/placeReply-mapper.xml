@@ -33,5 +33,32 @@
 		
 	</update>
 	
+		<select id="countReplyLikeByMember" parameterType="PlaceReplyLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_REPLY_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REPLY_NO = #{replyNo}
+	</select>
+	
+	<insert id="saveReplyLike" parameterType="PlaceReplyLike">
+		INSERT
+		  INTO
+		       FR_PLACE_REPLY_LIKE
+		       (
+		       REPLY_NO
+		     , MEMBER_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{replyNo}
+		     , #{memberNo}
+		     , SYSDATE
+		       )
+	</insert>
 	
 </mapper>
