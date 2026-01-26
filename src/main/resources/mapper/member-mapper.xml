@@ -320,6 +320,21 @@
 		       )
 	</insert>
 	
+	<!-- 좋아요 수 -->
+	<select id="countLikes" 
+			parameterType="ReviewLike" 
+			resultType="int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+
 	
 	
 			   

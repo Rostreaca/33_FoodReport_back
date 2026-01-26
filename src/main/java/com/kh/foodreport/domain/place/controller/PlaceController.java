@@ -6,10 +6,13 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.service.PlaceService;
 import com.kh.foodreport.global.common.ApiResponse;
@@ -49,7 +53,7 @@ public class PlaceController {
 	
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> savePlace(@ModelAttribute PlaceDTO place
-													 , @RequestParam(name = "tagNums") List<Long> tagNums
+													 , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 													 , @RequestParam(name="images", required = false) List<MultipartFile> images
 													 , @AuthenticationPrincipal CustomUserDetails user){
 		
@@ -66,6 +70,42 @@ public class PlaceController {
 		PlaceDTO place = placeService.findPlaceByPlaceNo(placeNo);
 		
 		return ApiResponse.ok(place, "상세 조회에 성공했습니다.");
+	}
+	
+	@PutMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<Void>> updatePlace(@PathVariable(name = "placeNo") Long placeNo
+													   , @ModelAttribute PlaceDTO place
+													   , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
+													   , @RequestParam(name = "images", required = false) List<MultipartFile> images
+													   , @AuthenticationPrincipal CustomUserDetails user){
+		
+		place.setPlaceNo(placeNo);
+		
+		place.setPlaceWriter(String.valueOf(user.getMemberNo()));
+		
+		placeService.updatePlace(place, tagNums, images);
+		
+		return ApiResponse.ok(null, "맛집 게시글 수정에 성공했습니다.");
+		
+	}
+	
+	@DeleteMapping("/{placeNo}")
+	public ResponseEntity<ApiResponse<Void>> deletePlace(@PathVariable(name = "placeNo") Long placeNo){
+		
+		placeService.deletePlace(placeNo);
+		
+		return ApiResponse.ok(null, "맛집 게시글 삭제에 성공했습니다.");
+	}
+	
+	@PostMapping("/{placeNo}/replies")
+	public ResponseEntity<ApiResponse<Void>> saveReply(@PathVariable(name = "placeNo") Long placeNo, @RequestBody PlaceReplyDTO reply, @AuthenticationPrincipal CustomUserDetails user){
+		
+		reply.setReplyWriter(String.valueOf(user.getMemberNo()));
+		
+		placeService.saveReply(placeNo, reply);
+		
+		return ApiResponse.created("댓글 작성에 성공했습니다.");
+		
 	}
 	
 }

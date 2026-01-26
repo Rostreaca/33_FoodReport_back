@@ -252,5 +252,20 @@ public class MemberServiceImpl implements MemberService {
 			throw new SavePlaceFailedException("사장님 등록에 실패했습니다.");
 		}
 	}
+	
+	@Override
+	public void findAllLikes(int page, Long memberNo) {
+		
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
+		// 페이징 처리용
+		int listCount = memberMapper.countByLikes(memberNo);
+		
+		pagenation.getPageRequest(listCount, page, 10);
+		
+		return;
+		
+		
+		
+	}
 
 }

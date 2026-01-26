@@ -15,9 +15,17 @@ import com.kh.foodreport.domain.place.model.dto.PlaceImageDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceReplyDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.place.model.vo.PlaceImage;
+import com.kh.foodreport.domain.place.model.vo.PlaceReply;
 import com.kh.foodreport.global.exception.BoardCreationException;
+import com.kh.foodreport.global.exception.BoardDeleteException;
+import com.kh.foodreport.global.exception.BoardUpdateException;
+import com.kh.foodreport.global.exception.FileDeleteException;
 import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.exception.ObjectCreationException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.exception.ReplyCreationException;
+import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
@@ -56,8 +64,9 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		GlobalValidator.checkNull(place, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
 		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 제목은 비어있을 수 없습니다.");
-		GlobalValidator.checkBlank(place.getPlaceTitle(),"게시글 내용은 비어있을 수 없습니다.");		
+		GlobalValidator.checkBlank(place.getPlaceContent(),"게시글 내용은 비어있을 수 없습니다.");	
 	}
+	
 	
 	@Transactional
 	@Override
@@ -71,7 +80,9 @@ public class PlaceServiceImpl implements PlaceService{
 			throw new BoardCreationException("맛집 게시글 작성에 실패하였습니다.");
 		}
 		
-		saveTags(place, tagNums);
+		if(tagNums != null && !tagNums.isEmpty()) {
+			saveTags(place.getPlaceNo(), tagNums);			
+		}
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
 		if (images != null && !images.isEmpty()) {
@@ -80,11 +91,11 @@ public class PlaceServiceImpl implements PlaceService{
 		
 	}
 	
-	private void saveTags(PlaceDTO place, List<Long> tagNums) {
+	private void saveTags(Long placeNo, List<Long> tagNums) {
 
 		Map<String, Object> params = new HashMap<>();
 		
-		params.put("placeNo", place.getPlaceNo());
+		params.put("placeNo", placeNo);
 		params.put("tagNums", tagNums);
 		
 		int tagResult = placeMapper.saveTagsByPlaceNo(params);
@@ -176,5 +187,140 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		return place;
 	}
+	
+	@Transactional
+	@Override
+	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
+		
+		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
+		validatePlace(place);
+		
+		int result = placeMapper.updatePlace(place);
+		
+		if(result == 0) {
+			throw new BoardUpdateException("맛집 게시글 수정에 실패했습니다.");
+		}
 
+		// 이미지가 존재하면 이미지 update
+		if(images != null && !images.isEmpty()) {
+			updateImage(place.getPlaceNo(), images);
+		}
+		
+		// 태그가 존재하면 태그 update
+		if(tagNums !=null && !tagNums.isEmpty()) {
+			updateTags(place.getPlaceNo(),tagNums);			
+		}
+		
+		
+	}
+	
+	private void updateImage(Long placeNo, List<MultipartFile> images) {
+		
+		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
+		
+		if (placeImages != null && !placeImages.isEmpty()) { // 기존 게시글에 이미지가 존재하면 우선 DELETE 함
+			placeImages.forEach(image -> { 
+				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+			});
+		}
+		
+		// 요청받은 이미지가 존재하면 INSERT
+		saveImages(placeNo, images);
+
+	}
+	
+	// 이미지 삭제 메소드
+	private void deleteImage(PlaceImageDTO image) {
+
+		// DB에서 이미지 삭제
+		int result = placeMapper.deleteImage(image.getImageNo());
+
+		if (result == 0) {
+			throw new FileDeleteException("이미지 처리 과정 중 문제가 발생했습니다.");
+		}
+
+		// S3에서 파일 삭제
+		fileService.deleteStoredFile(image.getChangeName());
+
+	}
+
+	private void updateTags(Long placeNo, List<Long> tagNums) {
+		
+		// 게시글의 태그 한번에 삭제
+		deleteTags(placeNo);
+		
+		// 요청받은 태그 추가
+		saveTags(placeNo, tagNums);
+		
+	}
+	
+	private void deleteTags(Long placeNo) {
+		
+		int result = placeMapper.deleteTags(placeNo);
+		
+		if(result == 0) {
+			throw new TagDeleteException("태그 처리 과정 중 문제가 발생했습니다.");
+		}
+		
+	}
+
+	@Transactional
+	@Override
+	public void deletePlace(Long placeNo) {
+		
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		
+		int result = placeMapper.deletePlace(placeNo);
+		
+		if(result == 0) {
+			throw new BoardDeleteException("게시글 삭제에 실패했습니다.");
+		}
+		
+		List<PlaceImageDTO> images = placeMapper.findImagesByPlaceNo(placeNo);
+		
+		if(images != null && !images.isEmpty()) {
+			
+			images.forEach(image -> {
+				deleteImage(image);
+			});
+			
+		}
+		
+	}
+
+	private void validateReply(Long placeNo, PlaceReplyDTO reply) {
+
+		GlobalValidator.validateNo(placeNo, "유효하지 않은 게시글 번호입니다.");
+		
+		int count = placeMapper.countByPlaceNo(placeNo);
+		
+		if(count == 0) {
+			throw new PageNotFoundException("게시글이 존재하지 않습니다.");
+		}
+		
+		GlobalValidator.checkNull(reply, "데이터가 존재하지 않습니다. 다시 시도해주세요.");
+		
+		GlobalValidator.checkBlank(reply.getReplyContent(), "댓글 내용은 비어있을 수 없습니다.");
+		
+	}
+	
+	@Override
+	public void saveReply(Long placeNo, PlaceReplyDTO reply) {
+		
+		validateReply(placeNo, reply);
+		
+		PlaceReply replyVO = PlaceReply.builder()
+									   .replyContent(reply.getReplyContent())
+									   .replyWriter(reply.getReplyWriter())
+									   .refPlaceNo(placeNo)
+									   .build();
+		
+		int result = placeMapper.saveReply(replyVO);
+		
+		if(result == 0) {
+			throw new ReplyCreationException("댓글 작성에 실패했습니다.");
+		}
+		
+	}
+	
 }

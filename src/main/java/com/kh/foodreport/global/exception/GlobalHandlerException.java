@@ -100,6 +100,12 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleFileManipulateException(FileManipulateException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 파일 삭제 예외
+	@ExceptionHandler(FileDeleteException.class)
+	public ResponseEntity<ApiResponse<Object>> handleFileDeleteException(FileDeleteException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 
 	// 페이징 처리 예외
 	@ExceptionHandler(PageNotFoundException.class)

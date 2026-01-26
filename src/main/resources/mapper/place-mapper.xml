@@ -288,6 +288,84 @@
 		       REPLY.CREATE_DATE DESC
 	</select>
 	
+	<update id="updatePlace" parameterType="PlaceDTO">
+		UPDATE
+		       FR_PLACE
+		   SET
+		       PLACE_TITLE = #{placeTitle}
+		     , PLACE_CONTENT = #{placeContent}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		
+	</update>
 	
+	<update id="deleteImage" parameterType="long">
+		UPDATE
+		       FR_PLACE_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	<delete id="deleteTags" parameterType="long">
+		DELETE
+		  FROM
+		       FR_PLACE_TAG
+		 WHERE
+		       PLACE_NO = #{placeNo}
+		
+	</delete>
+	
+	<update id="deletePlace" parameterType="long">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		   
+	</update>
+	
+	<select id="countByPlaceNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveReply" parameterType="PlaceReply">
+		INSERT
+		  INTO
+		       FR_PLACE_REPLY
+		       (
+		       REPLY_NO
+		     , REPLY_CONTENT
+		     , MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       SEQ_PLACE_REPLY_NO.NEXTVAL
+		     , #{replyContent}
+		     , #{replyWriter}
+		     , #{refPlaceNo}
+		     , SYSDATE
+		       )
+	</insert>
 	
 </mapper>
