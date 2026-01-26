@@ -52,4 +52,6 @@ public interface PlaceMapper {
 
 	int saveLike(PlaceLike placeLike);
 
+	int deleteLike(PlaceLike placeLike);
+
 }
