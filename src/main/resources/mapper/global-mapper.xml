@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.global.common.model.dao.GlobalMapper">
+	
+	<sql id="selectImagesAndTags">
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
+	</sql>
+	
+	<resultMap id="findAllPlaces" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="placeWriter" property="placeWriter" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="placeCreateDate" property="createDate" />
+		<collection property="placeImages" ofType="PlaceImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findAllPlaces" resultMap="findAllPlaces" parameterType="map">
+		SELECT
+		       PLACE.PLACE_NO placeNo
+		     , PLACE_TITLE placeTitle
+		     , PLACE_CONTENT placeContent
+		     , NICKNAME placeWriter
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
+		     , PLACE.CREATE_DATE placeCreateDate
+		     <include refid="selectImagesAndTags" />
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          PLACE_NO
+				    , PLACE_TITLE
+				    , PLACE_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_PLACE_LIKE
+				        WHERE
+				              PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+				    , CREATE_DATE
+		  	     FROM
+		  	          FR_PLACE
+		  	    WHERE
+		              STATUS = 'Y'
+				  AND
+				       PLACE_TITLE LIKE '%' || #{keyword} || '%'
+		   		ORDER
+				   BY 
+				       CREATE_DATE DESC
+			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
+		  	   ) PLACE
+		  LEFT
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (PLACETAG.TAG_NO = TAG.TAG_NO)
+		 ORDER
+		    BY 
+		       PLACE.CREATE_DATE DESC
+	</select>
+	
+	<resultMap id="findAllReviews" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="reviewWriter" property="reviewWriter" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="reviewCreateDate" property="createDate" />
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	
+	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
+		SELECT
+		       REVIEW.REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , NICKNAME reviewWriter
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE reviewCreateDate
+		     <include refid="selectImagesAndTags" />
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          REVIEW_NO
+				    , REVIEW_TITLE
+				    , REVIEW_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_REVIEW_LIKE
+				        WHERE
+				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				    , CREATE_DATE
+		  	     FROM
+		  	          FR_REVIEW
+		  	    WHERE
+		              STATUS = 'Y'
+				  AND
+				       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+		   		ORDER
+				   BY 
+				      CREATE_DATE DESC
+			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
+		  	   ) REVIEW
+		  LEFT
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (REVIEWTAG.TAG_NO = TAG.TAG_NO)
+		 ORDER
+		    BY 
+		       REVIEW.CREATE_DATE DESC
+		
+	</select>
+	
+	
+</mapper>
