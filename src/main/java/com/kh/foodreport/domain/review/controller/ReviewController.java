@@ -48,10 +48,11 @@ public class ReviewController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order){
+	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order, @RequestParam(name="tagNo", defaultValue="0") Long tagNo){
 		
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
 		params.put("order", order);
 		

@@ -16,7 +16,7 @@ import com.kh.foodreport.global.tag.model.dto.TagDTO;
 @Mapper
 public interface PlaceMapper {
 
-	int countByPlaces(String object);
+	int countByPlaces(Map<String, Object> params);
 
 	List<PlaceDTO> findAllPlaces(Map<String, Object> params);
 

@@ -4,17 +4,26 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.foodreport.domain.place.model.dao.PlaceMapper">
 	
-	<select id="countByPlaces" resultType="_int" parameterType="string">
+	<select id="countByPlaces" resultType="_int" parameterType="map">
 		SELECT
 		       COUNT(*)
 		  FROM
-		       FR_PLACE
+		       FR_PLACE PLACE
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  </if>
 	     WHERE
-	           STATUS = 'Y'
+	           PLACE.STATUS = 'Y'
 		  <if test="keyword != ''">
 		   AND
-	           PLACE_TITLE LIKE '%' || #{keyword} || '%'
+			   PLACE_TITLE LIKE '%' || #{keyword} || '%'
 		  </if>
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
 		
 	</select>
 	
@@ -78,12 +87,21 @@
 				    , CREATE_DATE
 		  	     FROM
 		  	          FR_PLACE
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_PLACE_TAG USING (PLACE_NO)
+	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
 				 	<if test="keyword != ''">
 				  AND
-				       PLACE_TITLE LIKE '%' || #{keyword} || '%'
+				      PLACE_TITLE LIKE '%' || #{keyword} || '%'
 					</if>
+					<if test="tagNo != 0">
+		 		  AND
+		       		  TAG_NO = #{tagNo}
+		   			</if>
 		   		ORDER
 				   BY 
 				 <choose>
@@ -283,6 +301,7 @@
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
 		     , NICKNAME replyWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 
 		               COUNT(*)
 		          FROM
@@ -294,6 +313,9 @@
 		       FR_PLACE_REPLY REPLY
 		  JOIN
 		       FR_MEMBER USING (MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		 WHERE
 		       REPLY.STATUS = 'Y'
 		   AND

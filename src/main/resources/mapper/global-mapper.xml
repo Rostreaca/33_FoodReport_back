@@ -67,10 +67,19 @@
 				    , CREATE_DATE
 		  	     FROM
 		  	          FR_PLACE
+		  	      <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_PLACE_TAG USING (PLACE_NO)
+	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
 				  AND
 				       PLACE_TITLE LIKE '%' || #{keyword} || '%'
+				    <if test="tagNo != 0">
+				 WHERE
+				       TAG.TAG_NO = #{tagNo}
+		  			 </if>
 		   		ORDER
 				   BY 
 				       CREATE_DATE DESC
@@ -151,10 +160,19 @@
 				    , CREATE_DATE
 		  	     FROM
 		  	          FR_REVIEW
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
 				  AND
-				       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+				      REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+				    <if test="tagNo != 0">
+				  AND
+					  TAG.TAG_NO = #{tagNo}
+					</if>
 		   		ORDER
 				   BY 
 				      CREATE_DATE DESC
