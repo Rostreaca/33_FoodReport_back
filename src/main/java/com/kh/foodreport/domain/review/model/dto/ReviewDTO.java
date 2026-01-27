@@ -22,6 +22,7 @@ public class ReviewDTO {
 	private String reviewTitle;
 	private String reviewContent;
 	private String reviewWriter;
+	private String profileImage;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
