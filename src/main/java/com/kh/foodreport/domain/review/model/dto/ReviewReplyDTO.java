@@ -18,6 +18,7 @@ public class ReviewReplyDTO {
 	private Long replyNo;
 	private String replyContent;
 	private String replyWriter;
+	private String profileImage;
 	private int likes;
 	private Date createDate;
 	private Date updateDate;
