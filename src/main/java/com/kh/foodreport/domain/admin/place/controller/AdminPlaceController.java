@@ -56,7 +56,7 @@ public class AdminPlaceController {
 		
 		placeService.updatePlace(placeNo);
 		
-		return ApiResponse.ok(null, "업장 업데이트에 성공하였습니다.");
+		return ApiResponse.ok(null, "업장 활성화에 성공하였습니다.");
 	}
 	
 }
