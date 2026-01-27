@@ -165,6 +165,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
@@ -217,7 +220,7 @@
 				</otherwise>
 			</choose>
  				<if test="tagNo != 0">
-	 		 , TAG_TITLE ASC
+	 		 , TAG.TAG_TITLE ASC
 			 	</if>
 		
 	</select>
