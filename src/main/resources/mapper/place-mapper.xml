@@ -91,6 +91,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_PLACE_TAG USING (PLACE_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
@@ -143,7 +146,7 @@
 				</otherwise>
 			</choose>
 				<if test="tagNo != 0">
-			 , TAG_TITLE ASC
+			 , TAG.TAG_TITLE ASC
 				</if>
 		
 		
