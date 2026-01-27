@@ -23,6 +23,7 @@
 		<result column="placeTitle" property="placeTitle"/>
 		<result column="placeContent" property="placeContent"/>
 		<result column="placeWriter" property="placeWriter" />
+		<result column="profileImage" property="profileImage" />
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="placeCreateDate" property="createDate" />
@@ -45,6 +46,7 @@
 		     , PLACE_TITLE placeTitle
 		     , PLACE_CONTENT placeContent
 		     , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -53,7 +55,7 @@
 		         WHERE
 		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
 		     , PLACE.CREATE_DATE placeCreateDate
-		     , IMAGE_NO imageNo
+		     , IMG.IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName
 		     , IMG.IMAGE_LEVEL imageLevel
 		     , TAG.TAG_NO tagNo
@@ -97,6 +99,9 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		  LEFT
 		  JOIN
 		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
@@ -215,6 +220,7 @@
 			 , PLACE_TITLE placeTitle
 			 , PLACE_CONTENT placeContent
 			 , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 			 , VIEW_COUNT viewCount
 			 , (SELECT 
 		               COUNT(*)
@@ -227,6 +233,9 @@
 		       FR_PLACE PLACE
 		  JOIN
 		       FR_MEMBER USING (MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		 WHERE
 		       PLACE_NO = #{placeNo}
 		   AND

@@ -5,7 +5,7 @@
 <mapper namespace="com.kh.foodreport.global.common.model.dao.GlobalMapper">
 	
 	<sql id="selectImagesAndTags">
-		     , IMAGE_NO imageNo
+		     , IMG.IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName
 		     , IMG.IMAGE_LEVEL imageLevel
 		     , TAG.TAG_NO tagNo
@@ -18,6 +18,7 @@
 		<result column="placeTitle" property="placeTitle"/>
 		<result column="placeContent" property="placeContent"/>
 		<result column="placeWriter" property="placeWriter" />
+		<result column="profileImage" property="profileImage" />
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="placeCreateDate" property="createDate" />
@@ -39,6 +40,7 @@
 		     , PLACE_TITLE placeTitle
 		     , PLACE_CONTENT placeContent
 		     , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -79,6 +81,9 @@
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
 		  LEFT
 		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
 		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
 		  LEFT
 		  JOIN
@@ -96,6 +101,7 @@
 		<result column="reviewTitle" property="reviewTitle"/>
 		<result column="reviewContent" property="reviewContent"/>
 		<result column="reviewWriter" property="reviewWriter" />
+		<result column="profileImage" property="profileImage" />
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="reviewCreateDate" property="createDate" />
@@ -118,6 +124,7 @@
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
 		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -156,6 +163,9 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		  LEFT
 		  JOIN
 		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')

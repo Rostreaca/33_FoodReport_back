@@ -96,6 +96,7 @@
 		<result column="reviewTitle" property="reviewTitle"/>
 		<result column="reviewContent" property="reviewContent"/>
 		<result column="reviewWriter" property="reviewWriter" />
+		<result column="profileImage" property="profileImage" />
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="reviewCreateDate" property="createDate" />
@@ -117,6 +118,7 @@
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
 		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -125,7 +127,7 @@
 		         WHERE
 		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE reviewCreateDate
-		     , IMAGE_NO imageNo
+		     , IMG.IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName
 		     , IMG.IMAGE_LEVEL imageLevel
 		     , TAG.TAG_NO tagNo
@@ -171,6 +173,9 @@
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
 		  LEFT
 		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
 		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
 		  LEFT
 		  JOIN
@@ -199,29 +204,16 @@
 		 WHERE
 		       REVIEW_NO = #{reviewNo}
 	</update>
-	
-	<resultMap id="findReviewByReviewNo" type="ReviewDTO">
-		<id column="reviewNo" property="reviewNo"/>
-		<result column="reviewTitle" property="reviewTitle"/>
-		<result column="reviewContent" property="reviewContent"/>
-		<result column="reviewWriter" property="reviewWriter" />
-		<result column="viewCount" property="viewCount"/>
-		<result column="likes" property="likes" />
-		<result column="reviewCreateDate" property="createDate" />
-		<collection property="reviewImages" ofType="ReviewImageDTO">
-			<id column="imageNo" property="imageNo"/>
-			<result column="changeName" property="changeName"/>
-			<result column="imageCreateDate" property="createDate" />
-		</collection>
 		
-	</resultMap>
 	
-	<select id="findReviewByReviewNo" resultMap="findReviewByReviewNo" parameterType="long">
+	
+	<select id="findReviewByReviewNo" resultType="ReviewDTO" parameterType="long">
 		SELECT
 			   REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
 		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
 		     , (SELECT 
 		               COUNT(*)
@@ -234,6 +226,9 @@
 		       FR_REVIEW REVIEW
 		  JOIN
 		       FR_MEMBER USING (MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		 WHERE
 		       REVIEW.STATUS = 'Y'
 		   AND
