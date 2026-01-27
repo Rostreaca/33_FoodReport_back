@@ -28,9 +28,7 @@ public class AdminReviewController {
 	
 	@GetMapping // 전체 리뷰 목록 조회
 	public ResponseEntity<ApiResponse<AdminReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue ="1") int page) {
-		System.out.println("결과 : " + 10 + 3);
-
-
+		
 		AdminReviewResponse reviews = reviewService.findAllReviews(page);
 		
 		return ApiResponse.ok(reviews, "리뷰 전체 조회 성공!");
@@ -58,7 +56,7 @@ public class AdminReviewController {
 		
 		reviewService.updateReview(reviewNo);
 		
-		return ApiResponse.ok(null, "활성화에 성공하였습니다!");
+		return ApiResponse.ok(null, "활성화에 성공하였습니다");
 	}
 	
 }

@@ -83,6 +83,9 @@
 		   		ORDER
 				   BY 
 				       CREATE_DATE DESC
+	 				<if test="tagNo != 0">
+			 		, TAG_TITLE ASC
+					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
 		  	   ) PLACE
 		  LEFT
@@ -103,6 +106,9 @@
 		 ORDER
 		    BY 
 		       PLACE.CREATE_DATE DESC
+     		<if test="tagNo != 0">
+			 , TAG.TAG_TITLE ASC
+			</if>
 	</select>
 	
 	<resultMap id="findAllReviews" type="ReviewDTO">
@@ -164,6 +170,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
@@ -176,6 +185,9 @@
 		   		ORDER
 				   BY 
 				      CREATE_DATE DESC
+	 				<if test="tagNo != 0">
+			 		, TAG_TITLE ASC
+					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
 		  	   ) REVIEW
 		  LEFT
@@ -196,6 +208,9 @@
 		 ORDER
 		    BY 
 		       REVIEW.CREATE_DATE DESC
+     		<if test="tagNo != 0">
+			 , TAG_TITLE ASC
+			</if>
 		
 	</select>
 	

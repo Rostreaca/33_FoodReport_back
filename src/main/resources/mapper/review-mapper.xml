@@ -165,6 +165,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
@@ -186,6 +189,9 @@
 				       CREATE_DATE DESC
 					 </otherwise>
 				 </choose>
+ 					<if test="tagNo != 0">
+					 , TAG_TITLE ASC
+					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
 		  	   ) REVIEW
 		  LEFT
@@ -212,7 +218,10 @@
 			    <otherwise>
 		       REVIEW.CREATE_DATE DESC
 				</otherwise>
-			</choose>	
+			</choose>
+ 				<if test="tagNo != 0">
+	 		 , TAG.TAG_TITLE ASC
+			 	</if>
 		
 	</select>
 	
