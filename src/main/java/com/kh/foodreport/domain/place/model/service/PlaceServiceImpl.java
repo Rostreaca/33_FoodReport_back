@@ -52,7 +52,7 @@ public class PlaceServiceImpl implements PlaceService{
 		
 		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
-		int listCount = placeMapper.countByPlaces(String.valueOf(params.get("keyword")));
+		int listCount = placeMapper.countByPlaces(params);
 		
 		Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 9);
 		

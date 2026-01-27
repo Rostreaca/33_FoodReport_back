@@ -83,11 +83,22 @@
 		SELECT
 		       COUNT(*)
 		  FROM
-		       FR_REVIEW
-		  <if test="keyword != ''">
+		       FR_REVIEW REVIEW
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
 		 WHERE
+		       REVIEW.STATUS = 'Y'
+		  <if test="keyword != ''">
+		   AND
 			   REVIEW_TITLE LIKE '%' || #{keyword} || '%'
 		  </if>
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
 		       
     </select>
 	
@@ -147,15 +158,24 @@
 				              FR_REVIEW_LIKE
 				        WHERE
 				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
-				    , CREATE_DATE
+				    , REVIEW.CREATE_DATE
 		  	     FROM
-		  	          FR_REVIEW
+		  	          FR_REVIEW REVIEW
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+	  	          </if>
 		  	    WHERE
-		              STATUS = 'Y'
+		              REVIEW.STATUS = 'Y'
 				 	<if test="keyword != ''">
 				  AND
-				       REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+				      REVIEW_TITLE LIKE '%' || #{keyword} || '%'
 					</if>
+					<if test="tagNo != 0">
+				  AND
+				      TAG_NO = #{tagNo}
+				    </if>
 		   		ORDER
 				   BY 
 				 <choose>
@@ -260,6 +280,7 @@
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
 		     , NICKNAME replyWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 
 		               COUNT(*)
 		          FROM
@@ -270,7 +291,10 @@
 		  FROM
 		       FR_REVIEW_REPLY REPLY
 		  JOIN
-		       FR_MEMBER USING (MEMBER_NO)
+		       FR_MEMBER USING (MEMBER_NO)		  
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
 		 WHERE
 		       REPLY.STATUS = 'Y'
 		   AND
