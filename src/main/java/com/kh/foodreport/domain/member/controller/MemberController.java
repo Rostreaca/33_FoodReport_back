@@ -96,9 +96,10 @@ public class MemberController {
 	
 	@GetMapping("/likes") // 마이페이지 - 회원 좋아요 목록 전체 조회
 	public ResponseEntity<ApiResponse<Void>> findAllLikes(@AuthenticationPrincipal CustomUserDetails user
-														 ,@RequestParam(name="page", defaultValue="1") int page){
-		memberService.findAllLikes(page, user.getMemberNo());
-		return ApiResponse.ok(null, "회원 좋아요 목록 전체 조회 성공");
+														 ,@RequestParam(name="page", defaultValue="1") int page
+														 ,@RequestParam(name="likeType", required=false) String likeType){
+		Map<String, Object> result = memberService.findAllLikes(page, user.getMemberNo(), likeType);
+		return ApiResponse.ok(result, "회원 좋아요 목록 전체 조회 성공");
 	}
 	
 

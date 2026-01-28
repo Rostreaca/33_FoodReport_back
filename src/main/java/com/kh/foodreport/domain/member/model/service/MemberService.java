@@ -1,14 +1,13 @@
 package com.kh.foodreport.domain.member.model.service;
 
+import java.util.Map;
+
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
 import com.kh.foodreport.domain.member.model.dto.RestaurantDTO;
-
-import jakarta.validation.Valid;
 
 public interface MemberService {
 	
@@ -28,6 +27,6 @@ public interface MemberService {
 
 	void saveOwner( RestaurantDTO restaurant, Long memberNo);
 
-	void findAllLikes(int page, Long memberNo);
+	Map<String, Object> findAllLikes(int page, Long memberNo, String category);
 
 }

@@ -334,6 +334,218 @@
 		       REVIEW_NO = #{reviewNo}
 	</select>
 	
+	<!-- 전체 좋아요 수 -->
+	<select id="countAllLikes" parameterType="long" resultType="int">
+    	SELECT 
+        	(SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE MEMBER_NO = #{memberNo})
+    	FROM DUAL
+	</select>
+	
+	<!-- 리뷰 좋아요 수 -->
+	<select id="countReviewLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_REVIEW_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 리뷰 댓글 좋아요 수 -->
+	<select id="countReviewReplyLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_REVIEW_REPLY_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 식당 좋아요 수 -->
+	<select id="countPlaceLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_PLACE_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 식당 댓글 좋아요 수 -->
+	<select id="countPlaceReplyLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_PLACE_REPLY_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 리뷰 좋아요 목록 조회 -->
+	<select id="findReviewLikes" resultType="ReviewLikeDTO">
+	    SELECT 
+	        RL.REVIEW_NO AS reviewNo,
+	        RL.MEMBER_NO AS memberNo,
+	        RL.CREATE_DATE AS createDate,
+	        R.REVIEW_TITLE AS reviewTitle,
+	        R.REVIEW_CONTENT AS reviewContent,
+	        M.NICKNAME AS reviewerNickname,
+	        (SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE REVIEW_NO = R.REVIEW_NO) AS reviewLikeCount,
+	        R.VIEW_COUNT AS reviewViewCount
+	    FROM FR_REVIEW_LIKE RL
+	    JOIN FR_REVIEW R ON RL.REVIEW_NO = R.REVIEW_NO
+	    JOIN FR_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+	    WHERE RL.MEMBER_NO = #{memberNo}
+	      AND R.STATUS = 'Y'
+	    ORDER BY RL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 리뷰 댓글 좋아요 목록 조회 -->
+	<select id="findReviewReplyLikes" resultType="ReviewReplyLikeDTO">
+	    SELECT 
+	        RRL.REPLY_NO AS replyNo,
+	        RRL.MEMBER_NO AS memberNo,
+	        RRL.CREATE_DATE AS createDate,
+	        RR.REPLY_CONTENT AS replyContent,
+	        RR.REVIEW_NO AS reviewNo,
+	        R.REVIEW_TITLE AS reviewTitle,
+	        M.NICKNAME AS replyWriterNickname,
+	        (SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE REPLY_NO = RR.REPLY_NO) AS replyLikeCount
+	    FROM FR_REVIEW_REPLY_LIKE RRL
+	    JOIN FR_REVIEW_REPLY RR ON RRL.REPLY_NO = RR.REPLY_NO
+	    JOIN FR_REVIEW R ON RR.REVIEW_NO = R.REVIEW_NO
+	    JOIN FR_MEMBER M ON RR.MEMBER_NO = M.MEMBER_NO
+	    WHERE RRL.MEMBER_NO = #{memberNo}
+	      AND RR.STATUS = 'Y'
+	      AND R.STATUS = 'Y'
+	    ORDER BY RRL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 장소 좋아요 목록 조회 -->
+	<select id="findPlaceLikes" resultType="PlaceLikeDTO">
+	    SELECT 
+	        PL.PLACE_NO AS placeNo,
+	        PL.MEMBER_NO AS memberNo,
+	        PL.CREATE_DATE AS createDate,
+	        P.PLACE_TITLE AS placeTitle,
+	        P.PLACE_CONTENT AS placeContent,
+	        M.NICKNAME AS placeWriterNickname,
+	        (SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE PLACE_NO = P.PLACE_NO) AS placeLikeCount,
+	        P.VIEW_COUNT AS placeViewCount
+	    FROM FR_PLACE_LIKE PL
+	    JOIN FR_PLACE P ON PL.PLACE_NO = P.PLACE_NO
+	    JOIN FR_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+	    WHERE PL.MEMBER_NO = #{memberNo}
+	      AND P.STATUS = 'Y'
+	    ORDER BY PL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 장소 댓글 좋아요 목록 조회 -->
+	<select id="findPlaceReplyLikes" resultType="PlaceReplyLikeDTO">
+	    SELECT 
+	        PRL.REPLY_NO AS replyNo,
+	        PRL.MEMBER_NO AS memberNo,
+	        PRL.CREATE_DATE AS createDate,
+	        PR.REPLY_CONTENT AS replyContent,
+	        PR.PLACE_NO AS placeNo,
+	        P.PLACE_TITLE AS placeTitle,
+	        M.NICKNAME AS replyWriterNickname,
+	        (SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE REPLY_NO = PR.REPLY_NO) AS replyLikeCount
+	    FROM FR_PLACE_REPLY_LIKE PRL
+	    JOIN FR_PLACE_REPLY PR ON PRL.REPLY_NO = PR.REPLY_NO
+	    JOIN FR_PLACE P ON PR.PLACE_NO = P.PLACE_NO
+	    JOIN FR_MEMBER M ON PR.MEMBER_NO = M.MEMBER_NO
+	    WHERE PRL.MEMBER_NO = #{memberNo}
+	      AND PR.STATUS = 'Y'
+	      AND P.STATUS = 'Y'
+	    ORDER BY PRL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 전체 좋아요 목록 통합 조회 (UNION ALL 사용) -->
+	<select id="findAllLikesByMemberNo" resultType="LikeDTO">
+	    SELECT * FROM (
+	        SELECT 
+	            'REVIEW' AS likeType,
+	            RL.REVIEW_NO AS targetNo,
+	            RL.CREATE_DATE AS createDate,
+	            R.REVIEW_TITLE AS title,
+	            R.REVIEW_CONTENT AS content,
+	            M.NICKNAME AS nickname,
+	            (SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE REVIEW_NO = R.REVIEW_NO) AS likeCount,
+	            R.VIEW_COUNT AS viewCount,
+	            NULL AS relatedNo,
+	            NULL AS relatedTitle
+	        FROM FR_REVIEW_LIKE RL
+	        JOIN FR_REVIEW R ON RL.REVIEW_NO = R.REVIEW_NO
+	        JOIN FR_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+	        WHERE RL.MEMBER_NO = #{memberNo}
+	          AND R.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	            'REVIEW_REPLY' AS likeType,
+	            RRL.REPLY_NO AS targetNo,
+	            RRL.CREATE_DATE AS createDate,
+	            R.REVIEW_TITLE AS title,
+	            RR.REPLY_CONTENT AS content,
+	            M.NICKNAME AS nickname,
+	            (SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE REPLY_NO = RR.REPLY_NO) AS likeCount,
+	            0 AS viewCount,
+	            RR.REVIEW_NO AS relatedNo,
+	            R.REVIEW_TITLE AS relatedTitle
+	        FROM FR_REVIEW_REPLY_LIKE RRL
+	        JOIN FR_REVIEW_REPLY RR ON RRL.REPLY_NO = RR.REPLY_NO
+	        JOIN FR_REVIEW R ON RR.REVIEW_NO = R.REVIEW_NO
+	        JOIN FR_MEMBER M ON RR.MEMBER_NO = M.MEMBER_NO
+	        WHERE RRL.MEMBER_NO = #{memberNo}
+	          AND RR.STATUS = 'Y'
+	          AND R.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	            'PLACE' AS likeType,
+	            PL.PLACE_NO AS targetNo,
+	            PL.CREATE_DATE AS createDate,
+	            P.PLACE_TITLE AS title,
+	            P.PLACE_CONTENT AS content,
+	            M.NICKNAME AS nickname,
+	            (SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE PLACE_NO = P.PLACE_NO) AS likeCount,
+	            P.VIEW_COUNT AS viewCount,
+	            NULL AS relatedNo,
+	            NULL AS relatedTitle
+	        FROM FR_PLACE_LIKE PL
+	        JOIN FR_PLACE P ON PL.PLACE_NO = P.PLACE_NO
+	        JOIN FR_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+	        WHERE PL.MEMBER_NO = #{memberNo}
+	          AND P.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	            'PLACE_REPLY' AS likeType,
+	            PRL.REPLY_NO AS targetNo,
+	            PRL.CREATE_DATE AS createDate,
+	            P.PLACE_TITLE AS title,
+	            PR.REPLY_CONTENT AS content,
+	            M.NICKNAME AS nickname,
+	            (SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE REPLY_NO = PR.REPLY_NO) AS likeCount,
+	            0 AS viewCount,
+	            PR.PLACE_NO AS relatedNo,
+	            P.PLACE_TITLE AS relatedTitle
+	        FROM FR_PLACE_REPLY_LIKE PRL
+	        JOIN FR_PLACE_REPLY PR ON PRL.REPLY_NO = PR.REPLY_NO
+	        JOIN FR_PLACE P ON PR.PLACE_NO = P.PLACE_NO
+	        JOIN FR_MEMBER M ON PR.MEMBER_NO = M.MEMBER_NO
+	        WHERE PRL.MEMBER_NO = #{memberNo}
+	          AND PR.STATUS = 'Y'
+	          AND P.STATUS = 'Y'
+	    ) ALL_LIKES
+	    ORDER BY createDate DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
 
 	
 	

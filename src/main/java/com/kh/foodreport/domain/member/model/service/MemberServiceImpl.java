@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -254,18 +255,44 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	@Override
-	public void findAllLikes(int page, Long memberNo) {
+	public Map<String, Object> findAllLikes(int page, Long memberNo, String likeType) {
+	    GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
-		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
-		// 페이징 처리용
-		int listCount = memberMapper.countByLikes(memberNo);
-		
-		pagenation.getPageRequest(listCount, page, 10);
-		
-		return;
-		
-		
-		
+	    Map<String, Object> result = new HashMap<>();
+	    int listCount = 0;
+	    List<?> likeList = null;
+	    
+	    // 카테고리별 분기 처리
+	    if (likeType == null || likeType.equals("ALL")) {
+	        // 전체 좋아요 수 (모든 테이블 합산)
+	        listCount = memberMapper.countAllLikes(memberNo);
+	        // 전체 좋아요 목록 조회 (최신순)
+	        likeList = memberMapper.findAllLikesByMemberNo(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        
+	    } else if (likeType.equals("REVIEW")) {
+	        listCount = memberMapper.countReviewLikes(memberNo);
+	        likeList = memberMapper.findReviewLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        
+	    } else if (likeType.equals("REVIEW_REPLY")) {
+	        listCount = memberMapper.countReviewReplyLikes(memberNo);
+	        likeList = memberMapper.findReviewReplyLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        
+	    } else if (likeType.equals("PLACE")) {
+	        listCount = memberMapper.countPlaceLikes(memberNo);
+	        likeList = memberMapper.findPlaceLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        
+	    } else if (likeType.equals("PLACE_REPLY")) {
+	        listCount = memberMapper.countPlaceReplyLikes(memberNo);
+	        likeList = memberMapper.findPlaceReplyLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	    }
+	    
+	    result.put("likeList", likeList);
+	    result.put("pagination", pagenation);
+	    result.put("likeType", likeType);
+	    
+	    return result;
 	}
+		
+		
 
 }
