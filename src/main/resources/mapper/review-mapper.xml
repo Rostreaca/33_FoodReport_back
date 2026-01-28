@@ -219,6 +219,7 @@
 		       REVIEW.CREATE_DATE DESC
 				</otherwise>
 			</choose>
+			 , REVIEW.REVIEW_NO DESC
  				<if test="tagNo != 0">
 	 		 , TAG.TAG_TITLE ASC
 			 	</if>
@@ -241,6 +242,7 @@
 			   REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME reviewWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
@@ -288,6 +290,7 @@
 		SELECT
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 

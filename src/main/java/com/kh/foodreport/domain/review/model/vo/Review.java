@@ -12,6 +12,7 @@ public class Review {
 	private Long reviewNo;
 	private String reviewTitle;
 	private String reviewContent;
+	private Long memberNo;
 	private String reviewWriter;
 	private Date createDate;
 	private Date updateDate;

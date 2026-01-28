@@ -13,6 +13,7 @@ public class Place {
 	private String placeTitle;
 	private String placeContent;
 	private String placeWriter;
+	private Long memberNo;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
