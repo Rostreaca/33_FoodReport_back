@@ -25,5 +25,6 @@ public class AdminMemberDTO {
 	private Date deleteDate;
 	private String status;
 	private String role;
+	private int reviewCount;
 	
 }

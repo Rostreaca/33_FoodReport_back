@@ -14,27 +14,40 @@
 	
 	<select id="findAllMember"
 		resultType="AdminMemberDTO" parameterType="map">
-	SELECT 
-		   MEMBER_NO memberNo,
-		   SUBSTR(EMAIL, 0, 2) 
-	       || RPAD('*', INSTR(EMAIL, '@') - 3, '*') 
-	       || SUBSTR(EMAIL, INSTR(EMAIL, '@')) email,
-		   NICKNAME nickname,
-	       SUBSTR(PHONE, 1, INSTR(PHONE, '-'))
-	       || RPAD('*', INSTR(PHONE, '-', 1, 2) - INSTR(PHONE, '-') - 1, '*')
-	       || SUBSTR(PHONE, INSTR(PHONE, '-', 1, 2)) phone,
-		   INTRODUCE introduce,
-		   CREATE_DATE createDate,
-		   UPDATE_DATE updateDate,
-		   DELETE_DATE deleteDate,
-		   STATUS status,
-		   ROLE role
-	  FROM
-		   FR_MEMBER
-	 ORDER
-	    BY
-	       MEMBER_NO ASC
-	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+		SELECT
+		    MEMBER.MEMBER_NO memberNo,
+		    SUBSTR(MEMBER.EMAIL, 0, 2)
+		    || RPAD('*', INSTR(MEMBER.EMAIL, '@') - 3, '*')
+		    || SUBSTR(MEMBER.EMAIL, INSTR(MEMBER.EMAIL, '@')) email,
+		    MEMBER.NICKNAME nickname,
+		    SUBSTR(MEMBER.PHONE, 1, INSTR(MEMBER.PHONE, '-'))
+		    || RPAD('*', INSTR(MEMBER.PHONE, '-', 1, 2) - INSTR(MEMBER.PHONE, '-') - 1, '*')
+		    || SUBSTR(MEMBER.PHONE, INSTR(MEMBER.PHONE, '-', 1, 2)) phone,
+		    MEMBER.INTRODUCE introduce,
+		    MEMBER.CREATE_DATE createDate,
+		    MEMBER.UPDATE_DATE updateDate,
+		    MEMBER.DELETE_DATE deleteDate,
+		    MEMBER.STATUS status,
+		    MEMBER.ROLE role,
+		    COUNT(REVIEW.REVIEW_NO) reviewCount
+		FROM
+		    FR_MEMBER MEMBER
+		LEFT JOIN
+		    FR_REVIEW REVIEW ON MEMBER.MEMBER_NO = REVIEW.MEMBER_NO
+		GROUP BY
+		    MEMBER.MEMBER_NO,
+		    MEMBER.EMAIL,
+		    MEMBER.NICKNAME,
+		    MEMBER.PHONE,
+		    MEMBER.INTRODUCE,
+		    MEMBER.CREATE_DATE,
+		    MEMBER.UPDATE_DATE,
+		    MEMBER.DELETE_DATE,
+		    MEMBER.STATUS,
+		    MEMBER.ROLE
+		ORDER BY
+		    MEMBER.MEMBER_NO ASC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
 	<select id="countByNickname"
@@ -49,28 +62,41 @@
 	
 	<select id="findByNickname"
 		resultType="AdminMemberDTO" parameterType="map">
-		SELECT 
-			   MEMBER_NO memberNo,
-			   SUBSTR(EMAIL, 0, 2) 
-		       || RPAD('*', INSTR(EMAIL, '@') - 3, '*') 
-		       || SUBSTR(EMAIL, INSTR(EMAIL, '@')) email,
-			   NICKNAME nickname,
-		       SUBSTR(PHONE, 1, INSTR(PHONE, '-'))
-		       || RPAD('*', INSTR(PHONE, '-', 1, 2) - INSTR(PHONE, '-') - 1, '*')
-		       || SUBSTR(PHONE, INSTR(PHONE, '-', 1, 2)) phone,
-			   INTRODUCE introduce,
-			   CREATE_DATE createDate,
-			   UPDATE_DATE updateDate,
-			   DELETE_DATE deleteDate,
-			   STATUS status,
-			   ROLE role
-		  FROM
-			   FR_MEMBER
-		 WHERE
-			   NICKNAME LIKE '%' || #{nickname} || '%'
-		 ORDER
-		    BY
-		       MEMBER_NO ASC
+		SELECT
+		    MEMBER.MEMBER_NO memberNo,
+		    SUBSTR(MEMBER.EMAIL, 0, 2)
+		    || RPAD('*', INSTR(MEMBER.EMAIL, '@') - 3, '*')
+		    || SUBSTR(MEMBER.EMAIL, INSTR(MEMBER.EMAIL, '@')) email,
+		    MEMBER.NICKNAME nickname,
+		    SUBSTR(MEMBER.PHONE, 1, INSTR(MEMBER.PHONE, '-'))
+		    || RPAD('*', INSTR(MEMBER.PHONE, '-', 1, 2) - INSTR(MEMBER.PHONE, '-') - 1, '*')
+		    || SUBSTR(MEMBER.PHONE, INSTR(MEMBER.PHONE, '-', 1, 2)) phone,
+		    MEMBER.INTRODUCE introduce,
+		    MEMBER.CREATE_DATE createDate,
+		    MEMBER.UPDATE_DATE updateDate,
+		    MEMBER.DELETE_DATE deleteDate,
+		    MEMBER.STATUS status,
+		    MEMBER.ROLE role,
+		    COUNT(REVIEW.REVIEW_NO) reviewCount
+		FROM
+		    FR_MEMBER MEMBER
+		LEFT JOIN
+		    FR_REVIEW REVIEW ON MEMBER.MEMBER_NO = REVIEW.MEMBER_NO
+		WHERE
+		    MEMBER.NICKNAME LIKE '%' || #{nickname} || '%'
+		GROUP BY
+		    MEMBER.MEMBER_NO,
+		    MEMBER.EMAIL,
+		    MEMBER.NICKNAME,
+		    MEMBER.PHONE,
+		    MEMBER.INTRODUCE,
+		    MEMBER.CREATE_DATE,
+		    MEMBER.UPDATE_DATE,
+		    MEMBER.DELETE_DATE,
+		    MEMBER.STATUS,
+		    MEMBER.ROLE
+		ORDER BY
+		    MEMBER.MEMBER_NO ASC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
@@ -110,6 +136,7 @@
 		resultType="AdminMemberPlaceDTO" parameterType="map">
 		SELECT 
 			   RESTAURANT_NO restaurantNo
+			 , BUSINESS_NO businessNo
 			 , (SELECT
 			 	 	   NICKNAME
 			 	  FROM

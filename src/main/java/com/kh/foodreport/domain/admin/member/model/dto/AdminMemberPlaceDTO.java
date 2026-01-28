@@ -16,6 +16,7 @@ import lombok.ToString;
 public class AdminMemberPlaceDTO {
 	
 	private Long restaurantNo;
+	private String businessNo;
 	private String nickname;
 	private String restaurantName;
 	private String address;
