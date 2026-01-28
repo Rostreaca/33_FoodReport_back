@@ -18,6 +18,8 @@ public class AdminMemberPlaceDTO {
 	private Long restaurantNo;
 	private String businessNo;
 	private String nickname;
+	private String memberId;
+	private String role;
 	private String restaurantName;
 	private String address;
 	private String status;
