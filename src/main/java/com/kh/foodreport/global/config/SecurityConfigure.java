@@ -67,10 +67,9 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.PUT,"/api/places/**").hasAuthority("ROLE_OWNER");
 					requests.requestMatchers(HttpMethod.DELETE,"/api/places/**").hasAuthority("ROLE_OWNER");
 					
+
 					// 관리자
 					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
-
-					
 				})
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
