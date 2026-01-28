@@ -68,9 +68,6 @@ public interface MemberMapper {
 	// 사장님 등록
 	int saveOwner(RestaurantVO restaurantBuilder);
 	
-	// 좋아요 개수 조회
-	int countByLikes(Long memberNo);
-	
 	// 회원 좋아요 목록 전체 조회
 	void findAllLikes();
 	

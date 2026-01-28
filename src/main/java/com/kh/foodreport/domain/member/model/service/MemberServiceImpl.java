@@ -262,7 +262,7 @@ public class MemberServiceImpl implements MemberService {
 	    int listCount = 0;
 	    List<?> likeList = null;
 	    
-	    // 카테고리별 분기 처리
+	    // 좋아요 타입별 분기 처리
 	    if (likeType == null || likeType.equals("ALL")) {
 	        // 전체 좋아요 수 (모든 테이블 합산)
 	        listCount = memberMapper.countAllLikes(memberNo);

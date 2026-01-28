@@ -27,6 +27,6 @@ public interface MemberService {
 
 	void saveOwner( RestaurantDTO restaurant, Long memberNo);
 
-	Map<String, Object> findAllLikes(int page, Long memberNo, String category);
+	Map<String, Object> findAllLikes(int page, Long memberNo, String likeType);
 
 }
