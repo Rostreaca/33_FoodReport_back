@@ -219,6 +219,7 @@
 		       REVIEW.CREATE_DATE DESC
 				</otherwise>
 			</choose>
+			 , REVIEW.REVIEW_NO DESC
  				<if test="tagNo != 0">
 	 		 , TAG.TAG_TITLE ASC
 			 	</if>

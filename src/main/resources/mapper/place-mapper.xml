@@ -145,6 +145,7 @@
 		       PLACE.CREATE_DATE DESC
 				</otherwise>
 			</choose>
+			 , PLACE.PLACE_NO DESC
 				<if test="tagNo != 0">
 			 , TAG.TAG_TITLE ASC
 				</if>
