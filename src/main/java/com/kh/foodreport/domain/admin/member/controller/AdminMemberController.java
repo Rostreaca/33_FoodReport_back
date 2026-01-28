@@ -64,7 +64,7 @@ public class AdminMemberController {
 		return ApiResponse.ok(null, "회원 역할 변경에 성공하였습니다");
 	}
 	
-	@GetMapping("/place") // 회원 업장 등록된거 확인하는 메소드
+	@GetMapping("/places") // 회원 업장 등록된거 확인하는 메소드
 	public ResponseEntity<ApiResponse<AdminMemberPlaceResponse>> findByMemberPlace(@RequestParam(name="page", defaultValue = "1")int page) {
 		
 		AdminMemberPlaceResponse response = memberService.findByMemberPlace(page);

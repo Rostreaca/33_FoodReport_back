@@ -146,6 +146,13 @@
 		    , R.CREATE_DATE createDate
 		    , R.UPDATE_DATE updateDate
 		    , R.DELETE_DATE deleteDate
+		    , (SELECT 
+		    	   	  CHANGE_NAME
+		    	 FROM
+		    	 	  FR_MEMBER_IMAGE MI
+		    	WHERE
+		    		  MI.MEMBER_NO = M.MEMBER_NO
+		    	 )
 		FROM 
 		    FR_RESTAURANT R
 		JOIN 
