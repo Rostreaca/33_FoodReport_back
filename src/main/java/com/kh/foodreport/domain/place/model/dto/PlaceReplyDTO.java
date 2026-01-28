@@ -18,6 +18,7 @@ public class PlaceReplyDTO {
 	private Long replyNo;
 	private String replyContent;
 	private String replyWriter;
+	private Long memberNo;
 	private String profileImage;
 	private int likes;
 	private Date createDate;

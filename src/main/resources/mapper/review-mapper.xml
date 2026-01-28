@@ -241,6 +241,7 @@
 			   REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME reviewWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
@@ -288,6 +289,7 @@
 		SELECT
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 
