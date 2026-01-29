@@ -150,7 +150,7 @@
 		  	          REVIEW_NO
 				    , REVIEW_TITLE
 				    , REVIEW_CONTENT
-				    , MEMBER_NO
+				    , MEMBER.MEMBER_NO
 				    , VIEW_COUNT
 				    , (SELECT 
 				              COUNT(*)
@@ -161,6 +161,8 @@
 				    , REVIEW.CREATE_DATE
 		  	     FROM
 		  	          FR_REVIEW REVIEW
+		  	     JOIN
+		  	          FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
 	  	          <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
@@ -194,7 +196,6 @@
 					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
 		  	   ) REVIEW
-		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
 		  LEFT
