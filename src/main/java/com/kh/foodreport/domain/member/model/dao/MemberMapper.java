@@ -86,7 +86,7 @@ public interface MemberMapper {
 	List<PlaceLikeDTO> findPlaceLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
 	List<PlaceReplyLikeDTO> findPlaceReplyLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
 
-	// 전체 좋아요 목록 (통합 조회 - 옵션)
+	// 전체 좋아요 목록 (통합 조회)
 	List<LikeDTO> findAllLikesByMemberNo(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
 
 

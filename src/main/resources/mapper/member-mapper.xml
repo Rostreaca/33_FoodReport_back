@@ -447,7 +447,7 @@
 	FETCH NEXT #{pageInfo.limit} ROWS ONLY
 	</select>
 	
-	<!-- 전체 좋아요 목록 통합 조회 (UNION ALL 사용) -->
+	<!-- 전체 좋아요 목록 통합 조회 -->
 	<select id="findAllLikesByMemberNo" resultType="LikeDTO">
 	    SELECT * 
 	      FROM 

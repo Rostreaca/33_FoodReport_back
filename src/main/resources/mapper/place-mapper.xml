@@ -91,6 +91,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_PLACE_TAG USING (PLACE_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              STATUS = 'Y'
@@ -142,8 +145,9 @@
 		       PLACE.CREATE_DATE DESC
 				</otherwise>
 			</choose>
+			 , PLACE.PLACE_NO DESC
 				<if test="tagNo != 0">
-			 , TAG_TITLE ASC
+			 , TAG.TAG_TITLE ASC
 				</if>
 		
 		
@@ -242,6 +246,7 @@
 			   PLACE_NO placeNo
 			 , PLACE_TITLE placeTitle
 			 , PLACE_CONTENT placeContent
+			 , MEMBER.MEMBER_NO memberNo
 			 , NICKNAME placeWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 			 , VIEW_COUNT viewCount
@@ -255,7 +260,7 @@
 		  FROM
 		       FR_PLACE PLACE
 		  JOIN
-		       FR_MEMBER USING (MEMBER_NO)
+		       FR_MEMBER MEMBER ON (PLACE.MEMBER_NO = MEMBER.MEMBER_NO)
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
@@ -305,6 +310,7 @@
 		SELECT
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 
@@ -317,7 +323,7 @@
 		  FROM
 		       FR_PLACE_REPLY REPLY
 		  JOIN
-		       FR_MEMBER USING (MEMBER_NO)
+		       FR_MEMBER MEMBER ON (REPLY.MEMBER_NO = MEMBER.MEMBER_NO)
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)

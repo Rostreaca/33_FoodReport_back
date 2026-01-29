@@ -21,6 +21,7 @@ public class PlaceDTO {
 	private String placeTitle;
 	private String placeContent;
 	private String placeWriter;
+	private Long memberNo;
 	private String profileImage;
 	private Date createDate;
 	private Date updateDate;

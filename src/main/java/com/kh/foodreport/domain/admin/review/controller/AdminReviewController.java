@@ -56,7 +56,7 @@ public class AdminReviewController {
 		
 		reviewService.updateReview(reviewNo);
 		
-		return ApiResponse.ok(null, "활성화에 성공하였습니다!");
+		return ApiResponse.ok(null, "활성화에 성공하였습니다");
 	}
 	
 }

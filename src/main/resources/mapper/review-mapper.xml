@@ -165,6 +165,9 @@
 		  	     LEFT
 		  	     JOIN
 		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG USING (TAG_NO)
 	  	          </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
@@ -216,8 +219,9 @@
 		       REVIEW.CREATE_DATE DESC
 				</otherwise>
 			</choose>
+			 , REVIEW.REVIEW_NO DESC
  				<if test="tagNo != 0">
-	 		 , TAG_TITLE ASC
+	 		 , TAG.TAG_TITLE ASC
 			 	</if>
 		
 	</select>
@@ -238,6 +242,7 @@
 			   REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME reviewWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
@@ -247,11 +252,11 @@
 		               FR_REVIEW_LIKE
 		         WHERE
 		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
-		     , REVIEW.CREATE_DATE reviewCreateDate
+		     , REVIEW.CREATE_DATE createDate
 		  FROM
 		       FR_REVIEW REVIEW
 		  JOIN
-		       FR_MEMBER USING (MEMBER_NO)
+		       FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
@@ -285,6 +290,7 @@
 		SELECT
 		       REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , (SELECT 
@@ -297,7 +303,7 @@
 		  FROM
 		       FR_REVIEW_REPLY REPLY
 		  JOIN
-		       FR_MEMBER USING (MEMBER_NO)		  
+		       FR_MEMBER MEMBER ON (REPLY.MEMBER_NO = MEMBER.MEMBER_NO)		  
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)

@@ -1,7 +1,7 @@
 package com.kh.foodreport.domain.member.model.service;
 
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +15,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
+import com.kh.foodreport.domain.member.model.dto.LikeDTO;
+import com.kh.foodreport.domain.member.model.dto.LikeResponse;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
+import com.kh.foodreport.domain.member.model.dto.PlaceLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.PlaceReplyLikeDTO;
 import com.kh.foodreport.domain.member.model.dto.RestaurantDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewReplyLikeDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
 import com.kh.foodreport.domain.member.model.vo.RestaurantVO;
@@ -255,42 +261,54 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 	@Override
-	public Map<String, Object> findAllLikes(int page, Long memberNo, String likeType) {
+	public LikeResponse findAllLikes(int page, Long memberNo, String likeType) {
 	    GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
-	    Map<String, Object> result = new HashMap<>();
+	    LikeResponse response = new LikeResponse();
 	    int listCount = 0;
-	    List<?> likeList = null;
+	    
+	    response.setLikeType(likeType);
+	    Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 5);
+	    
+	    List<LikeDTO> allLikes = new ArrayList<>();
+	    List<ReviewLikeDTO> reviewLikes = new ArrayList<>();
+	    List<ReviewReplyLikeDTO> reviewReplyLikes = new ArrayList<>();
+	    List<PlaceLikeDTO> placeLikes = new ArrayList<>();
+	    List<PlaceReplyLikeDTO> placeReplyLikes = new ArrayList<>();
+	    
 	    
 	    // 좋아요 타입별 분기 처리
 	    if (likeType == null || likeType.equals("ALL")) {
 	        // 전체 좋아요 수 (모든 테이블 합산)
 	        listCount = memberMapper.countAllLikes(memberNo);
 	        // 전체 좋아요 목록 조회 (최신순)
-	        likeList = memberMapper.findAllLikesByMemberNo(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        allLikes = memberMapper.findAllLikesByMemberNo(memberNo, pages);
 	        
 	    } else if (likeType.equals("REVIEW")) {
 	        listCount = memberMapper.countReviewLikes(memberNo);
-	        likeList = memberMapper.findReviewLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        reviewLikes = memberMapper.findReviewLikes(memberNo, pages);
 	        
 	    } else if (likeType.equals("REVIEW_REPLY")) {
 	        listCount = memberMapper.countReviewReplyLikes(memberNo);
-	        likeList = memberMapper.findReviewReplyLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        reviewReplyLikes = memberMapper.findReviewReplyLikes(memberNo, pages);
 	        
 	    } else if (likeType.equals("PLACE")) {
 	        listCount = memberMapper.countPlaceLikes(memberNo);
-	        likeList = memberMapper.findPlaceLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        placeLikes = memberMapper.findPlaceLikes(memberNo, pages);
 	        
 	    } else if (likeType.equals("PLACE_REPLY")) {
 	        listCount = memberMapper.countPlaceReplyLikes(memberNo);
-	        likeList = memberMapper.findPlaceReplyLikes(memberNo, pagenation.getPageRequest(listCount, page, 10));
+	        placeReplyLikes = memberMapper.findPlaceReplyLikes(memberNo, pages);
 	    }
-	    
-	    result.put("likeList", likeList);
-	    result.put("pagination", pagenation);
-	    result.put("likeType", likeType);
-	    
-	    return result;
+
+	    response.setAllLikes(allLikes);
+	    response.setReviewLikes(reviewLikes);
+        response.setReviewReplyLikes(reviewReplyLikes);
+        response.setPlaceLikes(placeLikes);
+        response.setPlaceReplyLikes(placeReplyLikes);
+	    response.setPageInfo((PageInfo)pages.get("pageInfo"));
+
+	    return response;
 	}
 		
 		

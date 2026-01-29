@@ -21,6 +21,7 @@ public class ReviewDTO {
 	private Long reviewNo;
 	private String reviewTitle;
 	private String reviewContent;
+	private Long memberNo;
 	private String reviewWriter;
 	private String profileImage;
 	private Date createDate;

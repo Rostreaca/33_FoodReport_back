@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
+import com.kh.foodreport.domain.member.model.dto.LikeResponse;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
 import com.kh.foodreport.domain.member.model.dto.RestaurantDTO;
@@ -95,10 +96,10 @@ public class MemberController {
 	}
 	
 	@GetMapping("/likes") // 마이페이지 - 회원 좋아요 목록 전체 조회
-	public ResponseEntity<ApiResponse<Void>> findAllLikes(@AuthenticationPrincipal CustomUserDetails user
+	public ResponseEntity<ApiResponse<LikeResponse>> findAllLikes(@AuthenticationPrincipal CustomUserDetails user
 														 ,@RequestParam(name="page", defaultValue="1") int page
 														 ,@RequestParam(name="likeType", required=false) String likeType){
-		Map<String, Object> result = memberService.findAllLikes(page, user.getMemberNo(), likeType);
+		LikeResponse result = memberService.findAllLikes(page, user.getMemberNo(), likeType);
 		return ApiResponse.ok(result, "회원 좋아요 목록 전체 조회 성공");
 	}
 	
