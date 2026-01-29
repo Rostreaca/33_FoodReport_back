@@ -26,5 +26,6 @@ public class AdminMemberDTO {
 	private String status;
 	private String role;
 	private int reviewCount;
+	private String profileImage;
 	
 }

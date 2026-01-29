@@ -29,7 +29,14 @@
 		    MEMBER.DELETE_DATE deleteDate,
 		    MEMBER.STATUS status,
 		    MEMBER.ROLE role,
-		    COUNT(REVIEW.REVIEW_NO) reviewCount
+		    COUNT(REVIEW.REVIEW_NO) reviewCount,
+		    (SELECT
+		    	    CHANGE_NAME
+		       FROM
+		       		FR_MEMBER_IMAGE
+		      WHERE
+		      	    MEMBER_NO = MEMBER.MEMBER_NO
+		    )
 		FROM
 		    FR_MEMBER MEMBER
 		LEFT JOIN
@@ -77,7 +84,14 @@
 		    MEMBER.DELETE_DATE deleteDate,
 		    MEMBER.STATUS status,
 		    MEMBER.ROLE role,
-		    COUNT(REVIEW.REVIEW_NO) reviewCount
+		    COUNT(REVIEW.REVIEW_NO) reviewCount,
+		    (SELECT
+		    	    CHANGE_NAME
+		       FROM
+		       		FR_MEMBER_IMAGE
+		      WHERE
+		      	    MEMBER_NO = MEMBER.MEMBER_NO
+		    ) profileImage
 		FROM
 		    FR_MEMBER MEMBER
 		LEFT JOIN
@@ -152,7 +166,7 @@
 		    	 	  FR_MEMBER_IMAGE MI
 		    	WHERE
 		    		  MI.MEMBER_NO = M.MEMBER_NO
-		    	 )
+		    	 ) profileImage
 		FROM 
 		    FR_RESTAURANT R
 		JOIN 
