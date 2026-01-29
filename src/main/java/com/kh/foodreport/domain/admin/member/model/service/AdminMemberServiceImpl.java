@@ -83,6 +83,10 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 	}
 
 	private void validateRole(String role) { // 역할 검증 메소드
+		if("ROLE_ADMIN".equals(role)) {
+			throw new IllegalArgumentException("관리자 권한은 부여할 수 없습니다.");
+		}
+		
 		boolean isMatch = Arrays.stream(Role.values())
                 .anyMatch(r -> r.name().equals(role));
 		
