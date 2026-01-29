@@ -1,6 +1,6 @@
 package com.kh.foodreport.domain.notice.model.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
