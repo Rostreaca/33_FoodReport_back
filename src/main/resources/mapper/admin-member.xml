@@ -36,7 +36,7 @@
 		       		FR_MEMBER_IMAGE
 		      WHERE
 		      	    MEMBER_NO = MEMBER.MEMBER_NO
-		    )
+		    ) profileImage
 		FROM
 		    FR_MEMBER MEMBER
 		LEFT JOIN
