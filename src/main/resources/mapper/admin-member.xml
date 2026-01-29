@@ -166,7 +166,7 @@
 		    	 	  FR_MEMBER_IMAGE MI
 		    	WHERE
 		    		  MI.MEMBER_NO = M.MEMBER_NO
-		    	 )
+		    	 ) profileImage
 		FROM 
 		    FR_RESTAURANT R
 		JOIN 
