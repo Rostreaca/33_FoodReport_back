@@ -21,9 +21,11 @@ public interface AdminMemberMapper {
 
 	int deleteMember(Long memberNo);
 	
-	int updateMember(Map<String, Object> params);
+	int grantMember(Map<String, Object> params);
 	
 	int countByMemberPlace();
 	
 	List<AdminMemberPlaceDTO> findByMemberPlace(Map<String, Object> pages);
+	
+	int updateMember(Long memberNo);
 }

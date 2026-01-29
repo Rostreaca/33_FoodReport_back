@@ -36,7 +36,7 @@
 		       		FR_MEMBER_IMAGE
 		      WHERE
 		      	    MEMBER_NO = MEMBER.MEMBER_NO
-		    )
+		    ) profileImage
 		FROM
 		    FR_MEMBER MEMBER
 		LEFT JOIN
@@ -126,7 +126,7 @@
 		   	   MEMBER_NO = #{memberNo}
 	</update>
 	
-	<update id="updateMember">
+	<update id="grantMember">
 		UPDATE
 			   FR_MEMBER
 		   SET
@@ -176,4 +176,17 @@
 		    R.RESTAURANT_NO DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+
+	<update id="updateMember">
+	UPDATE
+		   FR_MEMBER
+	   SET
+	   	   STATUS = 'Y'
+	     , UPDATE_DATE = SYSDATE
+	 WHERE
+	 	   MEMBER_NO = #{memberNo}
+	   AND
+	   	   STATUS = 'N'
+	</update>
+	
 </mapper>

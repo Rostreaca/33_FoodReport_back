@@ -3,8 +3,6 @@ package com.kh.foodreport.domain.admin.member.controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceResponse;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
 import com.kh.foodreport.domain.admin.member.model.service.AdminMemberService;
-import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 import com.kh.foodreport.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -56,10 +53,18 @@ public class AdminMemberController {
 	}
 	
 	@PutMapping("/{memberNo}")
-	public ResponseEntity<ApiResponse<Void>> updateMember(@PathVariable(name="memberNo")Long memberNo
+	public ResponseEntity<ApiResponse<Void>> updateMember(@PathVariable(name="memberNo")Long memberNo) {
+		
+		memberService.updateMember(memberNo);
+		
+		return ApiResponse.ok(null, "회원 활성화에 성공하였습니다.");
+	}
+	
+	@PutMapping("/role/{memberNo}")
+	public ResponseEntity<ApiResponse<Void>> grantMember(@PathVariable(name="memberNo")Long memberNo
 														 ,@RequestBody Map<String, String> role) {
 		
-		memberService.updateMember(memberNo, role.get("role"));
+		memberService.grantMember(memberNo, role.get("role"));
 		
 		return ApiResponse.ok(null, "회원 역할 변경에 성공하였습니다");
 	}
