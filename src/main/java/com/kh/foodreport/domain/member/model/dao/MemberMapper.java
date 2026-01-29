@@ -4,9 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import com.kh.foodreport.domain.member.model.dto.LikeDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberDTO;
 import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
+import com.kh.foodreport.domain.member.model.dto.PlaceLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.PlaceReplyLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewReplyLikeDTO;
 import com.kh.foodreport.domain.member.model.vo.MemberImage;
 import com.kh.foodreport.domain.member.model.vo.MemberVO;
 import com.kh.foodreport.domain.member.model.vo.RestaurantVO;
@@ -62,11 +68,26 @@ public interface MemberMapper {
 	// 사장님 등록
 	int saveOwner(RestaurantVO restaurantBuilder);
 	
-	// 좋아요 개수 조회
-	int countByLikes(Long memberNo);
-	
 	// 회원 좋아요 목록 전체 조회
 	void findAllLikes();
+	
+	// 전체 좋아요 수 (모든 테이블)
+	int countAllLikes(Long memberNo);
+
+	// 카테고리별 좋아요 수
+	int countReviewLikes(Long memberNo);
+	int countReviewReplyLikes(Long memberNo);
+	int countPlaceLikes(Long memberNo);
+	int countPlaceReplyLikes(Long memberNo);
+
+	// 카테고리별 좋아요 목록 조회
+	List<ReviewLikeDTO> findReviewLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
+	List<ReviewReplyLikeDTO> findReviewReplyLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
+	List<PlaceLikeDTO> findPlaceLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
+	List<PlaceReplyLikeDTO> findPlaceReplyLikes(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
+
+	// 전체 좋아요 목록 (통합 조회)
+	List<LikeDTO> findAllLikesByMemberNo(@Param("memberNo") Long memberNo, @Param("pageInfo") Map<String, Object> map);
 
 
 

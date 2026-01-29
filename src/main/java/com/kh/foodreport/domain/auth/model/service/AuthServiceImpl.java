@@ -43,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
 		// JWT라이브러리 이용 AccessToken, RefreshToken 만들어서 발급
 		
 		Map<String, String> loginResponse = tokenService.generateToken(String.valueOf(user.getMemberNo()));
+		loginResponse.put("memberNo", String.valueOf(user.getMemberNo()));
 		loginResponse.put("email", user.getUsername());
 		loginResponse.put("nickname", user.getNickname());
 		loginResponse.put("phone", user.getPhone());
