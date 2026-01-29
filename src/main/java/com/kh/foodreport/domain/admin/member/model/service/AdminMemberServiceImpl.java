@@ -80,14 +80,14 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 	}
 
 	@Override
-	public void updateMember(Long memberNo, String role) {
+	public void grantMember(Long memberNo, String role) {
 		
 		GlobalValidator.validateNo(memberNo, "0보다 작은값은 들어갈 수 없습니다.");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("memberNo", memberNo);
 		params.put("role", role);
-		int updateResult = memberMapper.updateMember(params);
+		int updateResult = memberMapper.grantMember(params);
 		
 		if(updateResult == 0) {
 			throw new MemberUpdateException("회원 역할변경에 실패하였습니다.");
@@ -110,6 +110,17 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		response.setPageInfo((PageInfo)pages.get("pageInfo"));
 		
 		return response;
+	}
+
+	@Override
+	public void updateMember(Long memberNo) {
+		GlobalValidator.validateNo(memberNo, "0보다 작은값은 들어갈 수 없습니다.");
+
+		int result = memberMapper.updateMember(memberNo);
+		
+		if(result == 0) {
+			throw new MemberUpdateException("회원 활성화에 실패하였습니다.");
+		}
 	}
 	
 	
