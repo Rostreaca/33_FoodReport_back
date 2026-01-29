@@ -20,12 +20,18 @@
 			 , NOTICE_CONTENT noticeContent
 			 , NICKNAME noticeWriter
 			 , NOTICE.CREATE_DATE createDate
+			 , CHANGE_NAME noticeImageUrl
 		  FROM
 		       FR_NOTICE NOTICE
 		  JOIN
 		       FR_MEMBER USING (MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_NOTICE_IMAGE IMAGE USING (NOTICE_NO)
 		 WHERE
 		       NOTICE.STATUS = 'Y'
+		   AND
+		       (IMAGE.IMAGE_NO IS NULL OR IMAGE.STATUS = 'Y')
 		 ORDER
 		    BY
 		       NOTICE.CREATE_DATE DESC 

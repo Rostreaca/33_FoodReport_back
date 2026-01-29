@@ -19,6 +19,7 @@ public class NoticeDTO {
 	private String noticeTitle;
 	private String noticeContent;
 	private String noticeWriter;
+	private String noticeImageUrl;
 	private String status;
 	private Date createDate;
 	private Date updateDate;
