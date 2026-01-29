@@ -204,4 +204,10 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException e){
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 멤버 업데이트 실패 예외
+	@ExceptionHandler(MemberUpdateException.class)
+	public ResponseEntity<ApiResponse<Object>> handleMemberUpdateException(MemberUpdateException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }
