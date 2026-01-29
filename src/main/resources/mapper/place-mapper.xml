@@ -54,6 +54,7 @@
 		       PLACE.PLACE_NO placeNo
 		     , PLACE_TITLE placeTitle
 		     , PLACE_CONTENT placeContent
+		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME placeWriter
 		     , MEMBERIMG.CHANGE_NAME profileImage
 		     , VIEW_COUNT viewCount
@@ -73,7 +74,7 @@
 		  FROM
 		  	   (
 		  	   SELECT 
-		  	          PLACE_NO
+		  	          PLACE.PLACE_NO
 				    , PLACE_TITLE
 				    , PLACE_CONTENT
 				    , MEMBER_NO
@@ -84,26 +85,28 @@
 				              FR_PLACE_LIKE
 				        WHERE
 				              PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
-				    , CREATE_DATE
+				    , PLACE.CREATE_DATE
 		  	     FROM
-		  	          FR_PLACE
+		  	          FR_PLACE PLACE
+		  	     JOIN
+		  	          FR_MEMBER MEMBER ON (PLACE.MEMBER_NO = PLACE.MEMBER_NO)
 	  	          <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
-		  	          FR_PLACE_TAG USING (PLACE_NO)
+		  	          FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
 		  	     LEFT
 		  	     JOIN
-		  	          FR_TAG TAG USING (TAG_NO)
+		  	          FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
 	  	          </if>
 		  	    WHERE
-		              STATUS = 'Y'
+		              PLACE.STATUS = 'Y'
 				 	<if test="keyword != ''">
 				  AND
 				      PLACE_TITLE LIKE '%' || #{keyword} || '%'
 					</if>
 					<if test="tagNo != 0">
 		 		  AND
-		       		  TAG_NO = #{tagNo}
+		       		  TAG.TAG_NO = #{tagNo}
 		   			</if>
 		   		ORDER
 				   BY 
@@ -112,7 +115,7 @@
 					  LIKES DESC
 					</when>
 					 <otherwise>
-				       CREATE_DATE DESC
+				      PLACE.CREATE_DATE DESC
 					 </otherwise>
 				 </choose>
 	 				<if test="tagNo != 0">
@@ -120,7 +123,6 @@
 					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
 		  	   ) PLACE
-		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
 		  LEFT
