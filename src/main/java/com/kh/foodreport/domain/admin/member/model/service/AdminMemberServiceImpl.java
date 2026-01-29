@@ -1,5 +1,6 @@
 package com.kh.foodreport.domain.admin.member.model.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberDTO;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceDTO;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberPlaceResponse;
 import com.kh.foodreport.domain.admin.member.model.dto.AdminMemberResponse;
+import com.kh.foodreport.domain.auth.model.vo.Role;
+import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.exception.MemberDeleteException;
 import com.kh.foodreport.global.exception.MemberUpdateException;
 import com.kh.foodreport.global.util.PageInfo;
@@ -79,10 +82,21 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		}
 	}
 
+	private void validateRole(String role) { // 역할 검증 메소드
+		boolean isMatch = Arrays.stream(Role.values())
+                .anyMatch(r -> r.name().equals(role));
+		
+		if(!isMatch) {
+			throw new IllegalArgumentException("역할에 맞게 부여해주시길 바랍니다.");
+		} 
+	}
+	
 	@Override
 	public void grantMember(Long memberNo, String role) {
 		
 		GlobalValidator.validateNo(memberNo, "0보다 작은값은 들어갈 수 없습니다.");
+		
+		validateRole(role); //  역할 값 검증
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("memberNo", memberNo);

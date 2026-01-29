@@ -11,7 +11,7 @@ public interface AdminMemberService {
 	
 	void deleteMember(Long memberNO);
 	
-	void grantMember(Long memberNo,String role);
+	void grantMember(Long memberNo, String role);
 	
 	void updateMember(Long memberNo);
 	

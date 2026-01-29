@@ -198,4 +198,10 @@ public class GlobalHandlerException {
 	public ResponseEntity<ApiResponse<Object>> handleMemberDeleteException(MemberDeleteException e) {
 		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 역할 부여 실패 예외
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException e){
+		return createErrorResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }
