@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.notice.model.dao.NoticeMapper">
+	
+	<select id="countByNotices" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_NOTICE
+	     WHERE
+	           STATUS = 'Y'
+	</select>
+	
+	<select id="findAllNotices" resultType="NoticeDTO" parameterType="map">
+		SELECT
+		       NOTICE.NOTICE_NO noticeNo
+			 , NOTICE_TITLE noticeTitle
+			 , NOTICE_CONTENT noticeContent
+			 , NICKNAME noticeWriter
+			 , NOTICE.CREATE_DATE createDate
+			 , CHANGE_NAME noticeImageUrl
+		  FROM
+		       FR_NOTICE NOTICE
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_NOTICE_IMAGE IMAGE ON (NOTICE.NOTICE_NO = IMAGE.NOTICE_NO AND IMAGE.STATUS = 'Y')
+		 WHERE
+		       NOTICE.STATUS = 'Y'
+		 ORDER
+		    BY
+		       NOTICE.CREATE_DATE DESC 
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+		
+	</select>
+	
+</mapper>
