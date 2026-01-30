@@ -8,12 +8,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
+import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
+import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.global.common.model.dao.GlobalMapper;
-import com.kh.foodreport.global.common.model.dto.BoardResponse;
 import com.kh.foodreport.global.exception.InvalidRequestException;
-import com.kh.foodreport.global.exception.InvalidValueException;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
+import com.kh.foodreport.global.util.PageInfo;
+import com.kh.foodreport.global.util.Pagenation;
 import com.kh.foodreport.global.validator.GlobalValidator;
 
 import lombok.RequiredArgsConstructor;
@@ -25,75 +27,57 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalServiceImpl implements GlobalService{
 
 	private final GlobalMapper globalMapper;
+	private final Pagenation pagenation;
 
 	@Override
-	public BoardResponse findAllByKeyword(String keyword) {
+	public ReviewResponse findAllReviewsByKeyword(String keyword, int page, Long tagNo) {
+		
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
 		GlobalValidator.checkNull(keyword, "유효하지 않은 요청입니다.");
 
-		List<ReviewDTO> reviews = new ArrayList<>();
-		List<PlaceDTO> places = new ArrayList<>();
-		
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
-		params.put("offset", 0); // 첫 조회 시 offset은 항상 0
 		
-		if(!"".equals(keyword.trim()) ) {
-			reviews = globalMapper.findAllReviews(params);		
+		int listCount = globalMapper.countByReviews(params);
+		
+		List<ReviewDTO> reviews = new ArrayList<>();
 
-			places = globalMapper.findAllPlaces(params);
-		}
+		params.putAll(pagenation.getPageRequest(listCount, page, 3));
 		
-		BoardResponse response = new BoardResponse(reviews, places);
+		reviews = globalMapper.findAllReviews(params);
+		
+		ReviewResponse response = new ReviewResponse(reviews, (PageInfo)params.get("pageInfo"));
 		
 		return response;
 	}
 
 	@Override
-	public List<ReviewDTO> findAllReviewsByKeyword(String keyword, int offset) {
+	public PlaceResponse findAllPlacesByKeyword(String keyword, int page, Long tagNo) {
+		
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
 		GlobalValidator.checkNull(keyword, "유효하지 않은 요청입니다.");
 		
-		if(offset < 3) { // 2번째 조회부터는 항상 offset이 3 이상이어야 함
-			throw new InvalidValueException("유효하지 않은 요청값입니다.");
-		}
-		
-		List<ReviewDTO> reviews = new ArrayList<>();
-		
+
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
-		params.put("offset", offset);
-		
-		if(!"".equals(keyword.trim()) ) {
-			reviews = globalMapper.findAllReviews(params);		
-		}
-		
-		return reviews;
-	}
-
-	@Override
-	public List<PlaceDTO> findAllPlacesByKeyword(String keyword, int offset) {
-		
-		GlobalValidator.checkNull(keyword, "유효하지 않은 요청입니다.");
-		
-		if(offset < 3) { // 2번째 조회부터는 항상 offset이 3 이상이어야 함
-			throw new InvalidValueException("유효하지 않은 요청값입니다.");
-		}
 		
 		List<PlaceDTO> places = new ArrayList<>();
 		
-		Map<String, Object> params = new HashMap<>();
+		int listCount = globalMapper.countByPlaces(params);
+
+		params.putAll(pagenation.getPageRequest(listCount, page, 3));
 		
-		params.put("keyword", keyword);
-		params.put("offset", offset);
+		places = globalMapper.findAllPlaces(params);		
 		
-		if(!"".equals(keyword.trim()) ) {
-			places = globalMapper.findAllPlaces(params);		
-		}
+		PlaceResponse response = new PlaceResponse(places, (PageInfo)params.get("pageInfo"));
 		
-		return places;
+		return response;
 	}
 
 	@Override

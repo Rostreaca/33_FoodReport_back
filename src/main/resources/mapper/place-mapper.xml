@@ -88,8 +88,6 @@
 				    , PLACE.CREATE_DATE
 		  	     FROM
 		  	          FR_PLACE PLACE
-		  	     JOIN
-		  	          FR_MEMBER MEMBER ON (PLACE.MEMBER_NO = PLACE.MEMBER_NO)
 	  	          <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
