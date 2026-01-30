@@ -15,7 +15,7 @@
 	
 	<select id="findAllNotices" resultType="NoticeDTO" parameterType="map">
 		SELECT
-		       NOTICE_NO noticeNo
+		       NOTICE.NOTICE_NO noticeNo
 			 , NOTICE_TITLE noticeTitle
 			 , NOTICE_CONTENT noticeContent
 			 , NICKNAME noticeWriter
@@ -27,7 +27,7 @@
 		       FR_MEMBER USING (MEMBER_NO)
 		  LEFT
 		  JOIN
-		       FR_NOTICE_IMAGE IMAGE USING (NOTICE_NO)
+		       FR_NOTICE_IMAGE IMAGE ON (NOTICE.NOTICE_NO = IMAGE.NOTICE_NO AND IMAGE.STATUS = 'Y')
 		 WHERE
 		       NOTICE.STATUS = 'Y'
 		 ORDER
