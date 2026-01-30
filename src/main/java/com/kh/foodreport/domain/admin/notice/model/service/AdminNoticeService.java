@@ -10,7 +10,7 @@ import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
 
 public interface AdminNoticeService {
 
-	void saveNotice(AdminNoticeDTO notice, MultipartFile file);
+	void saveNotice(AdminNoticeDTO notice, MultipartFile file, Long memberNo);
 	
 	AdminNoticeResponse findAllNotices(int page);
 	

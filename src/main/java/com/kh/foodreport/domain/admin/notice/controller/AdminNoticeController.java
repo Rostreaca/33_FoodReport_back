@@ -32,9 +32,10 @@ public class AdminNoticeController {
 	
 	@PostMapping // 공지사항 등록
 	public ResponseEntity<ApiResponse<String>> saveNotice(@ModelAttribute AdminNoticeDTO notice
-										,@RequestParam(name="file", required = false) MultipartFile file) {
+										,@RequestParam(name="file", required = false) MultipartFile file
+										,@AuthenticationPrincipal CustomUserDetails user) {
 		
-		noticeService.saveNotice(notice, file);
+		noticeService.saveNotice(notice, file, user.getMemberNo());
 		
 		return ApiResponse.created("공지사항 등록에 성공하였습니다.");
 	}
