@@ -113,7 +113,6 @@
 					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
 		  	   ) PLACE
-		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
 		  LEFT
@@ -236,7 +235,6 @@
 					</if>
 			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
 		  	   ) REVIEW
-		  LEFT
 		  JOIN
 		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
 		  LEFT

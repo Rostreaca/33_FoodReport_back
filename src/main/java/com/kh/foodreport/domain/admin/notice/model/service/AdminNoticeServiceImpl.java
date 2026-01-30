@@ -56,7 +56,9 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	
 	@Override
 	@Transactional
-	public void saveNotice(AdminNoticeDTO notice, MultipartFile file) {
+	public void saveNotice(AdminNoticeDTO notice, MultipartFile file, Long memberNo) {
+		
+		notice.setRefMemberNo(memberNo);
 		
 		// 1. 공지사항을 먼저 저장
 		int result = noticeMapper.saveNotice(notice);
