@@ -18,4 +18,8 @@ public interface GlobalMapper {
 
 	List<TagDTO> findAllTags();
 
+	int countByReviews(Map<String, Object> params);
+
+	int countByPlaces(Map<String, Object> params);
+
 }

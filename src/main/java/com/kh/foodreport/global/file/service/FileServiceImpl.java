@@ -42,9 +42,9 @@ public class FileServiceImpl implements FileService{
 		
 		String originalFilename = file.getOriginalFilename();
 		
-		String extesion = originalFilename.substring(originalFilename.lastIndexOf(".")+1);
+		String extension = originalFilename.substring(originalFilename.lastIndexOf(".")+1);
 		
-		if(!ALLOW_EXTENSION_LIST.contains(extesion)) {
+		if(!ALLOW_EXTENSION_LIST.contains(extension)) {
 			throw new InvalidValueException("유효하지 않은 확장자명입니다.");
 		}
 		
