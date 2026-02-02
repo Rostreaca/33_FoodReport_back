@@ -11,7 +11,7 @@ import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 
 public interface ReviewService {
 
-	public void saveReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images);
+	public void saveReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo);
 
 	public ReviewResponse findAllReviews(int page, Map<String, Object> params);
 

@@ -57,5 +57,7 @@ public interface ReviewMapper {
 
 	public int deleteTags(Long reviewNo);
 
+	public int saveRegionByReviewNo(Map<String, Object> params);
+
 	
 }

@@ -467,6 +467,24 @@
 		       REVIEW_NO = #{reviewNo}
 	</select>
 	
+	<insert id="saveRegionByReviewNo" parameterType="map">
+		INSERT
+		  INTO
+		       FR_REVIEW_REGION
+		       (
+		       REGION_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{regionNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
+	
 	
 	
 </mapper>
