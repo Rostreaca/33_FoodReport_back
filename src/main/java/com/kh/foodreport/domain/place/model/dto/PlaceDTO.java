@@ -3,6 +3,7 @@ package com.kh.foodreport.domain.place.model.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 import lombok.AllArgsConstructor;
@@ -33,5 +34,6 @@ public class PlaceDTO {
 	private List<TagDTO> tags;
 	private List<PlaceImageDTO> placeImages;
 	private List<PlaceReplyDTO> placeReplies;
+	private RegionDTO region;
 	
 }

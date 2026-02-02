@@ -91,6 +91,11 @@
 		  JOIN
 		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
 		  </if>
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
 		 WHERE
 		       REVIEW.STATUS = 'Y'
 		  <if test="keyword != ''">
@@ -229,6 +234,10 @@
 		  LEFT
 		  JOIN
 		       FR_REGION REGION ON (REVIEWREGION.REGION_NO = REGION.REGION_NO) 
+		       <if test = "regionNo != 0">
+		  WHERE
+		        REGION.REGION_NO = #{regionNo}
+			   </if>
 		 ORDER
 		    BY 
 		    <choose>

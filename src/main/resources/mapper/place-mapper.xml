@@ -38,6 +38,10 @@
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="placeCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
 		<collection property="placeImages" ofType="PlaceImageDTO">
 			<id column="imageNo" property="imageNo"/>
 			<result column="changeName" property="changeName"/>
@@ -73,6 +77,8 @@
 		     , TAG.TAG_NO tagNo
 		     , TAG.TAG_TITLE tagTitle
 		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
 		  FROM
 		  	   (
 		  	   SELECT 
@@ -137,6 +143,16 @@
 		  LEFT
 		  JOIN
 		       FR_TAG TAG ON (PLACETAG.TAG_NO = TAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (PLACEREGION.REGION_NO = REGION.REGION_NO)
+		       <if test = "regionNo != 0">
+		 WHERE
+		       REGION.REGION_NO = #{regionNo}
+		       </if>
 		 ORDER
 		    BY 
 		    <choose>
@@ -459,7 +475,7 @@
 		       PLACE_NO = #{placeNo}
 	</delete>
 	
-	<insert id="savePlaceByReviewNo" parameterType="map">
+	<insert id="saveRegionByPlaceNo" parameterType="map">
 		INSERT
 		  INTO
 		       FR_PLACE_REGION
