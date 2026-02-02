@@ -322,5 +322,15 @@
 		       TAG_TITLE ASC
 	</select>
 	
+	<select id="findAllRegions" resultType="RegionDTO">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		 ORDER
+		    BY
+		       REGION_NO ASC
+	</select>
 	
 </mapper>
