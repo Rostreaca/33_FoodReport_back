@@ -9,6 +9,8 @@
 		       COUNT(*)
 		  FROM
 		       FR_PLACE PLACE
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
 		  <if test="tagNo != 0">
 		  LEFT
 		  JOIN

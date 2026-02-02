@@ -3,6 +3,7 @@ package com.kh.foodreport.domain.review.model.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 import lombok.AllArgsConstructor;
@@ -34,5 +35,5 @@ public class ReviewDTO {
 	private List<TagDTO> tags;
 	private List<ReviewImageDTO> reviewImages;
 	private List<ReviewReplyDTO> reviewReplies;
-	
+	private RegionDTO region;
 }

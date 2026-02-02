@@ -84,6 +84,8 @@
 		       COUNT(*)
 		  FROM
 		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
 		  <if test="tagNo != 0">
 		  LEFT
 		  JOIN
@@ -99,6 +101,10 @@
 		   AND
 		       TAG_NO = #{tagNo}
 		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
+		   </if>
 		       
     </select>
 	
@@ -111,6 +117,10 @@
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="reviewCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
 		<collection property="reviewImages" ofType="ReviewImageDTO">
 			<id column="imageNo" property="imageNo"/>
 			<result column="changeName" property="changeName"/>
@@ -121,6 +131,7 @@
 			<result column="tagTitle" property="tagTitle"/>
 			<result column="tagContent" property="tagContent"/>
 		</collection>
+
 	</resultMap>
 	
 	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
@@ -144,6 +155,8 @@
 		     , TAG.TAG_NO tagNo
 		     , TAG.TAG_TITLE tagTitle
 		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
 		  FROM
 		  	   (
 		  	   SELECT 
@@ -210,6 +223,12 @@
 		  LEFT
 		  JOIN
 		       FR_TAG TAG ON (REVIEWTAG.TAG_NO = TAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REVIEWREGION.REGION_NO = REGION.REGION_NO) 
 		 ORDER
 		    BY 
 		    <choose>

@@ -37,7 +37,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user,@RequestParam(name="regionNo") Long regionNo){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user,@RequestParam(name="regionNo", defaultValue = "0") Long regionNo){
 		
 		review.setReviewWriter(String.valueOf(user.getMemberNo()));
 		
@@ -48,10 +48,15 @@ public class ReviewController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="keyword", defaultValue = "") String keyword, @RequestParam(name="order", defaultValue = "createDate") String order, @RequestParam(name="tagNo", defaultValue="0") Long tagNo){
+	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviews(@RequestParam(name="page", defaultValue = "1") int page
+																	, @RequestParam(name="keyword", defaultValue = "") String keyword
+																	, @RequestParam(name="order", defaultValue = "createDate") String order
+																	, @RequestParam(name="tagNo", defaultValue="0") Long tagNo
+																	, @RequestParam(name="regionNo", defaultValue = "0")Long regionNo){
 		
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("regionNo", regionNo);
 		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
 		params.put("order", order);
