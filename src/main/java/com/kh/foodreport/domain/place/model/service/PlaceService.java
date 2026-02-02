@@ -13,7 +13,7 @@ public interface PlaceService {
 
 	PlaceResponse findAllPlaces(int page, Map<String, Object> params);
 
-	void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images);
+	void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images, Long regionNo);
 
 	PlaceDTO findPlaceByPlaceNo(Long placeNo);
 

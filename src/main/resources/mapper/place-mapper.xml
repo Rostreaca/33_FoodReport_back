@@ -458,6 +458,23 @@
 		   AND 
 		       PLACE_NO = #{placeNo}
 	</delete>
+	
+	<insert id="savePlaceByReviewNo" parameterType="map">
+		INSERT
+		  INTO
+		       FR_PLACE_REGION
+		       (
+		       REGION_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{regionNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+	</insert>
 
 	
 </mapper>

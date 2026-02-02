@@ -54,4 +54,6 @@ public interface PlaceMapper {
 
 	int deleteLike(PlaceLike placeLike);
 
+	int saveRegionByPlaceNo(Map<String, Object> params);
+
 }

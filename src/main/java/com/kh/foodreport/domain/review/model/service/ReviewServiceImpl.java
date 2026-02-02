@@ -160,7 +160,7 @@ public class ReviewServiceImpl implements ReviewService {
 			saveImages(review.getReviewNo(), images);
 		}
 		
-		if(regionNo > 0) {
+		if(regionNo != null) {
 			saveRegion(review.getReviewNo(), regionNo);			
 		}
 

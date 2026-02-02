@@ -57,11 +57,12 @@ public class PlaceController {
 	public ResponseEntity<ApiResponse<Void>> savePlace(@ModelAttribute PlaceDTO place
 													 , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 													 , @RequestParam(name="images", required = false) List<MultipartFile> images
-													 , @AuthenticationPrincipal CustomUserDetails user){
+													 , @AuthenticationPrincipal CustomUserDetails user
+													 , @RequestParam(name="regionNo", required = false) Long regionNo){
 		
 		place.setPlaceWriter(String.valueOf(user.getMemberNo()));
 		
-		placeService.savePlace(place, tagNums, images);
+		placeService.savePlace(place, tagNums, images, regionNo);
 		
 		return ApiResponse.created("맛집 게시글 작성 성공");
 	}
