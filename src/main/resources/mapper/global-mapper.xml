@@ -28,7 +28,7 @@
 		  <if test = "regionNo != 0">
 		  LEFT
 		  JOIN
-		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.REVIEW_NO = PLACE.REVIEW_NO)
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
 		  </if>
 	     WHERE
 	           PLACE.STATUS = 'Y'
@@ -150,7 +150,7 @@
 		       FR_REGION REGION ON (REGION.REGION_NO = PLACEREGION.REGION_NO)
 		       <if test="regionNo != 0">
 		 WHERE
-		       REGION_NO = #{regionNo}
+		       REGION.REGION_NO = #{regionNo}
 			   </if>
 		 ORDER
 		    BY 
