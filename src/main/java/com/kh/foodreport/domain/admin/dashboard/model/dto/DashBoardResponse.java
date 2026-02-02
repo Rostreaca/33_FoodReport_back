@@ -20,7 +20,7 @@ public class DashBoardResponse {
 	private Long todayTotalReply;
 	
 	// 주간 멤버 데이터
-	private List<Long> weeklyNewMember;
+	private List<DailyMember> weeklyNewMember;
 	
 	// 사용된 인기 태그
 	private List<DashBoardTag> popularTags;

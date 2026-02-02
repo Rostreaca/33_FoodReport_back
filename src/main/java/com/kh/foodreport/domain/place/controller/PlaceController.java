@@ -40,10 +40,12 @@ public class PlaceController {
 	public ResponseEntity<ApiResponse<PlaceResponse>> findAllPlaces(@RequestParam(name="page", defaultValue = "1") int page
 																  , @RequestParam(name="keyword", defaultValue = "") String keyword
 																  , @RequestParam(name="order", defaultValue = "createDate") String order
-																  , @RequestParam(name="tagNo" , defaultValue = "0") Long tagNo){
+																  , @RequestParam(name="tagNo" , defaultValue = "0") Long tagNo
+																  , @RequestParam(name="regionNo", defaultValue = "0") Long regionNo){
 		
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("regionNo", regionNo);
 		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
 		params.put("order", order);
