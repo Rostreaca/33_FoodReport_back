@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.member.model.dao.AdminDashBoardMapper">
+	
+	<!-- 인기있는 태그 5순위 -->
+	<select id="getCountTag" resultType="DashBoardTag">
+	SELECT 
+		   T.TAG_TITLE AS tagName
+		 , COUNT(RT.REVIEW_NO) count
+	  FROM
+	  	   FR_REVIEW_TAG RT
+	  LEFT
+	  JOIN
+		   FR_TAG T ON T.TAG_NO = RT.TAG_NO
+	 GROUP
+	    BY
+		   T.TAG_NO , T.TAG_TITLE
+	ORDER 
+	   BY
+		  count DESC
+	FETCH FIRST 5 ROWS ONLY
+	</select>
+	
+	
+</mapper>

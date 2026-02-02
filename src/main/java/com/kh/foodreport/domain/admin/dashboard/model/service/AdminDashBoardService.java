@@ -1,9 +1,9 @@
 package com.kh.foodreport.domain.admin.dashboard.model.service;
 
-import java.util.List;
+import com.kh.foodreport.domain.admin.dashboard.model.dto.DashBoardResponse;
 
 public interface AdminDashBoardService {
 	
-	List<?> getDashBoard();
+	DashBoardResponse getDashBoard();
 	
 }

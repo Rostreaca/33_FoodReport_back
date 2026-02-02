@@ -23,10 +23,10 @@ public class DashBoardResponse {
 	private List<Long> weeklyNewMember;
 	
 	// 사용된 인기 태그
-	private List<Long> popularTags;
+	private List<DashBoardTag> popularTags;
 	
 	// 특정 지역에 포함된 리뷰 수
-	private List<Long> popularRegion;
+	private List<DashBoardRegion> popularRegion;
 	
 
 }

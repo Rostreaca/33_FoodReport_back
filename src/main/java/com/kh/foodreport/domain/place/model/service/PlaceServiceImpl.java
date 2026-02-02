@@ -66,7 +66,7 @@ public class PlaceServiceImpl implements PlaceService{
 	
 	@Transactional
 	@Override
-	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
+	public void savePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images, Long regionNo) {
 		
 		placeValiator.validatePlace(place);
 		
@@ -83,6 +83,27 @@ public class PlaceServiceImpl implements PlaceService{
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
 		if (images != null && !images.isEmpty()) {
 			saveImages(place.getPlaceNo(), images);
+		}
+		
+		if (regionNo != null ) {
+			saveRegion(place.getPlaceNo(), regionNo);
+		}
+		
+	}
+	
+	private void saveRegion(Long placeNo, Long regionNo) {
+		
+		GlobalValidator.validateNo(regionNo, "유효하지 않은 지역번호입니다.");
+		
+		Map<String, Object> params = new HashMap<>();
+		
+		params.put("placeNo", placeNo);
+		params.put("regionNo", regionNo);
+		
+		int placeResult = placeMapper.saveRegionByPlaceNo(params);
+		
+		if(placeResult == 0) {
+			throw new ObjectCreationException("맛집에 지역을 추가하는 과정에서 문제가 발생하였습니다.");
 		}
 		
 	}
