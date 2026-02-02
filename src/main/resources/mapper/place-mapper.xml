@@ -113,6 +113,14 @@
 		  	     JOIN
 		  	          FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
 	  	          </if>
+	  	          <if test="regionNo != 0">
+				 LEFT
+				 JOIN
+				      FR_PLACE_REGION PLACEREGION ON (PLACE.PLACE_NO = PLACEREGION.PLACE_NO)
+				 LEFT
+				 JOIN
+				      FR_REGION REGION ON (REGION.REGION_NO = PLACEREGION.REGION_NO)
+				  </if>
 		  	    WHERE
 		              PLACE.STATUS = 'Y'
 				 	<if test="keyword != ''">
@@ -123,6 +131,10 @@
 		 		  AND
 		       		  TAG.TAG_NO = #{tagNo}
 		   			</if>
+		   			<if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
+					</if>
 		   		ORDER
 				   BY 
 				 <choose>
