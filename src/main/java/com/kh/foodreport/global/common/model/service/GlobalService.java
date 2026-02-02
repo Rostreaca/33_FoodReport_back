@@ -8,9 +8,9 @@ import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 public interface GlobalService {
 
-	ReviewResponse findAllReviewsByKeyword(String keyword, int page, Long tagNo);
+	ReviewResponse findAllReviewsByKeyword(String keyword, int page, Long tagNo, Long regionNo);
 
-	PlaceResponse findAllPlacesByKeyword(String keyword, int page, Long tagNo);
+	PlaceResponse findAllPlacesByKeyword(String keyword, int page, Long tagNo, Long regionNo);
 
 	List<TagDTO> findAllTags();
 

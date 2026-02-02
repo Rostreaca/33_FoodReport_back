@@ -30,7 +30,7 @@ public class GlobalServiceImpl implements GlobalService{
 	private final Pagenation pagenation;
 
 	@Override
-	public ReviewResponse findAllReviewsByKeyword(String keyword, int page, Long tagNo) {
+	public ReviewResponse findAllReviewsByKeyword(String keyword, int page, Long tagNo, Long regionNo) {
 		
 		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
@@ -38,16 +38,15 @@ public class GlobalServiceImpl implements GlobalService{
 
 		Map<String, Object> params = new HashMap<>();
 		
+		params.put("regionNo", regionNo);
 		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
 		
 		int listCount = globalMapper.countByReviews(params);
-		
-		List<ReviewDTO> reviews = new ArrayList<>();
 
 		params.putAll(pagenation.getPageRequest(listCount, page, 3));
 		
-		reviews = globalMapper.findAllReviews(params);
+		List<ReviewDTO> reviews = globalMapper.findAllReviews(params);
 		
 		ReviewResponse response = new ReviewResponse(reviews, (PageInfo)params.get("pageInfo"));
 		
@@ -55,7 +54,7 @@ public class GlobalServiceImpl implements GlobalService{
 	}
 
 	@Override
-	public PlaceResponse findAllPlacesByKeyword(String keyword, int page, Long tagNo) {
+	public PlaceResponse findAllPlacesByKeyword(String keyword, int page, Long tagNo, Long regionNo) {
 		
 		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
 		
@@ -63,17 +62,16 @@ public class GlobalServiceImpl implements GlobalService{
 		
 
 		Map<String, Object> params = new HashMap<>();
-		
+
+		params.put("regionNo", regionNo);
 		params.put("tagNo", tagNo);
 		params.put("keyword", keyword);
-		
-		List<PlaceDTO> places = new ArrayList<>();
-		
+				
 		int listCount = globalMapper.countByPlaces(params);
 
 		params.putAll(pagenation.getPageRequest(listCount, page, 3));
 		
-		places = globalMapper.findAllPlaces(params);		
+		List<PlaceDTO> places = globalMapper.findAllPlaces(params);		
 		
 		PlaceResponse response = new PlaceResponse(places, (PageInfo)params.get("pageInfo"));
 		

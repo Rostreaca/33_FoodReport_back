@@ -4,13 +4,15 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.foodreport.global.common.model.dao.GlobalMapper">
 	
-	<sql id="selectImagesAndTags">
+	<sql id="selectImagesAndTagsAndRegion">
 		     , IMG.IMAGE_NO imageNo
 		     , IMG.CHANGE_NAME changeName
 		     , IMG.IMAGE_LEVEL imageLevel
 		     , TAG.TAG_NO tagNo
 		     , TAG.TAG_TITLE tagTitle
 		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
 	</sql>
 	
 	<select id="countByPlaces" resultType="_int" parameterType="map">
@@ -22,6 +24,11 @@
 		  LEFT
 		  JOIN
 		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  </if>		  
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.REVIEW_NO = PLACE.REVIEW_NO)
 		  </if>
 	     WHERE
 	           PLACE.STATUS = 'Y'
@@ -30,6 +37,10 @@
 		  <if test="tagNo != 0">
 		   AND
 		       TAG_NO = #{tagNo}
+		   </if>
+		  <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
 		   </if>
 		
 	</select>
@@ -44,6 +55,10 @@
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="placeCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
 		<collection property="placeImages" ofType="PlaceImageDTO">
 			<id column="imageNo" property="imageNo"/>
 			<result column="changeName" property="changeName"/>
@@ -71,7 +86,7 @@
 		         WHERE
 		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
 		     , PLACE.CREATE_DATE placeCreateDate
-		     <include refid="selectImagesAndTags" />
+		     <include refid="selectImagesAndTagsAndRegion" />
 		  FROM
 		  	   (
 		  	   SELECT 
@@ -127,6 +142,16 @@
 		  LEFT
 		  JOIN
 		       FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REGION.REGION_NO = PLACEREGION.REGION_NO)
+		       <if test="regionNo != 0">
+		 WHERE
+		       REGION_NO = #{regionNo}
+			   </if>
 		 ORDER
 		    BY 
 		       PLACE.CREATE_DATE DESC
@@ -140,10 +165,17 @@
 		       COUNT(*)
 		  FROM
 		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
 		  <if test="tagNo != 0">
 		  LEFT
 		  JOIN
 		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
+		  <if test="regionNo != 0">
+		  LEFT
+		  JOIN
+		  	   FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
 		  </if>
 	     WHERE
 	           REVIEW.STATUS = 'Y'
@@ -153,6 +185,10 @@
 		   AND
 		       TAG_NO = #{tagNo}
 		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		  	   REGION_NO = #{regionNo}
+		  </if>
 		
 	</select>
 	
@@ -165,6 +201,10 @@
 		<result column="viewCount" property="viewCount"/>
 		<result column="likes" property="likes" />
 		<result column="reviewCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
 		<collection property="reviewImages" ofType="ReviewImageDTO">
 			<id column="imageNo" property="imageNo"/>
 			<result column="changeName" property="changeName"/>
@@ -193,7 +233,7 @@
 		         WHERE
 		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE reviewCreateDate
-		     <include refid="selectImagesAndTags" />
+		     <include refid="selectImagesAndTagsAndRegion" />
 		  FROM
 		  	   (
 		  	   SELECT 
@@ -249,6 +289,16 @@
 		  LEFT
 		  JOIN
 		       FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REGION.REGION_NO = REVIEWREGION.REGION_NO)
+		       <if test="regionNo != 0">
+	     WHERE
+	           REGION.REGION_NO = #{regionNo}
+			   </if>
 		 ORDER
 		    BY 
 		       REVIEW.CREATE_DATE DESC
