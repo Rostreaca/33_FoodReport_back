@@ -15,6 +15,11 @@
 		  LEFT
 		  JOIN
 		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  </if>		  
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.REVIEW_NO = PLACE.REVIEW_NO)
 		  </if>
 	     WHERE
 	           PLACE.STATUS = 'Y'
@@ -25,6 +30,10 @@
 		  <if test="tagNo != 0">
 		   AND
 		       TAG_NO = #{tagNo}
+		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
 		   </if>
 		
 	</select>

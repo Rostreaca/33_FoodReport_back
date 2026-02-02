@@ -30,10 +30,11 @@ public class GlobalController {
 	@GetMapping("/searchReviews")
 	public ResponseEntity<ApiResponse<ReviewResponse>> findAllReviewsByKeyword(@RequestParam(name="keyword" , defaultValue = "") String keyword
 																			  , @RequestParam(name="page" , defaultValue = "1") int page
-																			  , @RequestParam(name="tagNo", defaultValue = "0") Long tagNo){
+																			  , @RequestParam(name="tagNo", defaultValue = "0") Long tagNo
+																			  , @RequestParam(name="regionNo", defaultValue= "0") Long regionNo){
 
 		
-		ReviewResponse response = globalService.findAllReviewsByKeyword(keyword, page, tagNo);
+		ReviewResponse response = globalService.findAllReviewsByKeyword(keyword, page, tagNo, regionNo);
 		
 		return ApiResponse.ok(response, "리뷰 조회에 성공하였습니다.");
 	}
@@ -41,8 +42,9 @@ public class GlobalController {
 	@GetMapping("/searchPlaces")
 	public ResponseEntity<ApiResponse<PlaceResponse>> findAllPlacesByKeyword(@RequestParam(name="keyword" , defaultValue = "") String keyword
 																			, @RequestParam(name="page" , defaultValue = "1") int page
-																			, @RequestParam(name="tagNo", defaultValue = "0") Long tagNo){
-		PlaceResponse response = globalService.findAllPlacesByKeyword(keyword, page, tagNo);
+																			, @RequestParam(name="tagNo", defaultValue = "0") Long tagNo
+																			, @RequestParam(name="regionNo", defaultValue = "0") Long regionNo){
+		PlaceResponse response = globalService.findAllPlacesByKeyword(keyword, page, tagNo, regionNo);
 
 		return ApiResponse.ok(response, "맛집 조회에 성공하였습니다.");
 	}
