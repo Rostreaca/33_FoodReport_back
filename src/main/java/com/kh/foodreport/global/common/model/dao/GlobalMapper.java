@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 @Mapper
@@ -21,5 +22,7 @@ public interface GlobalMapper {
 	int countByReviews(Map<String, Object> params);
 
 	int countByPlaces(Map<String, Object> params);
+
+	List<RegionDTO> findAllRegions();
 
 }

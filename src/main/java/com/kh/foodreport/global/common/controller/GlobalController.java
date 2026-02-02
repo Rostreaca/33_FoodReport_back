@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.foodreport.domain.place.model.dto.PlaceDTO;
 import com.kh.foodreport.domain.place.model.dto.PlaceResponse;
-import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.global.common.ApiResponse;
 import com.kh.foodreport.global.common.model.service.GlobalService;
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -56,5 +55,13 @@ public class GlobalController {
 		
 		return ApiResponse.ok(tags, "태그 조회 성공");
 		
+	}
+	
+	@GetMapping("/regions")
+	public ResponseEntity<ApiResponse<List<RegionDTO>>> findAllRegions(){
+		
+		List<RegionDTO> regions = globalService.findAllRegions();
+		
+		return ApiResponse.ok(regions, "지역 조회 성공");
 	}
 }
