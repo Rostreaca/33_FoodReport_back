@@ -165,7 +165,7 @@
 		  FROM
 		  	   (
 		  	   SELECT 
-		  	          REVIEW_NO
+		  	          REVIEW.REVIEW_NO
 				    , REVIEW_TITLE
 				    , REVIEW_CONTENT
 				    , MEMBER.MEMBER_NO
@@ -184,11 +184,19 @@
 	  	          <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
-		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	          FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
 		  	     LEFT
 		  	     JOIN
-		  	          FR_TAG TAG USING (TAG_NO)
+		  	          FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
 	  	          </if>
+	  	          <if test="regionNo != 0">
+			     LEFT
+			     JOIN
+			          FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+			     LEFT
+			     JOIN
+			          FR_REGION REGION ON (REVIEWREGION.REGION_NO = REGION.REGION_NO)
+				  </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
 				 	<if test="keyword != ''">
@@ -198,6 +206,10 @@
 					<if test="tagNo != 0">
 				  AND
 				      TAG_NO = #{tagNo}
+				    </if>					
+				    <if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
 				    </if>
 		   		ORDER
 				   BY 

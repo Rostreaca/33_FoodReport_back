@@ -90,7 +90,7 @@
 		  FROM
 		  	   (
 		  	   SELECT 
-		  	          PLACE_NO
+		  	          PLACE.PLACE_NO
 				    , PLACE_TITLE
 				    , PLACE_CONTENT
 				    , MEMBER_NO
@@ -112,6 +112,14 @@
 		  	     JOIN
 		  	          FR_TAG USING (TAG_NO)
 	  	          </if>
+	  	          <if test="regionNo != 0">
+				 LEFT
+				 JOIN
+				      FR_PLACE_REGION PLACEREGION ON (PLACE.PLACE_NO = PLACEREGION.PLACE_NO)
+				 LEFT
+				 JOIN
+				      FR_REGION REGION ON (PLACEREGION.REGION_NO = REGION.REGION_NO)
+				  </if>
 		  	    WHERE
 		              PLACE.STATUS = 'Y'
 				  AND
@@ -119,6 +127,10 @@
 				    <if test="tagNo != 0">
 				  AND
 				      TAG_NO = #{tagNo}
+		  			 </if>
+		  			 <if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
 		  			 </if>
 		   		ORDER
 				   BY 
@@ -187,7 +199,7 @@
 		   </if>
 		   <if test="regionNo != 0">
 		   AND
-		  	   REGION_NO = #{regionNo}
+		  	   REVIEWREGION.REGION_NO = #{regionNo}
 		  </if>
 		
 	</select>
@@ -259,6 +271,14 @@
 		  		 JOIN
 		       		  FR_TAG USING (TAG_NO)
 	  	          </if>
+	  	          <if test="regionNo != 0">
+		         LEFT
+		         JOIN
+		              FR_REVIEW_REGION USING (REVIEW_NO)
+		         LEFT
+		         JOIN
+		              FR_REGION USING (REGION_NO)
+		          </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
 				  AND
@@ -266,6 +286,10 @@
 				    <if test="tagNo != 0">
 				  AND
 					  TAG_NO = #{tagNo}
+					</if>				    
+					<if test="regionNo != 0">
+				  AND
+					  REGION_NO = #{regionNo}
 					</if>
 		   		ORDER
 				   BY 
