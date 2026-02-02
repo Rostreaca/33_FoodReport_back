@@ -102,6 +102,10 @@ public class ReviewServiceImpl implements ReviewService {
 	
 	private void saveTags(Long reviewNo, List<Long> tagNums) {
 
+		tagNums.forEach(tagNo -> {
+			GlobalValidator.validateNo(tagNo, "유효하지 않은 태그번호입니다.");
+		});
+		
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("reviewNo", reviewNo);
@@ -118,10 +122,12 @@ public class ReviewServiceImpl implements ReviewService {
 	
 	private void saveRegion(Long reviewNo, Long regionNo) {
 		
+		GlobalValidator.validateNo(regionNo, "유효하지 않은 지역번호입니다.");
+		
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("reviewNo", reviewNo);
-		params.put("region", regionNo);
+		params.put("regionNo", regionNo);
 		
 		int regionResult = reviewMapper.saveRegionByReviewNo(params);
 		
