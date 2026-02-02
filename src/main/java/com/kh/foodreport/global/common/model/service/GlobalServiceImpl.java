@@ -1,6 +1,5 @@
 package com.kh.foodreport.global.common.model.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import com.kh.foodreport.domain.review.model.dto.ReviewDTO;
 import com.kh.foodreport.domain.review.model.dto.ReviewResponse;
 import com.kh.foodreport.global.common.model.dao.GlobalMapper;
 import com.kh.foodreport.global.exception.InvalidRequestException;
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -88,6 +88,18 @@ public class GlobalServiceImpl implements GlobalService{
 		}
 		
 		return tags;
+	}
+
+	@Override
+	public List<RegionDTO> findAllRegions() {
+		
+		List<RegionDTO> regions = globalMapper.findAllRegions();
+		
+		if(regions == null || regions.isEmpty()) {
+			throw new InvalidRequestException("지역 조회 중 오류가 발생했습니다.");
+		}
+		
+		return regions;
 	}
 	
 	
