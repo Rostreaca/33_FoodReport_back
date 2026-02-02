@@ -115,10 +115,25 @@ public class ReviewServiceImpl implements ReviewService {
 
 		
 	}
+	
+	private void saveRegion(Long reviewNo, Long regionNo) {
+		
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("reviewNo", reviewNo);
+		params.put("region", regionNo);
+		
+		int regionResult = reviewMapper.saveRegionByReviewNo(params);
+		
+		if(regionResult == 0) {
+			throw new ObjectCreationException("리뷰에 지역을 추가하는 과정에서 문제가 발생했습니다.");
+		}
+		
+	}
 
 	@Transactional
 	@Override
-	public void saveReview(ReviewDTO review, List<Long> tagNums,List<MultipartFile> images) {
+	public void saveReview(ReviewDTO review, List<Long> tagNums,List<MultipartFile> images, Long regionNo) {
 		
 		reviewValidator.validateReview(review);
 		
@@ -138,6 +153,8 @@ public class ReviewServiceImpl implements ReviewService {
 		if (images != null && !images.isEmpty()) {
 			saveImages(review.getReviewNo(), images);
 		}
+		
+		saveRegion(review.getReviewNo(), regionNo);
 
 	}
 

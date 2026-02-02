@@ -37,11 +37,11 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ApiResponse<String>> saveReview(@ModelAttribute ReviewDTO review, @RequestParam(name = "tagNums", required = false) List<Long> tagNums, @RequestParam(name = "images", required = false) List<MultipartFile> images, @AuthenticationPrincipal CustomUserDetails user,@RequestParam(name="regionNo") Long regionNo){
 		
 		review.setReviewWriter(String.valueOf(user.getMemberNo()));
 		
-		reviewService.saveReview(review, tagNums, images);
+		reviewService.saveReview(review, tagNums, images, regionNo);
 		
 		return ApiResponse.created("생성완료");
 		
