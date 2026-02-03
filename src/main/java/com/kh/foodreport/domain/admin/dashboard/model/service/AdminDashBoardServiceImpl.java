@@ -22,7 +22,6 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService{
 	private final AdminDashBoardMapper dashBoardMapper;
 	
 	@Override
-	@Transactional(readOnly = true)
 	public DashBoardResponse getDashBoard() {
 		
 		DashBoardResponse response = new DashBoardResponse();
