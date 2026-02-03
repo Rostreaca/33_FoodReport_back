@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.domain.auth.model.vo.Role;
 import com.kh.foodreport.domain.member.model.dao.MemberMapper;
 import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
 import com.kh.foodreport.domain.member.model.dto.LikeDTO;
@@ -77,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
 										 .password(passwordEncoder.encode(member.getPassword()))
 										 .nickname(member.getNickname())
 										 .phone(member.getPhone())
-										 .role("ROLE_USER")
+										 .role(Role.ROLE_USER.name())
 										 .build();
 
 		// 매퍼 호출
@@ -143,6 +144,7 @@ public class MemberServiceImpl implements MemberService {
 	private CustomUserDetails validatePassword(String password) {
 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+	
 	// 검증이 맞다면
 	if(!passwordEncoder.matches(password, user.getPassword())) {
 		throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
@@ -180,6 +182,7 @@ public class MemberServiceImpl implements MemberService {
 		GlobalValidator.validateNo(memberNo, "유효하지 않은 회원 번호입니다.");
 		
 		MemberDTO member = memberMapper.findByMemberNo(memberNo);
+		log.info("이메일 오나 ? : {}", member.getEmail());
 		
 		if(member == null) {
 			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");		
