@@ -1,6 +1,6 @@
 package com.kh.foodreport.domain.admin.dashboard.model.dto;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class DailyMember {
-	private Date date;
+	private String createDate;
 	private Long count;
 }

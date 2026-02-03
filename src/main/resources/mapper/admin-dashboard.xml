@@ -35,19 +35,19 @@
 	<!-- 주간 회원자 가입 수 -->
 	<select id="getWeeklyNewMember" resultType="DailyMember">
 		<![CDATA[
-    	WITH date_range AS (
-	        SELECT TRUNC(SYSDATE) - LEVEL + 1 AS target_date
+    	WITH DATE_RANGE AS (
+	        SELECT TRUNC(SYSDATE) - LEVEL + 1 AS TARGET_DATE
 	        FROM DUAL
 	        CONNECT BY LEVEL <= 7
 	    )
 	    SELECT
-	        TO_CHAR(dr.target_date, 'YYYY-MM-DD') AS signupDate,
+	        TO_CHAR(dr.TARGET_DATE, 'YYYY-MM-DD') AS createDate,
 	        NVL(COUNT(m.MEMBER_NO), 0) AS count
-	    FROM date_range dr
+	    FROM DATE_RANGE dr
 	    LEFT JOIN FR_MEMBER m 
-	        ON TRUNC(m.CREATE_DATE) = dr.target_date
-	    GROUP BY dr.target_date
-	    ORDER BY dr.target_date ASC
+	        ON TRUNC(m.CREATE_DATE) = dr.TARGET_DATE
+	    GROUP BY dr.TARGET_DATE
+	    ORDER BY dr.TARGET_DATE ASC
 	    ]]>
 	</select>
 	
@@ -68,6 +68,20 @@
 	   BY
 		  count DESC
 	FETCH FIRST 5 ROWS ONLY
+	</select>
+	
+	<select id="getCountRegion" resultType="DashBoardRegion">
+		 SELECT 
+			    r.REGION_NO regionNo,
+			    r.REGION_NAME regionName,
+			    COUNT(DISTINCT rr.REVIEW_NO) AS reviewCount,
+			    COUNT(DISTINCT pr.PLACE_NO) AS placeCount,
+			    COUNT(DISTINCT rr.REVIEW_NO) + COUNT(DISTINCT pr.PLACE_NO) AS totalCount
+			FROM FR_REGION r
+			LEFT JOIN FR_REVIEW_REGION rr ON r.REGION_NO = rr.REGION_NO
+			LEFT JOIN FR_PLACE_REGION pr ON r.REGION_NO = pr.REGION_NO
+			GROUP BY r.REGION_NO, r.REGION_NAME
+			ORDER BY totalCount DESC
 	</select>
 	
 </mapper>

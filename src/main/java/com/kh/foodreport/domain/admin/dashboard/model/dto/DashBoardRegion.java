@@ -13,7 +13,9 @@ import lombok.ToString;
 @ToString
 public class DashBoardRegion {
 	
-	private String regionName;
-	private Long regionNo;
-	
+    private Long regionNo;
+    private String regionName;
+    private Long reviewCount;
+    private Long placeCount;
+    private Long totalCount;
 }
