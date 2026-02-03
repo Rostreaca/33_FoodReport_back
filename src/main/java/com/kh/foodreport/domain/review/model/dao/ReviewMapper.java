@@ -11,6 +11,7 @@ import com.kh.foodreport.domain.review.model.dto.ReviewReplyDTO;
 import com.kh.foodreport.domain.review.model.vo.ReviewImage;
 import com.kh.foodreport.domain.review.model.vo.ReviewLike;
 import com.kh.foodreport.domain.review.model.vo.ReviewReply;
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.Tag;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 
@@ -58,6 +59,8 @@ public interface ReviewMapper {
 	public int deleteTags(Long reviewNo);
 
 	public int saveRegionByReviewNo(Map<String, Object> params);
+
+	public RegionDTO findRegionByReviewNo(Long reviewNo);
 
 	
 }
