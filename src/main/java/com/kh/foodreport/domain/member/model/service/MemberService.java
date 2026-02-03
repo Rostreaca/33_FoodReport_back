@@ -18,7 +18,7 @@ public interface MemberService {
 	
 	void saveImage(Long memberNo, MultipartFile image);
 	
-	MemberDTO findByMemberNo(Long memverNo);
+	MemberDTO findByMemberNo(Long memberNo);
 	
 	void updateMember(Long memberNo, MemberDTO updateMember, MultipartFile image);
 	
