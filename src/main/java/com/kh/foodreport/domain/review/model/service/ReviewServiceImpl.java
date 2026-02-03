@@ -28,6 +28,7 @@ import com.kh.foodreport.global.exception.ReplyCreationException;
 import com.kh.foodreport.global.exception.ReviewCreationException;
 import com.kh.foodreport.global.exception.TagDeleteException;
 import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.region.model.dto.RegionDTO;
 import com.kh.foodreport.global.tag.model.dto.TagDTO;
 import com.kh.foodreport.global.util.PageInfo;
 import com.kh.foodreport.global.util.Pagenation;
@@ -204,11 +205,15 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		List<TagDTO> tags = reviewMapper.findTagByReviewNo(reviewNo);
 		
+		RegionDTO region = reviewMapper.findRegionByReviewNo(reviewNo);
+		
 		review.setReviewImages(images);
 		
 		review.setReviewReplies(reviewReplies);
 		
 		review.setTags(tags);
+		
+		review.setRegion(region);
 		
 		return review;
 	}

@@ -375,6 +375,19 @@
 		       REPLY.CREATE_DATE DESC
 	</select>
 	
+	<select id="findRegionByPlaceNo" resultType="RegionDTO" parameterType="long">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION USING (REGION_NO)
+		 WHERE
+		       PLACE_NO = #{placeNo}
+	</select>
+	
 	<update id="updatePlace" parameterType="PlaceDTO">
 		UPDATE
 		       FR_PLACE

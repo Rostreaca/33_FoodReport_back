@@ -357,6 +357,19 @@
 		       REPLY.CREATE_DATE DESC
 	</select>
 	
+	<select id="findRegionByReviewNo" resultType="RegionDTO" parameterType="long">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION USING (REGION_NO)
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
 	<update id="updateReview" parameterType="ReviewDTO">
 		UPDATE
 		       FR_REVIEW
