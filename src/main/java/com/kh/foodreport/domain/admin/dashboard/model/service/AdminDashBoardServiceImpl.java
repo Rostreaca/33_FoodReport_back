@@ -32,8 +32,6 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService{
 		response.setWeeklyNewMember(getWeeklyNewMember()); // 주간 회원가입 수
 		response.setPopularTags(getCountTag());  // 인기 태그 조회
 		response.setPopularRegion(getCountRegion()); // 인기 지역 조회
-		
-		log.info("response : {}", response);
 		return response;
 	}
 	

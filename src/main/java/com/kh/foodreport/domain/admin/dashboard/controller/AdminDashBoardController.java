@@ -22,7 +22,6 @@ public class AdminDashBoardController {
 	
 	@GetMapping
 	public ResponseEntity<ApiResponse<DashBoardResponse>> getDashBoard() {
-		log.info("dashboard 호출됨 : {} ");
 		return ApiResponse.ok(boardService.getDashBoard(), "조회 성공!");
 	}
 	
