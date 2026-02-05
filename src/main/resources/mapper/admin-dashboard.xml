@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.dashboard.model.dao.AdminDashBoardMapper">
+	
+	
+	<!-- 오늘 하루 신규 가입자 수 -->
+	<select id="getTodayNewMembers" resultType="long">
+		SELECT 
+			   COUNT(*)
+		  FROM 
+			   FR_MEMBER
+		WHERE TRUNC(CREATE_DATE) = TRUNC(SYSDATE)
+	</select>
+	
+	<!-- 오늘 하루 작성된 리뷰 수 -->
+	<select id="getTodayNewReviews" resultType="long">
+		SELECT 
+			   COUNT(*)
+		  FROM 
+			   FR_REVIEW
+		WHERE TRUNC(CREATE_DATE) = TRUNC(SYSDATE)
+	</select>
+	
+	<!-- 오늘 하루 작성된 리뷰 댓글 수-->
+	<select id="getTodayNewReplies" resultType="long">
+		SELECT 
+			   COUNT(*)
+		  FROM 
+			   FR_REVIEW_REPLY
+		WHERE TRUNC(CREATE_DATE) = TRUNC(SYSDATE)
+	</select>
+	
+	<!-- 주간 회원자 가입 수 -->
+	<select id="getWeeklyNewMember" resultType="DailyMember">
+		<![CDATA[
+    	WITH DATE_RANGE AS (
+	        SELECT TRUNC(SYSDATE) - LEVEL + 1 AS TARGET_DATE
+	        FROM DUAL
+	        CONNECT BY LEVEL <= 7
+	    )
+	    SELECT
+	        TO_CHAR(dr.TARGET_DATE, 'YYYY-MM-DD') AS createDate,
+	        NVL(COUNT(m.MEMBER_NO), 0) AS count
+	    FROM DATE_RANGE dr
+	    LEFT JOIN FR_MEMBER m 
+	        ON TRUNC(m.CREATE_DATE) = dr.TARGET_DATE
+	    GROUP BY dr.TARGET_DATE
+	    ORDER BY dr.TARGET_DATE ASC
+	    ]]>
+	</select>
+	
+	<!-- 인기있는 태그 5순위 -->
+	<select id="getCountTag" resultType="DashBoardTag">
+	SELECT 
+		   T.TAG_TITLE AS tagName
+		 , COUNT(RT.REVIEW_NO) count
+	  FROM
+	  	   FR_REVIEW_TAG RT
+	  LEFT
+	  JOIN
+		   FR_TAG T ON T.TAG_NO = RT.TAG_NO
+	 GROUP
+	    BY
+		   T.TAG_NO , T.TAG_TITLE
+	ORDER 
+	   BY
+		  count DESC
+	FETCH FIRST 5 ROWS ONLY
+	</select>
+	
+	<select id="getCountRegion" resultType="DashBoardRegion">
+		 SELECT 
+			    r.REGION_NO regionNo,
+			    r.REGION_NAME regionName,
+			    COUNT(DISTINCT rr.REVIEW_NO) AS reviewCount,
+			    COUNT(DISTINCT pr.PLACE_NO) AS placeCount,
+			    COUNT(DISTINCT rr.REVIEW_NO) + COUNT(DISTINCT pr.PLACE_NO) AS totalCount
+			FROM FR_REGION r
+			LEFT JOIN FR_REVIEW_REGION rr ON r.REGION_NO = rr.REGION_NO
+			LEFT JOIN FR_PLACE_REGION pr ON r.REGION_NO = pr.REGION_NO
+			GROUP BY r.REGION_NO, r.REGION_NAME
+			ORDER BY totalCount DESC
+	</select>
+	
+</mapper>

@@ -52,6 +52,8 @@
 	           FR_MEMBER
 	 	 WHERE 
 	       	   EMAIL = #{username}
+	       AND 
+	           STATUS = 'Y'
 	</select>
 	
 	<!-- 비밀번호 변경 -->
@@ -149,6 +151,7 @@
 	
 	<resultMap id="findByMemberNo" type="memberDTO">
 		<id column="memberNo" property="memberNo"/>
+		<result column="email" property="email"/>
 		<result column="nickname" property="nickname"/>
 		<result column="phone" property="phone"/>
 		<result column="introduce" property="introduce" />
