@@ -36,4 +36,6 @@ public class ReviewDTO {
 	private List<ReviewImageDTO> reviewImages;
 	private List<ReviewReplyDTO> reviewReplies;
 	private RegionDTO region;
+	
+	private List<Long> likeMembers;
 }
