@@ -205,7 +205,7 @@
 					</if>
 					<if test="tagNo != 0">
 				  AND
-				      TAG_NO = #{tagNo}
+				      TAG.TAG_NO = #{tagNo}
 				    </if>					
 				    <if test="regionNo != 0">
 				  AND
