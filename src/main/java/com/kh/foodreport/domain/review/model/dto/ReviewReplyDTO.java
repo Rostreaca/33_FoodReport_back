@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.review.model.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,6 @@ public class ReviewReplyDTO {
 	private Date deleteDate;
 	private String status;
 	private Long refReviewNo;
+	
+	private List<Long> likeMembers;
 }
