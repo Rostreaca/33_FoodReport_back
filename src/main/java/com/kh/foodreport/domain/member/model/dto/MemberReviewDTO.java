@@ -23,5 +23,6 @@ public class MemberReviewDTO {
 	private String deleteDate;
 	private String nickname;
 	private int likes; 
+	private String thumbnail;
 
 }
