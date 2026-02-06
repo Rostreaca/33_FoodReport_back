@@ -101,7 +101,7 @@
 				         FROM
 				              FR_PLACE_LIKE
 				        WHERE
-				              PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+				              PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
 				    , PLACE.CREATE_DATE
 		  	     FROM
 		  	          FR_PLACE PLACE
@@ -145,6 +145,7 @@
 				      PLACE.CREATE_DATE DESC
 					 </otherwise>
 				 </choose>
+					, PLACE.PLACE_NO DESC
 	 				<if test="tagNo != 0">
 			 		, TAG_TITLE ASC
 					</if>

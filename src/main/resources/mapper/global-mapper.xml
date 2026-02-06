@@ -107,10 +107,10 @@
 		  	      <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
-		  	          FR_PLACE_TAG USING (PLACE_NO)
+		  	          FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
 		  	     LEFT
 		  	     JOIN
-		  	          FR_TAG USING (TAG_NO)
+		  	          FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
 	  	          </if>
 	  	          <if test="regionNo != 0">
 				 LEFT
@@ -126,7 +126,7 @@
 				      PLACE_TITLE LIKE '%' || #{keyword} || '%'
 				    <if test="tagNo != 0">
 				  AND
-				      TAG_NO = #{tagNo}
+				      TAG.TAG_NO = #{tagNo}
 		  			 </if>
 		  			 <if test="regionNo != 0">
 				  AND
@@ -249,7 +249,7 @@
 		  FROM
 		  	   (
 		  	   SELECT 
-		  	          REVIEW_NO
+		  	          REVIEW.REVIEW_NO
 				    , REVIEW_TITLE
 				    , REVIEW_CONTENT
 				    , MEMBER_NO
@@ -266,18 +266,18 @@
 	  	          <if test="tagNo != 0">
 		  	     LEFT
 		  	     JOIN
-		  	          FR_REVIEW_TAG USING (REVIEW_NO)
+		  	          FR_REVIEW_TAG REVIEWTAG ON (REVIEW.REVIEW_NO = REVIEWTAG.REVIEW_NO)
 		  	     LEFT
 		  		 JOIN
-		       		  FR_TAG USING (TAG_NO)
+		       		  FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
 	  	          </if>
 	  	          <if test="regionNo != 0">
 		         LEFT
 		         JOIN
-		              FR_REVIEW_REGION USING (REVIEW_NO)
+		              FR_REVIEW_REGION REVIEWREGION ON (REVIEW.REVIEW_NO = REVIEWREGION.REVIEW_NO)
 		         LEFT
 		         JOIN
-		              FR_REGION USING (REGION_NO)
+		              FR_REGION REGION ON (REGION.REGION_NO = REVIEWREGION.REGION_NO)
 		          </if>
 		  	    WHERE
 		              REVIEW.STATUS = 'Y'
@@ -285,11 +285,11 @@
 				      REVIEW_TITLE LIKE '%' || #{keyword} || '%'
 				    <if test="tagNo != 0">
 				  AND
-					  TAG_NO = #{tagNo}
+					  TAG.TAG_NO = #{tagNo}
 					</if>				    
 					<if test="regionNo != 0">
 				  AND
-					  REGION_NO = #{regionNo}
+					  REGION.REGION_NO = #{regionNo}
 					</if>
 		   		ORDER
 				   BY 
