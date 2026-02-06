@@ -280,9 +280,24 @@
 		
 	</update>
 	
-	<select id="findPlaceByPlaceNo" resultType="PlaceDTO" parameterType="long">
+	<resultMap id="findPlace" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="placeWriter" property="placeWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate"/>
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>		
+	</resultMap>
+	
+	<select id="findPlaceByPlaceNo" resultMap="findPlace" parameterType="long">
 		SELECT
-			   PLACE_NO placeNo
+			   PLACE.PLACE_NO placeNo
 			 , PLACE_TITLE placeTitle
 			 , PLACE_CONTENT placeContent
 			 , MEMBER.MEMBER_NO memberNo
@@ -296,6 +311,7 @@
 		         WHERE
 		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
 			 , PLACE.CREATE_DATE createDate
+			 , PLACELIKE.MEMBER_NO likeMembers
 		  FROM
 		       FR_PLACE PLACE
 		  JOIN
@@ -303,8 +319,11 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_LIKE PLACELIKE ON (PLACELIKE.PLACE_NO = PLACE.PLACE_NO)
 		 WHERE
-		       PLACE_NO = #{placeNo}
+		       PLACE.PLACE_NO = #{placeNo}
 		   AND
 		       PLACE.STATUS = 'Y'
 	</select>
@@ -345,9 +364,22 @@
 		       TAG_TITLE ASC
 	</select>
 	
-	<select id="findRepliesByPlaceNo" resultType="PlaceReplyDTO" parameterType="long">
+	<resultMap id="findReplies" type="PlaceReplyDTO">
+		<id column="replyNo" property="replyNo"/>
+		<result column="replyContent" property="replyContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="replyWriter" property="replyWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate" />
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findRepliesByPlaceNo" resultMap="findReplies" parameterType="long">
 		SELECT
-		       REPLY_NO replyNo
+		       REPLY.REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
 		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
@@ -359,6 +391,7 @@
 		         WHERE
 		               REPLY.REPLY_NO = FR_PLACE_REPLY_LIKE.REPLY_NO) AS likes
 		     , REPLY.CREATE_DATE createDate
+		     , REPLYLIKE.MEMBER_NO likeMembers
 		  FROM
 		       FR_PLACE_REPLY REPLY
 		  JOIN
@@ -366,6 +399,9 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REPLY_LIKE REPLYLIKE ON (REPLYLIKE.REPLY_NO = REPLY.REPLY_NO)
 		 WHERE
 		       REPLY.STATUS = 'Y'
 		   AND

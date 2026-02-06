@@ -36,4 +36,6 @@ public class PlaceDTO {
 	private List<PlaceReplyDTO> placeReplies;
 	private RegionDTO region;
 	
+	private List<Long> likeMembers;
+	
 }

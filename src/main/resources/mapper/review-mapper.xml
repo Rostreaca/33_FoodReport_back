@@ -353,6 +353,7 @@
 		<result column="replyWriter" property="replyWriter"/>
 		<result column="profileImage" property="profileImage"/>
 		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate" />
 		<collection property="likeMembers" ofType="Long">
 			<result column="likeMembers" property="likeMembers"/>
 		</collection>

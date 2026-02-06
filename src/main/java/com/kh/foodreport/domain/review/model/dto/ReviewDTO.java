@@ -18,7 +18,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class ReviewDTO {
-
 	private Long reviewNo;
 	private String reviewTitle;
 	private String reviewContent;

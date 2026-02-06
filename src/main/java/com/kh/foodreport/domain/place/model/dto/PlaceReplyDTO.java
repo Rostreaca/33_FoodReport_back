@@ -1,6 +1,7 @@
 package com.kh.foodreport.domain.place.model.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,6 @@ public class PlaceReplyDTO {
 	private Date deleteDate;
 	private String status;
 	private Long refPlaceNo;
-	
+
+	private List<Long> likeMembers;
 }
