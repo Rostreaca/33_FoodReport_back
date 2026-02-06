@@ -175,7 +175,7 @@
 				         FROM
 				              FR_REVIEW_LIKE
 				        WHERE
-				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				              REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
 				    , REVIEW.CREATE_DATE
 		  	     FROM
 		  	          FR_REVIEW REVIEW
@@ -218,9 +218,10 @@
 					  LIKES DESC
 					</when>
 					 <otherwise>
-				       CREATE_DATE DESC
+				       REVIEW.CREATE_DATE DESC
 					 </otherwise>
 				 </choose>
+			 		 , REVIEW.REVIEW_NO DESC
  					<if test="tagNo != 0">
 					 , TAG_TITLE ASC
 					</if>
