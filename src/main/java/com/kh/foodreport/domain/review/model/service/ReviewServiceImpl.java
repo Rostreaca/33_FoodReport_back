@@ -220,8 +220,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images) {
-
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, List<Long> deleteImageNums) {
+		
 		GlobalValidator.validateNo(review.getReviewNo(), "유효하지 않은 게시글 번호입니다.");
 		reviewValidator.validateReview(review);
 
@@ -232,7 +232,7 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 
 		if(images != null && !images.isEmpty()) {
-			updateImages(review.getReviewNo(), images);
+			updateImages(review.getReviewNo(), images, deleteImageNums);
 		}
 
 		if(tagNums != null && !tagNums.isEmpty()) {
@@ -256,14 +256,18 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 	
 	
-	private void updateImages(Long reviewNo, List<MultipartFile> images) {
+	private void updateImages(Long reviewNo, List<MultipartFile> images, List<Long> deleteImageNums) {
 		
 		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
 		
-		if (reviewImages != null && !reviewImages.isEmpty()) { // 기존 이미지 X
-
+		log.info("진입 확인 : {}", reviewImages);
+		
+		if (reviewImages != null && !reviewImages.isEmpty()) {
 			reviewImages.forEach(image -> { // 반복
-				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+				log.info("트루 펄스 테스트 : {}",deleteImageNums.contains(image.getImageNo()));
+				if(deleteImageNums != null && deleteImageNums.contains(image.getImageNo())) {
+					deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+				}
 			});
 		}
 		
