@@ -1,13 +1,10 @@
 package com.kh.foodreport.global.config.filter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.http.HttpHeaders;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -49,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		String uri = request.getRequestURI();
 		// log.info("요청 확인{}", uri);
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if(authorization == null || uri.equals("/auth/login")) {
+		if(authorization == null || uri.equals("/api/auth/login")) {
 			filterChain.doFilter(request, response);
 			return;
 		}

@@ -264,6 +264,7 @@
 			 , REVIEW.UPDATE_DATE updateDate
 			 , REVIEW.DELETE_DATE deleteDate
 			 , MEMBER.NICKNAME nickname
+			 , IMAGE.CHANGE_NAME thumbnail
 			 , (SELECT 
 			    	   COUNT(*)
 			  	  FROM
@@ -275,13 +276,16 @@
 	   	  LEFT 
 	      JOIN 
 	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+	      LEFT
+	      JOIN
+	      	   FR_REVIEW_IMAGE IMAGE ON (REVIEW.REVIEW_NO = IMAGE.REVIEW_NO AND IMAGE_LEVEL = 0)
 	     WHERE 
 	 	       REVIEW.MEMBER_NO = #{memberNo} 
 		   AND 
 	   		   REVIEW.STATUS = 'Y'  	           
 	  	 ORDER 
 	        BY 
-	  	       REVIEW_NO DESC
+	  	       REVIEW.REVIEW_NO DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	

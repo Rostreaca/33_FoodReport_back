@@ -18,7 +18,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class ReviewDTO {
-
 	private Long reviewNo;
 	private String reviewTitle;
 	private String reviewContent;
@@ -36,4 +35,6 @@ public class ReviewDTO {
 	private List<ReviewImageDTO> reviewImages;
 	private List<ReviewReplyDTO> reviewReplies;
 	private RegionDTO region;
+	
+	private List<Long> likeMembers;
 }

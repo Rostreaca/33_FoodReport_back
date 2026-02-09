@@ -175,7 +175,7 @@
 				         FROM
 				              FR_REVIEW_LIKE
 				        WHERE
-				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				              REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
 				    , REVIEW.CREATE_DATE
 		  	     FROM
 		  	          FR_REVIEW REVIEW
@@ -205,7 +205,7 @@
 					</if>
 					<if test="tagNo != 0">
 				  AND
-				      TAG_NO = #{tagNo}
+				      TAG.TAG_NO = #{tagNo}
 				    </if>					
 				    <if test="regionNo != 0">
 				  AND
@@ -218,9 +218,10 @@
 					  LIKES DESC
 					</when>
 					 <otherwise>
-				       CREATE_DATE DESC
+				       REVIEW.CREATE_DATE DESC
 					 </otherwise>
 				 </choose>
+			 		 , REVIEW.REVIEW_NO DESC
  					<if test="tagNo != 0">
 					 , TAG_TITLE ASC
 					</if>
@@ -276,11 +277,26 @@
 		       REVIEW_NO = #{reviewNo}
 	</update>
 		
+		
+	<resultMap id="findReview" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="reviewWriter" property="reviewWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate"/>
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>		
+	</resultMap>
 	
 	
-	<select id="findReviewByReviewNo" resultType="ReviewDTO" parameterType="long">
+	<select id="findReviewByReviewNo" resultMap="findReview" parameterType="long">
 		SELECT
-			   REVIEW_NO reviewNo
+			   REVIEW.REVIEW_NO reviewNo
 		     , REVIEW_TITLE reviewTitle
 		     , REVIEW_CONTENT reviewContent
 		     , MEMBER.MEMBER_NO memberNo
@@ -294,6 +310,7 @@
 		         WHERE
 		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
 		     , REVIEW.CREATE_DATE createDate
+		     , REVIEWLIKE.MEMBER_NO likeMembers
 		  FROM
 		       FR_REVIEW REVIEW
 		  JOIN
@@ -301,6 +318,9 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_LIKE REVIEWLIKE ON (REVIEWLIKE.REVIEW_NO = REVIEW.REVIEW_NO)
 		 WHERE
 		       REVIEW.STATUS = 'Y'
 		   AND
@@ -327,9 +347,22 @@
 		       TAG_TITLE ASC
 	</select>
 	
-	<select id="findRepliesByReviewNo" parameterType="long" resultType="ReviewReplyDTO">
+	<resultMap id="findReplies" type="ReviewReplyDTO">
+		<id column="replyNo" property="replyNo"/>
+		<result column="replyContent" property="replyContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="replyWriter" property="replyWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate" />
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findRepliesByReviewNo" parameterType="long" resultMap="findReplies">
 		SELECT
-		       REPLY_NO replyNo
+		       REPLY.REPLY_NO replyNo
 		     , REPLY_CONTENT replyContent
 		     , MEMBER.MEMBER_NO memberNo
 		     , NICKNAME replyWriter
@@ -341,6 +374,7 @@
 		         WHERE
 		               REPLY.REPLY_NO = FR_REVIEW_REPLY_LIKE.REPLY_NO) AS likes
 		     , REPLY.CREATE_DATE createDate
+		     , REPLYLIKE.MEMBER_NO likeMembers
 		  FROM
 		       FR_REVIEW_REPLY REPLY
 		  JOIN
@@ -348,6 +382,9 @@
 		  LEFT
 		  JOIN
 		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REPLY_LIKE REPLYLIKE ON (REPLYLIKE.REPLY_NO = REPLY.REPLY_NO)
 		 WHERE
 		       REPLY.STATUS = 'Y'
 		   AND
@@ -355,6 +392,25 @@
 		 ORDER
 		    BY
 		       REPLY.CREATE_DATE DESC
+	</select>
+	
+	<select id="findTagsByReviewNo" resultType="TagDTO" parameterType="long">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG USING (TAG_NO)
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
 	</select>
 	
 	<select id="findRegionByReviewNo" resultType="RegionDTO" parameterType="long">
@@ -400,7 +456,7 @@
 		       STATUS = 'Y'
 		 ORDER
 		    BY
-		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+		       IMAGE_LEVEL ASC, CREATE_DATE ASC
 	</select>
 	
 	<update id="deleteImage" parameterType="long">
@@ -436,6 +492,14 @@
 		 WHERE
 		       REVIEW_NO = #{reviewNo}
     </delete>
+	
+	<delete id="deleteRegion" parameterType="long">
+		DELETE
+		  FROM
+		       FR_REVIEW_REGION
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</delete>
 	
 	<update id="deleteReplies" parameterType="long">
 		UPDATE

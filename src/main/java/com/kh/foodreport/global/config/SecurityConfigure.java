@@ -2,6 +2,7 @@ package com.kh.foodreport.global.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,8 +34,8 @@ public class SecurityConfigure {
 	
 	private final JwtFilter jwtFilter;
 	
-//	@Value("${instnace.url}")
-//	private String instance;
+	@Value("${instance.url}")
+	private String instance;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -46,11 +47,11 @@ public class SecurityConfigure {
 					// 비로그인 허용
 					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET).permitAll();
-					
+
+					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST,"/api/members").permitAll(); // 회원가입 경로 누구나 접근 가능
 					
-					// 비로그인 허용(POST)
-					requests.requestMatchers(HttpMethod.POST, "api/members/**", "/api/reviews/*/replies", "api/reviews/**","/api/members/images").authenticated();
+					requests.requestMatchers(HttpMethod.POST, "/api/members/**", "/api/reviews/*/replies", "/api/reviews/**","/api/members/images").authenticated();
 					
 					// 로그인 필요(GET)
 					
@@ -58,9 +59,10 @@ public class SecurityConfigure {
 					// 로그인 필요(POST)
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members").permitAll();
 					// 로그인 필요(PUT)	
-					requests.requestMatchers(HttpMethod.PUT, "/api/members/info", "/api/reviews/**").authenticated();
+
+					requests.requestMatchers(HttpMethod.PUT, "/api/members", "/api/members/info", "/api/reviews/**").authenticated();
 					// 로그인 필요(DELETE)
-					requests.requestMatchers(HttpMethod.DELETE, "/api/members").authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/members", "/api/reviews/**").authenticated();
 					
 					// 사장님
 					requests.requestMatchers(HttpMethod.POST,"/api/places/**").hasAuthority("ROLE_OWNER");
@@ -79,7 +81,7 @@ public class SecurityConfigure {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(instance));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-type"));
 		configuration.setAllowCredentials(true);
