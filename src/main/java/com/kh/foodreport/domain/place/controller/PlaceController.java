@@ -82,13 +82,14 @@ public class PlaceController {
 													   , @ModelAttribute PlaceDTO place
 													   , @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 													   , @RequestParam(name = "images", required = false) List<MultipartFile> images
+													   , @RequestParam(name="regionNo", required=false) Long regionNo
 													   , @AuthenticationPrincipal CustomUserDetails user){
 		
 		place.setPlaceNo(placeNo);
 		
 		place.setPlaceWriter(String.valueOf(user.getMemberNo()));
 		
-		placeService.updatePlace(place, tagNums, images);
+		placeService.updatePlace(place, tagNums, images, regionNo);
 		
 		return ApiResponse.ok(null, "맛집 게시글 수정에 성공했습니다.");
 		

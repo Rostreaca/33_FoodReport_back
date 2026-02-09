@@ -212,7 +212,7 @@ public class PlaceServiceImpl implements PlaceService{
 	
 	@Transactional
 	@Override
-	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images) {
+	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images, Long regionNo) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
 		placeValiator.validatePlace(place);
@@ -224,16 +224,25 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 
 		// 이미지가 존재하면 이미지 update
-		if(images != null && !images.isEmpty()) {
 			updateImages(place.getPlaceNo(), images);
-		}
 		
-		// 태그가 존재하면 태그 update
-		if(tagNums !=null && !tagNums.isEmpty()) {
 			updateTags(place.getPlaceNo(),tagNums);			
+		
+			updateRegion(place.getPlaceNo(), regionNo);			
+		
+	}
+	
+	private void updateRegion(Long placeNo, Long regionNo) {
+		
+		deleteRegion(placeNo);			
+
+		if(regionNo != null) {
+			saveRegion(placeNo, regionNo);
 		}
-		
-		
+	}
+	
+	private void deleteRegion(Long placeNo) {
+		placeMapper.deleteRegion(placeNo);
 	}
 	
 	private void updateImages(Long placeNo, List<MultipartFile> images) {
@@ -247,7 +256,9 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 		
 		// 요청받은 이미지가 존재하면 INSERT
-		saveImages(placeNo, images);
+		if(images != null && !images.isEmpty()) {
+			saveImages(placeNo, images);
+		}
 
 	}
 	
@@ -255,11 +266,7 @@ public class PlaceServiceImpl implements PlaceService{
 	private void deleteImage(PlaceImageDTO image) {
 
 		// DB에서 이미지 삭제
-		int result = placeMapper.deleteImage(image.getImageNo());
-
-		if (result == 0) {
-			throw new FileDeleteException("이미지 처리 과정 중 문제가 발생했습니다.");
-		}
+		placeMapper.deleteImage(image.getImageNo());
 
 		// S3에서 파일 삭제
 		fileService.deleteStoredFile(image.getChangeName());
@@ -267,23 +274,18 @@ public class PlaceServiceImpl implements PlaceService{
 	}
 
 	private void updateTags(Long placeNo, List<Long> tagNums) {
-		
-		// 게시글의 태그 한번에 삭제
-		deleteTags(placeNo);
+		deleteTags(placeNo);			
 		
 		// 요청받은 태그 추가
+
+		// 태그가 존재하면 태그 update
+		if(tagNums !=null && !tagNums.isEmpty()) {
 		saveTags(placeNo, tagNums);
-		
+		}
 	}
 	
 	private void deleteTags(Long placeNo) {
-		
-		int result = placeMapper.deleteTags(placeNo);
-		
-		if(result == 0) {
-			throw new TagDeleteException("태그 처리 과정 중 문제가 발생했습니다.");
-		}
-		
+		placeMapper.deleteTags(placeNo);
 	}
 
 	@Transactional

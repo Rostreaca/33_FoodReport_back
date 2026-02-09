@@ -220,7 +220,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images) {
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo) {
 
 		GlobalValidator.validateNo(review.getReviewNo(), "유효하지 않은 게시글 번호입니다.");
 		reviewValidator.validateReview(review);
@@ -231,28 +231,36 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewCreationException("리뷰 내용 수정에 실패했습니다");
 		}
 
-		if(images != null && !images.isEmpty()) {
 			updateImages(review.getReviewNo(), images);
-		}
 
-		if(tagNums != null && !tagNums.isEmpty()) {
 			updateTags(review.getReviewNo(), tagNums);
-		}
+		
+			updateRegion(review.getReviewNo(), regionNo);			
 
+	}
+	
+	private void updateRegion(Long reviewNo, Long regionNo) {
+		
+		deleteRegion(reviewNo);
+		if(regionNo != null) {
+			saveRegion(reviewNo, regionNo);
+		}
+	}
+	
+	private void deleteRegion(Long reviewNo) {
+		reviewMapper.deleteRegion(reviewNo);
 	}
 	
 	private void updateTags(Long reviewNo, List<Long> tagNums) {
-		deleteTags(reviewNo);
-		
-		saveTags(reviewNo, tagNums);
+		deleteTags(reviewNo);			
+
+		if(tagNums != null && !tagNums.isEmpty()) {
+			saveTags(reviewNo, tagNums);
+		}
 	}
 	
 	private void deleteTags(Long reviewNo) {
-		int result = reviewMapper.deleteTags(reviewNo);
-		
-		if(result == 0) {
-			throw new TagDeleteException("태그 처리 과정 중 문제가 발생했습니다.");
-		}
+		reviewMapper.deleteTags(reviewNo);
 	}
 	
 	
@@ -267,7 +275,10 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 		}
 		
-		saveImages(reviewNo, images);
+
+		if(images != null && !images.isEmpty()) {
+			saveImages(reviewNo, images);
+		}
 		
 	}
 
@@ -275,11 +286,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private void deleteImage(ReviewImageDTO image) {
 
 		// DB에서 이미지 삭제
-		int result = reviewMapper.deleteImage(image.getImageNo());
-
-		if (result == 0) {
-			throw new FileManipulateException("기존 이미지 삭제에 실패했습니다.");
-		}
+		reviewMapper.deleteImage(image.getImageNo());
 
 		// S3에서 파일 삭제
 		fileService.deleteStoredFile(image.getChangeName());
