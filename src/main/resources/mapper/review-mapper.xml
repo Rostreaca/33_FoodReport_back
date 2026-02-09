@@ -394,6 +394,25 @@
 		       REPLY.CREATE_DATE DESC
 	</select>
 	
+	<select id="findTagsByReviewNo" resultType="TagDTO" parameterType="long">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG USING (TAG_NO)
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
+	</select>
+	
 	<select id="findRegionByReviewNo" resultType="RegionDTO" parameterType="long">
 		SELECT
 		       REGION_NO regionNo
@@ -473,6 +492,14 @@
 		 WHERE
 		       REVIEW_NO = #{reviewNo}
     </delete>
+	
+	<delete id="deleteRegion" parameterType="long">
+		DELETE
+		  FROM
+		       FR_REVIEW_REGION
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</delete>
 	
 	<update id="deleteReplies" parameterType="long">
 		UPDATE

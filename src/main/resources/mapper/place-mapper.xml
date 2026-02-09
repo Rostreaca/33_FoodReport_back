@@ -459,7 +459,14 @@
 		       FR_PLACE_TAG
 		 WHERE
 		       PLACE_NO = #{placeNo}
-		
+	</delete>
+	
+	<delete id="deleteRegion" parameterType="long">
+		DELETE
+		  FROM
+		       FR_PLACE_REGION
+		 WHERE
+		       PLACE_NO = #{placeNo}
 	</delete>
 	
 	<update id="deletePlace" parameterType="long">

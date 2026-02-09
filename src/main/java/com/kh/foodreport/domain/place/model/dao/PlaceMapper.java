@@ -59,4 +59,6 @@ public interface PlaceMapper {
 
 	RegionDTO findRegionByPlaceNo(Long placeNo);
 
+	int deleteRegion(Long reviewNo);
+
 }
