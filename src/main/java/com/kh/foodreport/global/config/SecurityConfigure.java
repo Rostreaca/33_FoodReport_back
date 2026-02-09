@@ -11,24 +11,31 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.kh.foodreport.global.config.filter.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableMethodSecurity
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
 	
-//	@Value("${instnace.url}")
-//	private String instance;
+	private final JwtFilter jwtFilter;
+	
+	@Value("${instance.url}")
+	private String instance;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -38,33 +45,42 @@ public class SecurityConfigure {
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(requests -> {
 					// 비로그인 허용
+					requests.requestMatchers("/ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 					requests.requestMatchers(HttpMethod.GET).permitAll();
+
 					// 비로그인 허용(POST)
-					requests.requestMatchers(HttpMethod.POST).permitAll();
+					requests.requestMatchers(HttpMethod.POST,"/api/members").permitAll(); // 회원가입 경로 누구나 접근 가능
+					
+					requests.requestMatchers(HttpMethod.POST, "/api/members/**", "/api/reviews/*/replies", "/api/reviews/**","/api/members/images").authenticated();
+					
 					// 로그인 필요(GET)
 					
-					requests.requestMatchers(HttpMethod.GET).authenticated();
+					//requests.requestMatchers(HttpMethod.GET).authenticated();
 					// 로그인 필요(POST)
-					requests.requestMatchers(HttpMethod.POST).authenticated();
-					// 로그인 필요(PUT)
-					requests.requestMatchers(HttpMethod.PUT).authenticated();
+					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members").permitAll();
+					// 로그인 필요(PUT)	
+					requests.requestMatchers(HttpMethod.PUT, "/api/members", "/api/members/info", "/api/reviews/**").authenticated();
 					// 로그인 필요(DELETE)
-					requests.requestMatchers(HttpMethod.DELETE).authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/members", "/api/reviews/**").authenticated();
 					
+					// 사장님
+					requests.requestMatchers(HttpMethod.POST,"/api/places/**").hasAuthority("ROLE_OWNER");
+					requests.requestMatchers(HttpMethod.PUT,"/api/places/**").hasAuthority("ROLE_OWNER");
+					requests.requestMatchers(HttpMethod.DELETE,"/api/places/**").hasAuthority("ROLE_OWNER");
+					
+
 					// 관리자
-					requests.requestMatchers(HttpMethod.GET).hasAuthority("");
-					requests.requestMatchers(HttpMethod.POST).hasAuthority("");
-					requests.requestMatchers(HttpMethod.PUT).hasAuthority("");
-					requests.requestMatchers(HttpMethod.DELETE).hasAuthority("");
+					requests.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 				})
 		        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 		        .build();
 	}
 	
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(instance));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-type"));
 		configuration.setAllowCredentials(true);

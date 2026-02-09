@@ -1,10 +1,18 @@
 package com.kh.foodreport.global.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
-@Component //클래스를 빈으로 등록하는것이다. 즉 spring제어하게 만드는 것객체를 생성안해도됨 
-public class Pagenation {
+import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.validator.GlobalValidator;
 
+import lombok.RequiredArgsConstructor;
+
+@Component //클래스를 빈으로 등록하는것이다. 즉 spring제어하게 만드는 것객체를 생성안해도됨
+@RequiredArgsConstructor
+public class Pagenation {
 
 	public PageInfo getPageInfo(int listCount
 							  , int currentPage
@@ -17,5 +25,27 @@ public class Pagenation {
 		return new PageInfo(listCount,currentPage,boardLimit,pageLimit,maxPage,
 				startPage,endPage);
 	}
+	
+	public Map<String, Object> getPageRequest(int listCount, int page, int boardLimit) {
 		
+		GlobalValidator.validateNo(page, "잘못된 접근입니다. (0보다 큰 값을 입력해주세요.)");
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		int offset = (page - 1) * boardLimit;
+		
+		map.put("offset", offset);
+		map.put("limit", boardLimit);
+		
+		PageInfo pageInfo = getPageInfo(listCount, page, boardLimit, 5);
+		
+		if(listCount != 0 && page > pageInfo.getMaxPage() ) {
+			throw new PageNotFoundException("존재하지 않는 페이지입니다.");
+		}
+		
+		map.put("pageInfo", pageInfo);
+		
+		return map;
+	}
+	
 }

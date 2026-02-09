@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.global.common.model.dao.GlobalMapper">
+	
+	<sql id="selectImagesAndTagsAndRegion">
+		     , IMG.IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
+	</sql>
+	
+	<select id="countByPlaces" resultType="_int" parameterType="map">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE PLACE
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  </if>		  
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  </if>
+	     WHERE
+	           PLACE.STATUS = 'Y'
+		   AND
+			   PLACE_TITLE LIKE '%' || #{keyword} || '%'
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
+		  <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
+		   </if>
+		
+	</select>
+	
+	
+	<resultMap id="findAllPlaces" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="placeWriter" property="placeWriter" />
+		<result column="profileImage" property="profileImage" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="placeCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
+		<collection property="placeImages" ofType="PlaceImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findAllPlaces" resultMap="findAllPlaces" parameterType="map">
+		SELECT
+		       PLACE.PLACE_NO placeNo
+		     , PLACE_TITLE placeTitle
+		     , PLACE_CONTENT placeContent
+		     , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
+		     , PLACE.CREATE_DATE placeCreateDate
+		     <include refid="selectImagesAndTagsAndRegion" />
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          PLACE.PLACE_NO
+				    , PLACE_TITLE
+				    , PLACE_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_PLACE_LIKE
+				        WHERE
+				              PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+				    , PLACE.CREATE_DATE
+		  	     FROM
+		  	          FR_PLACE PLACE
+		  	      <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
+	  	          </if>
+	  	          <if test="regionNo != 0">
+				 LEFT
+				 JOIN
+				      FR_PLACE_REGION PLACEREGION ON (PLACE.PLACE_NO = PLACEREGION.PLACE_NO)
+				 LEFT
+				 JOIN
+				      FR_REGION REGION ON (PLACEREGION.REGION_NO = REGION.REGION_NO)
+				  </if>
+		  	    WHERE
+		              PLACE.STATUS = 'Y'
+				  AND
+				      PLACE_TITLE LIKE '%' || #{keyword} || '%'
+				    <if test="tagNo != 0">
+				  AND
+				      TAG.TAG_NO = #{tagNo}
+		  			 </if>
+		  			 <if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
+		  			 </if>
+		   		ORDER
+				   BY 
+				      PLACE.CREATE_DATE DESC
+	 				<if test="tagNo != 0">
+			 		, TAG_TITLE ASC
+					</if>
+			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
+		  	   ) PLACE
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO AND MEMBERIMG.STATUS = 'Y')
+		  LEFT
+		  JOIN
+		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REGION.REGION_NO = PLACEREGION.REGION_NO)
+		       <if test="regionNo != 0">
+		 WHERE
+		       REGION.REGION_NO = #{regionNo}
+			   </if>
+		 ORDER
+		    BY 
+		       PLACE.CREATE_DATE DESC
+     		<if test="tagNo != 0">
+			 , TAG_TITLE ASC
+			</if>
+	</select>
+	
+	<select id="countByReviews" resultType="_int" parameterType="map">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
+		  <if test="regionNo != 0">
+		  LEFT
+		  JOIN
+		  	   FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
+	     WHERE
+	           REVIEW.STATUS = 'Y'
+		   AND
+			   REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		  	   REVIEWREGION.REGION_NO = #{regionNo}
+		  </if>
+		
+	</select>
+	
+	<resultMap id="findAllReviews" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="reviewWriter" property="reviewWriter" />
+		<result column="profileImage" property="profileImage" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="reviewCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	
+	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
+		SELECT
+		       REVIEW.REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE reviewCreateDate
+		     <include refid="selectImagesAndTagsAndRegion" />
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          REVIEW.REVIEW_NO
+				    , REVIEW_TITLE
+				    , REVIEW_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_REVIEW_LIKE
+				        WHERE
+				              REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				    , REVIEW.CREATE_DATE
+		  	     FROM
+		  	          FR_REVIEW REVIEW
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_REVIEW_TAG REVIEWTAG ON (REVIEW.REVIEW_NO = REVIEWTAG.REVIEW_NO)
+		  	     LEFT
+		  		 JOIN
+		       		  FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
+	  	          </if>
+	  	          <if test="regionNo != 0">
+		         LEFT
+		         JOIN
+		              FR_REVIEW_REGION REVIEWREGION ON (REVIEW.REVIEW_NO = REVIEWREGION.REVIEW_NO)
+		         LEFT
+		         JOIN
+		              FR_REGION REGION ON (REGION.REGION_NO = REVIEWREGION.REGION_NO)
+		          </if>
+		  	    WHERE
+		              REVIEW.STATUS = 'Y'
+				  AND
+				      REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+				    <if test="tagNo != 0">
+				  AND
+					  TAG.TAG_NO = #{tagNo}
+					</if>				    
+					<if test="regionNo != 0">
+				  AND
+					  REGION.REGION_NO = #{regionNo}
+					</if>
+		   		ORDER
+				   BY 
+				      REVIEW.CREATE_DATE DESC
+	 				<if test="tagNo != 0">
+			 		, TAG_TITLE ASC
+					</if>
+			   OFFSET #{offset} ROWS FETCH NEXT 3 ROWS ONLY	
+		  	   ) REVIEW
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO AND MEMBERIMG.STATUS = 'Y')
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REGION.REGION_NO = REVIEWREGION.REGION_NO)
+		       <if test="regionNo != 0">
+	     WHERE
+	           REGION.REGION_NO = #{regionNo}
+			   </if>
+		 ORDER
+		    BY 
+		       REVIEW.CREATE_DATE DESC
+     		<if test="tagNo != 0">
+			 , TAG_TITLE ASC 
+			</if>
+		
+	</select>
+	
+	<select id="findAllTags" resultType="TagDTO">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		 WHERE
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
+	</select>
+	
+	<select id="findAllRegions" resultType="RegionDTO">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		 ORDER
+		    BY
+		       REGION_NO ASC
+	</select>
+	
+</mapper>

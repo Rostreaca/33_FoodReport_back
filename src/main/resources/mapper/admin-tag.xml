@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.tag.model.dao.AdminTagMapper">
+	
+	<!-- 태그 insert -->
+	<insert id="saveTag"
+		parameterType="Tag"	
+		>
+		INSERT 
+		  INTO
+		  	   FR_TAG
+		  	   (
+		  	   TAG_NO
+		  	 , TAG_TITLE
+		  	 , TAG_CONTENT
+		  	   )
+		 VALUES
+		  	   (
+		  	   SEQ_TAG_NO.NEXTVAL
+		  	 , #{tagTitle}
+		  	 , #{tagContent}
+		  	   )
+	</insert>
+	
+	<select id="countByTags"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+	      FROM
+	      	   FR_TAG
+	</select>
+	
+	<select id="findAllTag"
+		resultType="TagDTO" parameterType="map">
+		SELECT 
+			   TAG_NO tagNo
+			 , TAG_TITLE tagTitle
+			 , TAG_CONTENT tagContent
+			 , STATUS status
+			 , CREATE_DATE createDate
+			 , UPDATE_DATE updateDate
+			 , DELETE_DATE deleteDate
+		  FROM 
+			   FR_TAG
+		 ORDER BY TAG_TITLE ASC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<update id="updateTag">
+		UPDATE
+			   FR_TAG
+		   SET
+		   	   TAG_TITLE = #{tagTitle}
+		   	 , TAG_CONTENT = #{tagContent}
+		   	 , STATUS = 'Y'
+		   	 , UPDATE_DATE = SYSDATE
+		WHERE
+			  TAG_NO = #{tagNo}
+	</update>
+	
+	<update id="deleteTag">
+		UPDATE
+			   FR_TAG
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   TAG_NO = #{tagNo}
+	</update>
+	
+</mapper>

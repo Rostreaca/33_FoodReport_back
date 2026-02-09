@@ -3,27 +3,22 @@ plugins {
 	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
-
 group = 'com.kh.foodreport'
 version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
-
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
-
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
 }
-
 repositories {
 	mavenCentral()
 }
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -34,7 +29,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'software.amazon.awssdk:s3:2.20.56'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.0'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
@@ -46,7 +41,6 @@ dependencies {
 	testImplementation 'org.seleniumhq.selenium:selenium-java:4.16.1'
  	testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
 }
-
 tasks.named('test') {
 	useJUnitPlatform()
 }

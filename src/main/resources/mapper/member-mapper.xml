@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.member.model.dao.MemberMapper">
+	
+	<!-- 회원가입 -->
+	<insert id="signUp"
+		parameterType="MemberVO">
+		INSERT 
+		  INTO 
+		  	   FR_MEMBER 
+		VALUES 
+			   (
+			   SEQ_MEMBER_NO.NEXTVAL
+			 , #{email}
+			 , #{password}
+			 , #{nickname}
+			 , #{phone}
+			 , #{introduce}
+			 , SYSDATE
+			 , NULL
+			 , NULL
+			 , 'Y'
+			 , 'ROLE_USER'
+			   )
+	</insert>
+	
+	<!-- 이메일 중복 확인 -->
+	<select id="countByEmail"
+			resultType="int" parameterType="string">		
+		SELECT 
+		       COUNT(*) 
+		  FROM 
+		  	   FR_MEMBER 
+		 WHERE 
+		 	   EMAIL = #{email}
+	</select>
+	
+	<!-- 로그인 -->
+	<select id="loadUser"
+			resultType="MemberDTO" parameterType="string">	
+		SELECT 
+			   MEMBER_NO memberNo
+		     , EMAIL email
+		 	 , PASSWORD password
+		 	 , NICKNAME nickname
+		 	 , PHONE phone
+		 	 , status
+		 	 , role
+	  	  FROM 
+	           FR_MEMBER
+	 	 WHERE 
+	       	   EMAIL = #{username}
+	       AND 
+	           STATUS = 'Y'
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword"
+			parameterType="Map">
+		UPDATE 
+			   FR_MEMBER 
+		   SET 
+		   	   PASSWORD = #{newPassword} 
+		 WHERE 
+		       EMAIL = #{email}
+	</update>
+	
+	<!-- 회원 탈퇴 -->
+	<update id="deleteMember"
+			parameterType="String">
+		UPDATE  
+		  	   FR_MEMBER
+		   SET
+		       STATUS = 'N' 
+		 WHERE 
+		 	   EMAIL = #{email}		
+	</update>
+	
+	<!-- 로그인 검증용 -->
+	<select id="loadUserByMemberNo"
+			resultType="MemberDTO" parameterType="Long">	
+		SELECT 
+			   MEMBER_NO memberNo
+		     , EMAIL email
+		 	 , PASSWORD password
+		 	 , NICKNAME nickname
+		 	 , PHONE phone
+		 	 , status
+		 	 , role
+	  	  FROM 
+	           FR_MEMBER
+	 	 WHERE 
+	       	   MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 프로필 이미지 저장 -->
+	<insert id="saveImage" 
+			parameterType="MemberImage">
+		INSERT
+		  INTO
+		       FR_MEMBER_IMAGE
+		       (
+		       IMAGE_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , MEMBER_NO
+		     , CREATE_DATE
+		     , STATUS
+		       )
+		VALUES
+		       (
+		       SEQ_MEMBER_IMAGE_NO.NEXTVAL
+		     , #{originName}
+		     , #{changeName}
+		     , #{refMemberNo}
+		     , SYSDATE
+		     , 'Y'
+		       )
+	</insert>
+	
+	<!-- 프로필 이미지 수정-->
+	<update id="updateImage">
+		UPDATE 
+			   FR_MEMBER_IMAGE
+		   SET 
+		   	   ORIGIN_NAME = #{originName}
+		  	 , CHANGE_NAME = #{changeName}
+		  	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{refMemberNo}		
+		
+	</update>
+	
+	<!-- 프로필 이미지 삭제 -->
+	<update id="deleteImage" 
+				parameterType="long">
+		UPDATE
+		       FR_MEMBER_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+
+
+	
+	<resultMap id="findByMemberNo" type="memberDTO">
+		<id column="memberNo" property="memberNo"/>
+		<result column="email" property="email"/>
+		<result column="nickname" property="nickname"/>
+		<result column="phone" property="phone"/>
+		<result column="introduce" property="introduce" />
+		<result column="memberCreateDate" property="createDate"/>
+		<collection property="memberImages" ofType="MemberImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageCreateDate" property="createDate" />
+		</collection>
+		<collection property="restaurants" ofType="RestaurantDTO">
+			<id column="restaurantNo" property="restaurantNo"/>
+			<result column="restautantName" property="restaurantName"/>
+			<result column="address" property="address"/>
+			<result column="restaurantCreateDate" property="createDate"/>
+		</collection>	
+	</resultMap>
+	
+	<!-- 회원 정보 조회 -->
+	<select id="findByMemberNo" 
+			resultMap="findByMemberNo" 
+			parameterType="long">
+		SELECT
+		       EMAIL email
+		     , NICKNAME nickname
+		     , PHONE phone
+		     , INTRODUCE introduce
+		     , MEMBER.CREATE_DATE memberCreateDate
+		     , IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.CREATE_DATE imageCreateDate
+		     , IMG.STATUS imageStatus
+		     , RESTAURANT.RESTAURANT_NO restaurantNo
+		     , RESTAURANT.RESTAURANT_NAME restaurantName
+		     , RESTAURANT.ADDRESS address
+		     , RESTAURANT.CREATE_DATE restaurantCreateDate
+		  FROM
+		       FR_MEMBER MEMBER
+		  LEFT
+		  JOIN
+		       FR_RESTAURANT RESTAURANT ON (MEMBER.MEMBER_NO = RESTAURANT.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE IMG ON (IMG.MEMBER_NO = MEMBER.MEMBER_NO AND IMG.STATUS = 'Y')
+		 WHERE
+		       MEMBER.STATUS = 'Y'
+		   AND
+		       MEMBER.MEMBER_NO = #{memberNo}
+		 ORDER
+		    BY
+		       IMG.CREATE_DATE ASC
+	</select>	
+	
+	<!-- 프로필 이미지 조회 -->
+	<select id="findUrlByMemberNo"
+		resultType="String">
+		SELECT
+			   I.CHANGE_NAME memberImages
+		  FROM 
+		  	   FR_MEMBER M
+		  LEFT 
+		  JOIN 
+		  	   FR_MEMBER_IMAGE I
+		  	ON 
+		  	   I.MEMBER_NO = M.MEMBER_NO 
+		   AND 
+		       I.STATUS = 'Y'
+		 WHERE 
+		  	   M.MEMBER_NO = #{memberNo}
+		   AND 
+		  	   M.STATUS = 'Y'
+	</select>
+	
+	<!-- 회원 정보 수정 -->
+	<update id="updateMember">
+		UPDATE 
+			   FR_MEMBER
+		   SET 
+		   	   NICKNAME = #{nickname}
+		   	 , PHONE = #{phone}
+		   	 , INTRODUCE = #{introduce}
+		   	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{memberNo}
+	</update>
+	
+	<!-- 리뷰 개수 조회 -->
+	<select id="countByReviews" 
+			resultType="int" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW
+		 WHERE 
+		       MEMBER_NO = #{memberNo} 
+		   AND 
+		       STATUS = 'Y'
+    </select>
+    
+    <!-- 회원 리뷰 전체 조회 -->
+    <select id="findAllReviews"
+    		parameterType="map"
+    		resultType="MemberReviewDTO">
+ 		SELECT
+			   REVIEW.REVIEW_NO reviewNo
+			 , REVIEW.REVIEW_TITLE reviewTitle
+			 , REVIEW.REVIEW_CONTENT reviewContent
+			 , REVIEW.CREATE_DATE createDate
+			 , REVIEW.STATUS status
+			 , REVIEW.VIEW_COUNT viewCount
+			 , REVIEW.UPDATE_DATE updateDate
+			 , REVIEW.DELETE_DATE deleteDate
+			 , MEMBER.NICKNAME nickname
+			 , IMAGE.CHANGE_NAME thumbnail
+			 , (SELECT 
+			    	   COUNT(*)
+			  	  FROM
+			  	  	   FR_REVIEW_LIKE
+			  	 WHERE
+			  	 	   REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+	 	  FROM 
+	   	       FR_REVIEW REVIEW
+	   	  LEFT 
+	      JOIN 
+	           FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+	      LEFT
+	      JOIN
+	      	   FR_REVIEW_IMAGE IMAGE ON (REVIEW.REVIEW_NO = IMAGE.REVIEW_NO AND IMAGE_LEVEL = 0)
+	     WHERE 
+	 	       REVIEW.MEMBER_NO = #{memberNo} 
+		   AND 
+	   		   REVIEW.STATUS = 'Y'  	           
+	  	 ORDER 
+	        BY 
+	  	       REVIEW.REVIEW_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<!-- 사업자번호 중복 확인 -->
+	<select id="countByBusinessNo"
+			resultType="int" parameterType="string">		
+		SELECT 
+		       COUNT(*) 
+		  FROM 
+		  	   FR_RESTAURANT
+		 WHERE 
+		 	   BUSINESS_NO = #{businessNo}
+	</select>
+	
+		<!-- 사업자 등록 -->
+	<insert id="saveOwner"
+			parameterType="RestaurantVO">
+		INSERT 
+		  INTO 
+		       FR_RESTAURANT
+		       (
+		       RESTAURANT_NO
+		     , BUSINESS_NO
+		     , RESTAURANT_NAME
+		     , ADDRESS
+		     , STATUS
+		     , CREATE_DATE
+		     , MEMBER_NO
+		       )
+		VALUES 
+		       (
+		       SEQ_RESTAURANT_NO.NEXTVAL
+		     , #{businessNo}
+		     , #{restaurantName}
+		     , #{address}
+		     , 'Y'
+		     , SYSDATE
+		     , #{refMemberNo}
+		       )
+	</insert>
+	
+	
+	<!-- 전체 좋아요 수 -->
+	<select id="countAllLikes" parameterType="long" resultType="int">
+    	SELECT 
+        	(SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE MEMBER_NO = #{memberNo}) +
+        	(SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE MEMBER_NO = #{memberNo})
+    	FROM DUAL
+	</select>
+	
+	<!-- 리뷰 좋아요 수 -->
+	<select id="countReviewLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_REVIEW_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 리뷰 댓글 좋아요 수 -->
+	<select id="countReviewReplyLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_REVIEW_REPLY_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 식당 좋아요 수 -->
+	<select id="countPlaceLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_PLACE_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 식당 댓글 좋아요 수 -->
+	<select id="countPlaceReplyLikes" parameterType="long" resultType="int">
+	    SELECT COUNT(*)
+	    FROM FR_PLACE_REPLY_LIKE
+	    WHERE MEMBER_NO = #{memberNo}
+	</select>
+	
+	<!-- 리뷰 좋아요 목록 조회 -->
+	<select id="findReviewLikes" resultType="ReviewLikeDTO">
+	    SELECT 
+	           RL.REVIEW_NO AS reviewNo,
+	           RL.MEMBER_NO AS memberNo,
+	           RL.CREATE_DATE AS createDate,
+	           R.REVIEW_TITLE AS reviewTitle,
+	           R.REVIEW_CONTENT AS reviewContent,
+	           M.NICKNAME AS reviewerNickname,
+	           (SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE REVIEW_NO = R.REVIEW_NO) AS reviewLikeCount,
+	           R.VIEW_COUNT AS reviewViewCount
+	      FROM FR_REVIEW_LIKE RL
+	      JOIN FR_REVIEW R ON RL.REVIEW_NO = R.REVIEW_NO
+	      JOIN FR_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+	     WHERE RL.MEMBER_NO = #{memberNo}
+	       AND R.STATUS = 'Y'
+	  ORDER BY RL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 리뷰 댓글 좋아요 목록 조회 -->
+	<select id="findReviewReplyLikes" resultType="ReviewReplyLikeDTO">
+	    SELECT 
+	           RRL.REPLY_NO AS replyNo,
+	           RRL.MEMBER_NO AS memberNo,
+	           RRL.CREATE_DATE AS createDate,
+	           RR.REPLY_CONTENT AS replyContent,
+	           RR.REVIEW_NO AS reviewNo,
+	           R.REVIEW_TITLE AS reviewTitle,
+	           M.NICKNAME AS replyWriterNickname,
+	           (SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE REPLY_NO = RR.REPLY_NO) AS replyLikeCount
+	      FROM FR_REVIEW_REPLY_LIKE RRL
+	      JOIN FR_REVIEW_REPLY RR ON RRL.REPLY_NO = RR.REPLY_NO
+	      JOIN FR_REVIEW R ON RR.REVIEW_NO = R.REVIEW_NO
+	      JOIN FR_MEMBER M ON RR.MEMBER_NO = M.MEMBER_NO
+	     WHERE RRL.MEMBER_NO = #{memberNo}
+	       AND RR.STATUS = 'Y'
+	       AND R.STATUS = 'Y'
+	  ORDER BY RRL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 장소 좋아요 목록 조회 -->
+	<select id="findPlaceLikes" resultType="PlaceLikeDTO">
+	    SELECT 
+	           PL.PLACE_NO AS placeNo,
+	           PL.MEMBER_NO AS memberNo,
+	           PL.CREATE_DATE AS createDate,
+	           P.PLACE_TITLE AS placeTitle,
+	           P.PLACE_CONTENT AS placeContent,
+	           M.NICKNAME AS placeWriterNickname,
+	           (SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE PLACE_NO = P.PLACE_NO) AS placeLikeCount,
+	           P.VIEW_COUNT AS placeViewCount
+	      FROM FR_PLACE_LIKE PL
+	      JOIN FR_PLACE P ON PL.PLACE_NO = P.PLACE_NO
+	      JOIN FR_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+	     WHERE PL.MEMBER_NO = #{memberNo}
+	       AND P.STATUS = 'Y'
+	  ORDER BY PL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 장소 댓글 좋아요 목록 조회 -->
+	<select id="findPlaceReplyLikes" resultType="PlaceReplyLikeDTO">
+	    SELECT 
+	           PRL.REPLY_NO AS replyNo,
+	           PRL.MEMBER_NO AS memberNo,
+	           PRL.CREATE_DATE AS createDate,
+	           PR.REPLY_CONTENT AS replyContent,
+	           PR.PLACE_NO AS placeNo,
+	           P.PLACE_TITLE AS placeTitle,
+	           M.NICKNAME AS replyWriterNickname,
+	           (SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE REPLY_NO = PR.REPLY_NO) AS replyLikeCount
+	      FROM FR_PLACE_REPLY_LIKE PRL
+	      JOIN FR_PLACE_REPLY PR ON PRL.REPLY_NO = PR.REPLY_NO
+	      JOIN FR_PLACE P ON PR.PLACE_NO = P.PLACE_NO
+	      JOIN FR_MEMBER M ON PR.MEMBER_NO = M.MEMBER_NO
+	     WHERE PRL.MEMBER_NO = #{memberNo}
+	       AND PR.STATUS = 'Y'
+	       AND P.STATUS = 'Y'
+	  ORDER BY PRL.CREATE_DATE DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+	<!-- 전체 좋아요 목록 통합 조회 -->
+	<select id="findAllLikesByMemberNo" resultType="LikeDTO">
+	    SELECT * 
+	      FROM 
+          (
+	        SELECT 
+	               'REVIEW' AS likeType,
+	               RL.REVIEW_NO AS targetNo,
+	               RL.CREATE_DATE AS createDate,
+	               R.REVIEW_TITLE AS title,
+	               R.REVIEW_CONTENT AS content,
+	               M.NICKNAME AS nickname,
+	               (SELECT COUNT(*) FROM FR_REVIEW_LIKE WHERE REVIEW_NO = R.REVIEW_NO) AS likeCount,
+	               R.VIEW_COUNT AS viewCount,
+	               NULL AS relatedNo,
+	               NULL AS relatedTitle
+	          FROM FR_REVIEW_LIKE RL
+	          JOIN FR_REVIEW R ON RL.REVIEW_NO = R.REVIEW_NO
+	          JOIN FR_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+	         WHERE RL.MEMBER_NO = #{memberNo}
+	           AND R.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	               'REVIEW_REPLY' AS likeType,
+	               RRL.REPLY_NO AS targetNo,
+	               RRL.CREATE_DATE AS createDate,
+	               R.REVIEW_TITLE AS title,
+	               RR.REPLY_CONTENT AS content,
+	               M.NICKNAME AS nickname,
+	               (SELECT COUNT(*) FROM FR_REVIEW_REPLY_LIKE WHERE REPLY_NO = RR.REPLY_NO) AS likeCount,
+	               0 AS viewCount,
+	               RR.REVIEW_NO AS relatedNo,
+	               R.REVIEW_TITLE AS relatedTitle
+	          FROM FR_REVIEW_REPLY_LIKE RRL
+	          JOIN FR_REVIEW_REPLY RR ON RRL.REPLY_NO = RR.REPLY_NO
+	          JOIN FR_REVIEW R ON RR.REVIEW_NO = R.REVIEW_NO
+	          JOIN FR_MEMBER M ON RR.MEMBER_NO = M.MEMBER_NO
+	         WHERE RRL.MEMBER_NO = #{memberNo}
+	           AND RR.STATUS = 'Y'
+	           AND R.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	               'PLACE' AS likeType,
+	               PL.PLACE_NO AS targetNo,
+	               PL.CREATE_DATE AS createDate,
+	               P.PLACE_TITLE AS title,
+	               P.PLACE_CONTENT AS content,
+	               M.NICKNAME AS nickname,
+	               (SELECT COUNT(*) FROM FR_PLACE_LIKE WHERE PLACE_NO = P.PLACE_NO) AS likeCount,
+	               P.VIEW_COUNT AS viewCount,
+	               NULL AS relatedNo,
+	               NULL AS relatedTitle
+	          FROM FR_PLACE_LIKE PL
+	          JOIN FR_PLACE P ON PL.PLACE_NO = P.PLACE_NO
+	          JOIN FR_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO
+	         WHERE PL.MEMBER_NO = #{memberNo}
+	           AND P.STATUS = 'Y'
+	        
+	        UNION ALL
+	        
+	        SELECT 
+	               'PLACE_REPLY' AS likeType,
+	               PRL.REPLY_NO AS targetNo,
+	               PRL.CREATE_DATE AS createDate,
+	               P.PLACE_TITLE AS title,
+	               PR.REPLY_CONTENT AS content,
+	               M.NICKNAME AS nickname,
+	               (SELECT COUNT(*) FROM FR_PLACE_REPLY_LIKE WHERE REPLY_NO = PR.REPLY_NO) AS likeCount,
+	               0 AS viewCount,
+	               PR.PLACE_NO AS relatedNo,
+	               P.PLACE_TITLE AS relatedTitle
+	          FROM FR_PLACE_REPLY_LIKE PRL
+	          JOIN FR_PLACE_REPLY PR ON PRL.REPLY_NO = PR.REPLY_NO
+	          JOIN FR_PLACE P ON PR.PLACE_NO = P.PLACE_NO
+	          JOIN FR_MEMBER M ON PR.MEMBER_NO = M.MEMBER_NO
+	         WHERE PRL.MEMBER_NO = #{memberNo}
+	           AND PR.STATUS = 'Y'
+	           AND P.STATUS = 'Y'
+          ) ALL_LIKES
+        ORDER BY createDate DESC
+	    OFFSET #{pageInfo.offset} ROWS
+	    FETCH NEXT #{pageInfo.limit} ROWS ONLY
+	</select>
+	
+
+	
+	
+			   
+		       
+    
+
+	
+</mapper>

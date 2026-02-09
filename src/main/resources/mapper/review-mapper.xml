@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.review.model.dao.ReviewMapper">
+	
+	<insert id="saveReview" parameterType="ReviewDTO">
+		<selectKey resultType="long" keyProperty="reviewNo" order="BEFORE">
+			SELECT SEQ_REVIEW_NO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT
+		  INTO
+		       FR_REVIEW
+		       (
+		       REVIEW_NO
+		     , REVIEW_TITLE
+		     , REVIEW_CONTENT
+		     , MEMBER_NO
+		     , CREATE_DATE
+		     , STATUS
+		       )
+		VALUES
+		       (
+		       #{reviewNo}
+		     , #{reviewTitle}
+		     , #{reviewContent}
+		     , #{reviewWriter}
+		     , SYSDATE
+		     , 'Y'
+		       )		
+	</insert>
+	
+	<insert id="saveTagByReviewNo" parameterType="map">
+		INSERT ALL
+		 <foreach collection="tagNums" item="tagNo">
+		  INTO
+		       FR_REVIEW_TAG
+		       (
+		       TAG_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{tagNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+		</foreach>
+		SELECT
+		       *
+		  FROM
+		       DUAL
+	</insert>
+	
+	<insert id="saveImage" parameterType="ReviewImage">
+		INSERT
+		  INTO
+		       FR_REVIEW_IMAGE
+		       (
+		       IMAGE_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , REVIEW_NO
+		     , CREATE_DATE
+		     , STATUS
+		     , IMAGE_LEVEL
+		       )
+		VALUES
+		       (
+		       SEQ_REVIEW_IMAGE_NO.NEXTVAL
+		     , #{originName}
+		     , #{changeName}
+		     , #{refReviewNo}
+		     , SYSDATE
+		     , 'Y'
+		     , #{imageLevel}
+		       )
+	</insert>
+	
+	<select id="countByReviews" resultType="_int" parameterType="map">
+		
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  </if>
+		 WHERE
+		       REVIEW.STATUS = 'Y'
+		  <if test="keyword != ''">
+		   AND
+			   REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+		  </if>
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
+		   </if>
+		       
+    </select>
+	
+	<resultMap id="findAllReviews" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="reviewWriter" property="reviewWriter" />
+		<result column="profileImage" property="profileImage" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="reviewCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
+		<collection property="reviewImages" ofType="ReviewImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+
+	</resultMap>
+	
+	<select id="findAllReviews" resultMap="findAllReviews" parameterType="map">
+		SELECT
+		       REVIEW.REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE reviewCreateDate
+		     , IMG.IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          REVIEW.REVIEW_NO
+				    , REVIEW_TITLE
+				    , REVIEW_CONTENT
+				    , MEMBER.MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_REVIEW_LIKE
+				        WHERE
+				              REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+				    , REVIEW.CREATE_DATE
+		  	     FROM
+		  	          FR_REVIEW REVIEW
+		  	     JOIN
+		  	          FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG ON (TAG.TAG_NO = REVIEWTAG.TAG_NO)
+	  	          </if>
+	  	          <if test="regionNo != 0">
+			     LEFT
+			     JOIN
+			          FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+			     LEFT
+			     JOIN
+			          FR_REGION REGION ON (REVIEWREGION.REGION_NO = REGION.REGION_NO)
+				  </if>
+		  	    WHERE
+		              REVIEW.STATUS = 'Y'
+				 	<if test="keyword != ''">
+				  AND
+				      REVIEW_TITLE LIKE '%' || #{keyword} || '%'
+					</if>
+					<if test="tagNo != 0">
+				  AND
+				      TAG.TAG_NO = #{tagNo}
+				    </if>					
+				    <if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
+				    </if>
+		   		ORDER
+				   BY 
+				 <choose>
+					<when test="order == 'likes'">
+					  LIKES DESC
+					</when>
+					 <otherwise>
+				       REVIEW.CREATE_DATE DESC
+					 </otherwise>
+				 </choose>
+			 		 , REVIEW.REVIEW_NO DESC
+ 					<if test="tagNo != 0">
+					 , TAG_TITLE ASC
+					</if>
+			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
+		  	   ) REVIEW
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = REVIEW.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_IMAGE IMG ON (REVIEW.REVIEW_NO = IMG.REVIEW_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG REVIEWTAG ON (REVIEWTAG.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (REVIEWTAG.TAG_NO = TAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION REVIEWREGION ON (REVIEWREGION.REVIEW_NO = REVIEW.REVIEW_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (REVIEWREGION.REGION_NO = REGION.REGION_NO) 
+		       <if test = "regionNo != 0">
+		  WHERE
+		        REGION.REGION_NO = #{regionNo}
+			   </if>
+		 ORDER
+		    BY 
+		    <choose>
+				<when test="order == 'likes'">
+			   LIKES DESC
+				</when>
+			    <otherwise>
+		       REVIEW.CREATE_DATE DESC
+				</otherwise>
+			</choose>
+			 , REVIEW.REVIEW_NO DESC
+ 				<if test="tagNo != 0">
+	 		 , TAG.TAG_TITLE ASC
+			 	</if>
+		
+	</select>
+	
+	<update id="updateViewCount" parameterType="long">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</update>
+		
+		
+	<resultMap id="findReview" type="ReviewDTO">
+		<id column="reviewNo" property="reviewNo"/>
+		<result column="reviewTitle" property="reviewTitle"/>
+		<result column="reviewContent" property="reviewContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="reviewWriter" property="reviewWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate"/>
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>		
+	</resultMap>
+	
+	
+	<select id="findReviewByReviewNo" resultMap="findReview" parameterType="long">
+		SELECT
+			   REVIEW.REVIEW_NO reviewNo
+		     , REVIEW_TITLE reviewTitle
+		     , REVIEW_CONTENT reviewContent
+		     , MEMBER.MEMBER_NO memberNo
+		     , NICKNAME reviewWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_LIKE
+		         WHERE
+		               REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS likes
+		     , REVIEW.CREATE_DATE createDate
+		     , REVIEWLIKE.MEMBER_NO likeMembers
+		  FROM
+		       FR_REVIEW REVIEW
+		  JOIN
+		       FR_MEMBER MEMBER ON (REVIEW.MEMBER_NO = MEMBER.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_LIKE REVIEWLIKE ON (REVIEWLIKE.REVIEW_NO = REVIEW.REVIEW_NO)
+		 WHERE
+		       REVIEW.STATUS = 'Y'
+		   AND
+		       REVIEW.REVIEW_NO = #{reviewNo}
+		       
+	</select>
+	
+	<select id="findTagByReviewNo" parameterType="long" resultType="TagDTO">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_REVIEW_TAG USING (TAG_NO)
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
+	</select>
+	
+	<resultMap id="findReplies" type="ReviewReplyDTO">
+		<id column="replyNo" property="replyNo"/>
+		<result column="replyContent" property="replyContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="replyWriter" property="replyWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate" />
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findRepliesByReviewNo" parameterType="long" resultMap="findReplies">
+		SELECT
+		       REPLY.REPLY_NO replyNo
+		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
+		     , NICKNAME replyWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_REVIEW_REPLY_LIKE
+		         WHERE
+		               REPLY.REPLY_NO = FR_REVIEW_REPLY_LIKE.REPLY_NO) AS likes
+		     , REPLY.CREATE_DATE createDate
+		     , REPLYLIKE.MEMBER_NO likeMembers
+		  FROM
+		       FR_REVIEW_REPLY REPLY
+		  JOIN
+		       FR_MEMBER MEMBER ON (REPLY.MEMBER_NO = MEMBER.MEMBER_NO)		  
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REPLY_LIKE REPLYLIKE ON (REPLYLIKE.REPLY_NO = REPLY.REPLY_NO)
+		 WHERE
+		       REPLY.STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		 ORDER
+		    BY
+		       REPLY.CREATE_DATE DESC
+	</select>
+	
+	<select id="findRegionByReviewNo" resultType="RegionDTO" parameterType="long">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		  LEFT
+		  JOIN
+		       FR_REVIEW_REGION USING (REGION_NO)
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<update id="updateReview" parameterType="ReviewDTO">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       REVIEW_TITLE = #{reviewTitle}
+		     , REVIEW_CONTENT = #{reviewContent}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+		   AND
+		       MEMBER_NO = #{reviewWriter}
+		
+	</update>
+	
+	<select id="findImagesByReviewNo" resultType="ReviewImageDTO" parameterType="long">
+		SELECT
+		       IMAGE_NO imageNo
+		     , ORIGIN_NAME originName
+		     , CHANGE_NAME changeName
+		     , IMAGE_LEVEL imageLevel
+		  FROM
+		       FR_REVIEW_IMAGE
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+	</select>
+	
+	<update id="deleteImage" parameterType="long">
+		UPDATE
+		       FR_REVIEW_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	
+	<update id="deleteReview" parameterType="long">
+		UPDATE
+		       FR_REVIEW
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+		
+	</update>
+	
+	<delete id="deleteTags" parameterType="long">
+		DELETE
+		  FROM
+		       FR_REVIEW_TAG
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+    </delete>
+	
+	<update id="deleteReplies" parameterType="long">
+		UPDATE
+		       FR_REVIEW_REPLY
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       REVIEW_NO = #{reviewNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	<insert id="saveReply" parameterType="ReviewReply">
+		INSERT
+		  INTO
+		       FR_REVIEW_REPLY
+		       (
+		       REPLY_NO
+		     , REPLY_CONTENT
+		     , MEMBER_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+	    VALUES
+		       (
+		       SEQ_REVIEW_REPLY_NO.NEXTVAL
+		     , #{replyContent}
+		     , #{replyWriter}
+		     , #{refReviewNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
+	<select id="countLikeByMember" parameterType="ReviewLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="ReviewLike">
+		INSERT
+		  INTO
+		       FR_REVIEW_LIKE
+		       (
+		       MEMBER_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
+	<delete id="deleteLike" parameterType="ReviewLike">
+		DELETE
+		  FROM
+		       FR_REVIEW_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REVIEW_NO = #{reviewNo}
+	</delete>
+	
+	<select id="countByReviewNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_REVIEW
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REVIEW_NO = #{reviewNo}
+	</select>
+	
+	<insert id="saveRegionByReviewNo" parameterType="map">
+		INSERT
+		  INTO
+		       FR_REVIEW_REGION
+		       (
+		       REGION_NO
+		     , REVIEW_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{regionNo}
+		     , #{reviewNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
+	
+	
+</mapper>

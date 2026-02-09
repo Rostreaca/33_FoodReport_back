@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.member.model.dao.AdminMemberMapper">
+	
+	<select id="countByMembers"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_MEMBER
+	</select>
+	
+	<select id="findAllMember"
+		resultType="AdminMemberDTO" parameterType="map">
+		SELECT
+		    MEMBER.MEMBER_NO memberNo,
+		    SUBSTR(MEMBER.EMAIL, 0, 2)
+		    || RPAD('*', INSTR(MEMBER.EMAIL, '@') - 3, '*')
+		    || SUBSTR(MEMBER.EMAIL, INSTR(MEMBER.EMAIL, '@')) email,
+		    MEMBER.NICKNAME nickname,
+		    SUBSTR(MEMBER.PHONE, 1, INSTR(MEMBER.PHONE, '-'))
+		    || RPAD('*', INSTR(MEMBER.PHONE, '-', 1, 2) - INSTR(MEMBER.PHONE, '-') - 1, '*')
+		    || SUBSTR(MEMBER.PHONE, INSTR(MEMBER.PHONE, '-', 1, 2)) phone,
+		    MEMBER.INTRODUCE introduce,
+		    MEMBER.CREATE_DATE createDate,
+		    MEMBER.UPDATE_DATE updateDate,
+		    MEMBER.DELETE_DATE deleteDate,
+		    MEMBER.STATUS status,
+		    MEMBER.ROLE role,
+		    COUNT(REVIEW.REVIEW_NO) reviewCount,
+		    (SELECT
+		    	    CHANGE_NAME
+		       FROM
+		       		FR_MEMBER_IMAGE
+		      WHERE
+		      	    MEMBER_NO = MEMBER.MEMBER_NO
+		    ) profileImage
+		FROM
+		    FR_MEMBER MEMBER
+		LEFT JOIN
+		    FR_REVIEW REVIEW ON MEMBER.MEMBER_NO = REVIEW.MEMBER_NO
+		GROUP BY
+		    MEMBER.MEMBER_NO,
+		    MEMBER.EMAIL,
+		    MEMBER.NICKNAME,
+		    MEMBER.PHONE,
+		    MEMBER.INTRODUCE,
+		    MEMBER.CREATE_DATE,
+		    MEMBER.UPDATE_DATE,
+		    MEMBER.DELETE_DATE,
+		    MEMBER.STATUS,
+		    MEMBER.ROLE
+		ORDER BY
+		    MEMBER.MEMBER_NO ASC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="countByNickname"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_MEMBER
+		 WHERE
+		 	   NICKNAME LIKE '%' || #{nickname} || '%'
+	</select>
+	
+	<select id="findByNickname"
+		resultType="AdminMemberDTO" parameterType="map">
+		SELECT
+		    MEMBER.MEMBER_NO memberNo,
+		    SUBSTR(MEMBER.EMAIL, 0, 2)
+		    || RPAD('*', INSTR(MEMBER.EMAIL, '@') - 3, '*')
+		    || SUBSTR(MEMBER.EMAIL, INSTR(MEMBER.EMAIL, '@')) email,
+		    MEMBER.NICKNAME nickname,
+		    SUBSTR(MEMBER.PHONE, 1, INSTR(MEMBER.PHONE, '-'))
+		    || RPAD('*', INSTR(MEMBER.PHONE, '-', 1, 2) - INSTR(MEMBER.PHONE, '-') - 1, '*')
+		    || SUBSTR(MEMBER.PHONE, INSTR(MEMBER.PHONE, '-', 1, 2)) phone,
+		    MEMBER.INTRODUCE introduce,
+		    MEMBER.CREATE_DATE createDate,
+		    MEMBER.UPDATE_DATE updateDate,
+		    MEMBER.DELETE_DATE deleteDate,
+		    MEMBER.STATUS status,
+		    MEMBER.ROLE role,
+		    COUNT(REVIEW.REVIEW_NO) reviewCount,
+		    (SELECT
+		    	    CHANGE_NAME
+		       FROM
+		       		FR_MEMBER_IMAGE
+		      WHERE
+		      	    MEMBER_NO = MEMBER.MEMBER_NO
+		    ) profileImage
+		FROM
+		    FR_MEMBER MEMBER
+		LEFT JOIN
+		    FR_REVIEW REVIEW ON MEMBER.MEMBER_NO = REVIEW.MEMBER_NO
+		WHERE
+		    MEMBER.NICKNAME LIKE '%' || #{nickname} || '%'
+		GROUP BY
+		    MEMBER.MEMBER_NO,
+		    MEMBER.EMAIL,
+		    MEMBER.NICKNAME,
+		    MEMBER.PHONE,
+		    MEMBER.INTRODUCE,
+		    MEMBER.CREATE_DATE,
+		    MEMBER.UPDATE_DATE,
+		    MEMBER.DELETE_DATE,
+		    MEMBER.STATUS,
+		    MEMBER.ROLE
+		ORDER BY
+		    MEMBER.MEMBER_NO ASC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<update id="deleteMember">
+		UPDATE
+			   FR_MEMBER
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   STATUS = 'Y'
+		   AND
+		   	   MEMBER_NO = #{memberNo}
+	</update>
+	
+	<update id="grantMember">
+		UPDATE
+			   FR_MEMBER
+		   SET
+		   	   ROLE = #{role}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   MEMBER_NO = #{memberNo}
+		   AND
+		   	   STATUS = 'Y'
+	</update>
+	
+	<select id="countByMemberPlace"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_RESTAURANT
+	</select>
+	
+	<select id="findByMemberPlace"
+		resultType="AdminMemberPlaceDTO" parameterType="map">
+		SELECT 
+		      R.RESTAURANT_NO restaurantNo
+		    , R.BUSINESS_NO businessNo
+		    , M.NICKNAME nickname
+		    , M.EMAIL memberId
+		    , M.ROLE role
+		    , R.RESTAURANT_NAME restaurantName
+		    , R.ADDRESS address
+		    , R.STATUS status
+		    , R.CREATE_DATE createDate
+		    , R.UPDATE_DATE updateDate
+		    , R.DELETE_DATE deleteDate
+		    , (SELECT 
+		    	   	  CHANGE_NAME
+		    	 FROM
+		    	 	  FR_MEMBER_IMAGE MI
+		    	WHERE
+		    		  MI.MEMBER_NO = M.MEMBER_NO
+		    	 ) profileImage
+		FROM 
+		    FR_RESTAURANT R
+		JOIN 
+		    FR_MEMBER M ON (R.MEMBER_NO = M.MEMBER_NO)
+		WHERE ROLE = 'ROLE_USER'
+		ORDER BY 
+		    R.RESTAURANT_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+
+	<update id="updateMember">
+	UPDATE
+		   FR_MEMBER
+	   SET
+	   	   STATUS = 'Y'
+	     , UPDATE_DATE = SYSDATE
+	 WHERE
+	 	   MEMBER_NO = #{memberNo}
+	   AND
+	   	   STATUS = 'N'
+	</update>
+	
+</mapper>

@@ -1,0 +1,319 @@
+package com.kh.foodreport.domain.member.model.service;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.kh.foodreport.domain.auth.model.vo.CustomUserDetails;
+import com.kh.foodreport.domain.auth.model.vo.Role;
+import com.kh.foodreport.domain.member.model.dao.MemberMapper;
+import com.kh.foodreport.domain.member.model.dto.ChangePasswordDTO;
+import com.kh.foodreport.domain.member.model.dto.LikeDTO;
+import com.kh.foodreport.domain.member.model.dto.LikeResponse;
+import com.kh.foodreport.domain.member.model.dto.MemberDTO;
+import com.kh.foodreport.domain.member.model.dto.MemberReviewDTO;
+import com.kh.foodreport.domain.member.model.dto.MemberReviewResponse;
+import com.kh.foodreport.domain.member.model.dto.PlaceLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.PlaceReplyLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.RestaurantDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewLikeDTO;
+import com.kh.foodreport.domain.member.model.dto.ReviewReplyLikeDTO;
+import com.kh.foodreport.domain.member.model.vo.MemberImage;
+import com.kh.foodreport.domain.member.model.vo.MemberVO;
+import com.kh.foodreport.domain.member.model.vo.RestaurantVO;
+import com.kh.foodreport.domain.token.model.dao.TokenMapper;
+import com.kh.foodreport.global.exception.BusinessNoDuplicateException;
+import com.kh.foodreport.global.exception.CustomAuthenticationException;
+import com.kh.foodreport.global.exception.EmailDuplicateException;
+import com.kh.foodreport.global.exception.FileUploadException;
+import com.kh.foodreport.global.exception.MemberUpdateException;
+import com.kh.foodreport.global.exception.PageNotFoundException;
+import com.kh.foodreport.global.exception.SavePlaceFailedException;
+import com.kh.foodreport.global.exception.SignUpFailedException;
+import com.kh.foodreport.global.exception.TokenDeleteException;
+import com.kh.foodreport.global.file.service.FileService;
+import com.kh.foodreport.global.util.PageInfo;
+import com.kh.foodreport.global.util.Pagenation;
+import com.kh.foodreport.global.validator.GlobalValidator;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MemberServiceImpl implements MemberService {
+	
+	private final MemberMapper memberMapper;
+	private final TokenMapper tokenMapper;
+	private final PasswordEncoder passwordEncoder;
+	private final FileService fileService;
+	private final Pagenation pagenation;
+
+
+
+	@Override
+	public void signUp(MemberDTO member) {
+		
+		// 유효성 검사  ==> Validator에게 위임
+		// 이메일 중복 검사
+		int count = memberMapper.countByEmail(member.getEmail());
+		
+		if(1 == count) {
+			throw new EmailDuplicateException("이미 존재하는 이메일입니다.");
+		}
+		// 비밀번호 암호화
+		
+		// ROLE 주기
+		MemberVO memberBuilder = MemberVO.builder()
+										 .email(member.getEmail())
+										 .password(passwordEncoder.encode(member.getPassword()))
+										 .nickname(member.getNickname())
+										 .phone(member.getPhone())
+										 .role(Role.ROLE_USER.name())
+										 .build();
+
+		// 매퍼 호출
+		int result = memberMapper.signUp(memberBuilder);
+		log.info("사용자 등록 성공 : {} ", memberBuilder);
+		 
+		if(0 == result) {
+			throw new SignUpFailedException("회원가입에 실패했습니다.");
+		}
+
+	}
+
+	@Override
+	public void updatePassword(ChangePasswordDTO password) {
+		
+		// 현재 비밀번호가 맞는지 검증
+		// Authentication에서 현재 인증된 사용자의 정보 뽑아오기
+		/*
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		String currentPassword = password.getCurrentPassword();
+		String encodedPassword = user.getPassword();
+		if(passwordEncoder.matches(currentPassword, currentPassword)) {
+			throw new CustomAuthenticationException("일치하지 않는 비밀번호");
+		}
+		*/
+		CustomUserDetails user = validatePassword(password.getCurrentPassword());
+		// 현재 비밀번호가 맞다면 새 비밀번호를 암호화
+		String newPassword = passwordEncoder.encode(password.getNewPassword());
+		// UPDATE FR_MEMBER PASSWORD = "newpassword" WHERE EMAIL = "사용자ID"
+		
+		Map<String, String> changeRequest = Map.of("email", user.getUsername(),
+												   "newPassword", newPassword);
+		
+		memberMapper.updatePassword(changeRequest);
+		
+	}
+
+	@Override
+	@Transactional
+	public void deleteByPassword(String password) {
+		// 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호 암호문이 맞는지 검증
+		// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		//CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		// 검증이 맞다면
+		//if(!passwordEncoder.matches(password, user.getPassword())) {
+		//	throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+		
+		// DELETE FROM FR_MEMBER WHERE EMAIL = 사용자 아이디(이메일)
+		CustomUserDetails user = validatePassword(password);
+		int tokenResult = tokenMapper.deleteToken(user.getMemberNo());
+		if(tokenResult == 0) {
+			throw new TokenDeleteException("토큰 삭제에 실패했습니다.");
+		}
+		
+		int memberResult = memberMapper.deleteMember(user.getUsername());
+		if(memberResult == 0) {
+			throw new SignUpFailedException("회원 탈퇴에 실패했습니다.");
+		}
+	}
+	
+	private CustomUserDetails validatePassword(String password) {
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+	
+	// 검증이 맞다면
+	if(!passwordEncoder.matches(password, user.getPassword())) {
+		throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+	}
+	return user;
+		
+	}
+	
+	public void saveImage(Long memberNo, MultipartFile image) {
+
+		if(image == null || image.isEmpty()) {
+			return;
+		}
+
+		String changeName = fileService.store(image);
+		
+			// Mapper에 전달할 이미지 정보 memberImage 객체 생성
+			MemberImage memberImage = MemberImage.builder()
+					.originName(image.getOriginalFilename())
+					.changeName(changeName).refMemberNo(memberNo).build();
+
+			log.info("{}", memberImage);
+			
+			int result = memberMapper.saveImage(memberImage);
+
+			if(result == 0) {
+				fileService.deleteStoredFile(changeName);
+				throw new FileUploadException("이미지 업로드에 실패했습니다.");
+			}
+	}
+	
+	@Override
+	public MemberDTO findByMemberNo(Long memberNo) {
+		
+		GlobalValidator.validateNo(memberNo, "유효하지 않은 회원 번호입니다.");
+		
+		MemberDTO member = memberMapper.findByMemberNo(memberNo);
+		log.info("이메일 오나 ? : {}", member.getEmail());
+		
+		if(member == null) {
+			throw new PageNotFoundException("존재하지 않는 페이지 입니다.");		
+		}
+		return member;
+	}
+	
+	@Override
+	public void updateMember(Long memberNo, MemberDTO member, MultipartFile image) {
+		
+		
+		GlobalValidator.validateNo(memberNo, "0보다 큰 값을 넣어주시기 바랍니다.");
+		
+		String url = memberMapper.findUrlByMemberNo(memberNo);
+		member.setMemberNo(memberNo);
+		
+		int memberResult = memberMapper.updateMember(member);
+		if(memberResult == 0) {
+			throw new MemberUpdateException ("회원 정보 수정에 실패했습니다.");
+		}
+		if(url != null && !"".equals(url)) { // 기존 파일 존재
+			if(image != null && !image.isEmpty()) { // 새 파일 존재
+				String imageUrl = fileService.store(image);
+				MemberImage profile = MemberImage.builder()
+						.originName(image.getOriginalFilename())
+						.changeName(imageUrl)
+						.refMemberNo(memberNo).build();
+				int imageResult = memberMapper.updateImage(profile);
+				if(imageResult > 0) {
+					fileService.deleteStoredFile(url);
+				} else {
+					fileService.deleteStoredFile(imageUrl);
+					throw new FileUploadException("파일 업로드에 실패했습니다.");
+				}
+			}
+		} else { // 기존 파일 없음
+			if(image != null && !image.isEmpty()) { // 새 파일 존재
+				saveImage(memberNo, image);
+			}
+		}		
+	}
+	
+	@Override
+	public MemberReviewResponse findAllReviews(int page,Long memberNo) {
+
+		GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
+		// 페이징 처리용
+		int listCount = memberMapper.countByReviews(memberNo);
+		// 페이징 처리 메소드 호출
+		Map<String, Object> params = pagenation.getPageRequest(listCount, page, 4);
+		params.put("memberNo", memberNo);
+		// DB에서 회원이 작성한 리뷰 목록 조회
+		List<MemberReviewDTO> reviews = memberMapper.findAllReviews(params);
+		// log.info("조회된 결과 : {}", reviews);
+		return new MemberReviewResponse(reviews ,(PageInfo)params.get("pageInfo"));
+	}
+
+	@Override
+	public void saveOwner(RestaurantDTO restaurant, Long memberNo) {
+		// 사업자번호 중복 검사
+		int count = memberMapper.countByBusinessNo(restaurant.getBusinessNo());
+		if(1 == count) {
+			throw new BusinessNoDuplicateException("이미 존재하는 사업자번호입니다.");
+		}
+		
+		RestaurantVO restaurantBuilder = RestaurantVO.builder()
+										 .businessNo(restaurant.getBusinessNo())
+										 .restaurantName(restaurant.getRestaurantName())
+										 .address(restaurant.getAddress())
+										 .status(restaurant.getStatus())
+										 .refMemberNo(memberNo)
+										 .build();
+		// 매퍼 호출
+		int result = memberMapper.saveOwner(restaurantBuilder);
+		// log.info("사장님 등록 성공 : {} ", restaurantBuilder);
+		if(0 == result) {
+			throw new SavePlaceFailedException("사장님 등록에 실패했습니다.");
+		}
+	}
+	
+	@Override
+	public LikeResponse findAllLikes(int page, Long memberNo, String likeType) {
+	    GlobalValidator.validateNo(page, "유효하지 않은 페이지 요청입니다.");
+		
+	    LikeResponse response = new LikeResponse();
+	    int listCount = 0;
+	    
+	    response.setLikeType(likeType);
+	    Map<String, Object> pages = pagenation.getPageRequest(listCount, page, 5);
+	    
+	    List<LikeDTO> allLikes = new ArrayList<>();
+	    List<ReviewLikeDTO> reviewLikes = new ArrayList<>();
+	    List<ReviewReplyLikeDTO> reviewReplyLikes = new ArrayList<>();
+	    List<PlaceLikeDTO> placeLikes = new ArrayList<>();
+	    List<PlaceReplyLikeDTO> placeReplyLikes = new ArrayList<>();
+	    
+	    
+	    // 좋아요 타입별 분기 처리
+	    if (likeType == null || likeType.equals("ALL")) {
+	        // 전체 좋아요 수 (모든 테이블 합산)
+	        listCount = memberMapper.countAllLikes(memberNo);
+	        // 전체 좋아요 목록 조회 (최신순)
+	        allLikes = memberMapper.findAllLikesByMemberNo(memberNo, pages);
+	        
+	    } else if (likeType.equals("REVIEW")) {
+	        listCount = memberMapper.countReviewLikes(memberNo);
+	        reviewLikes = memberMapper.findReviewLikes(memberNo, pages);
+	        
+	    } else if (likeType.equals("REVIEW_REPLY")) {
+	        listCount = memberMapper.countReviewReplyLikes(memberNo);
+	        reviewReplyLikes = memberMapper.findReviewReplyLikes(memberNo, pages);
+	        
+	    } else if (likeType.equals("PLACE")) {
+	        listCount = memberMapper.countPlaceLikes(memberNo);
+	        placeLikes = memberMapper.findPlaceLikes(memberNo, pages);
+	        
+	    } else if (likeType.equals("PLACE_REPLY")) {
+	        listCount = memberMapper.countPlaceReplyLikes(memberNo);
+	        placeReplyLikes = memberMapper.findPlaceReplyLikes(memberNo, pages);
+	    }
+
+	    response.setAllLikes(allLikes);
+	    response.setReviewLikes(reviewLikes);
+        response.setReviewReplyLikes(reviewReplyLikes);
+        response.setPlaceLikes(placeLikes);
+        response.setPlaceReplyLikes(placeReplyLikes);
+	    response.setPageInfo((PageInfo)pages.get("pageInfo"));
+
+	    return response;
+	}
+		
+		
+
+}

@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.place.model.dao.PlaceMapper">
+	
+	<select id="countByPlaces" resultType="_int" parameterType="map">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE PLACE
+		  JOIN
+		       FR_MEMBER USING (MEMBER_NO)
+		  <if test="tagNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  </if>		  
+		  <if test = "regionNo != 0">
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  </if>
+	     WHERE
+	           PLACE.STATUS = 'Y'
+		  <if test="keyword != ''">
+		   AND
+			   PLACE_TITLE LIKE '%' || #{keyword} || '%'
+		  </if>
+		  <if test="tagNo != 0">
+		   AND
+		       TAG_NO = #{tagNo}
+		   </if>
+		   <if test="regionNo != 0">
+		   AND
+		       REGION_NO = #{regionNo}
+		   </if>
+		
+	</select>
+	
+	<resultMap id="findAllPlaces" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="placeWriter" property="placeWriter" />
+		<result column="profileImage" property="profileImage" />
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes" />
+		<result column="placeCreateDate" property="createDate" />
+		<association property="region" javaType="RegionDTO">
+			<id column="regionNo" property="regionNo"/>
+			<result column="regionName" property="regionName"/>
+		</association>
+		<collection property="placeImages" ofType="PlaceImageDTO">
+			<id column="imageNo" property="imageNo"/>
+			<result column="changeName" property="changeName"/>
+			<result column="imageLevel" property="imageLevel"/>
+		</collection>
+		<collection property="tags" ofType="TagDTO">
+			<id column="tagNo" property="tagNo"/>
+			<result column="tagTitle" property="tagTitle"/>
+			<result column="tagContent" property="tagContent"/>
+		</collection>
+	</resultMap>
+	
+	
+	<select id="findAllPlaces" resultMap="findAllPlaces" parameterType="map">
+		SELECT
+		       PLACE.PLACE_NO placeNo
+		     , PLACE_TITLE placeTitle
+		     , PLACE_CONTENT placeContent
+		     , MEMBER.MEMBER_NO memberNo
+		     , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , VIEW_COUNT viewCount
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
+		     , PLACE.CREATE_DATE placeCreateDate
+		     , IMG.IMAGE_NO imageNo
+		     , IMG.CHANGE_NAME changeName
+		     , IMG.IMAGE_LEVEL imageLevel
+		     , TAG.TAG_NO tagNo
+		     , TAG.TAG_TITLE tagTitle
+		     , TAG.TAG_CONTENT tagContent
+		     , REGION.REGION_NO regionNo
+		     , REGION.REGION_NAME regionName
+		  FROM
+		  	   (
+		  	   SELECT 
+		  	          PLACE.PLACE_NO
+				    , PLACE_TITLE
+				    , PLACE_CONTENT
+				    , MEMBER_NO
+				    , VIEW_COUNT
+				    , (SELECT 
+				              COUNT(*)
+				         FROM
+				              FR_PLACE_LIKE
+				        WHERE
+				              PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS LIKES
+				    , PLACE.CREATE_DATE
+		  	     FROM
+		  	          FR_PLACE PLACE
+	  	          <if test="tagNo != 0">
+		  	     LEFT
+		  	     JOIN
+		  	          FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  	     LEFT
+		  	     JOIN
+		  	          FR_TAG TAG ON (TAG.TAG_NO = PLACETAG.TAG_NO)
+	  	          </if>
+	  	          <if test="regionNo != 0">
+				 LEFT
+				 JOIN
+				      FR_PLACE_REGION PLACEREGION ON (PLACE.PLACE_NO = PLACEREGION.PLACE_NO)
+				 LEFT
+				 JOIN
+				      FR_REGION REGION ON (REGION.REGION_NO = PLACEREGION.REGION_NO)
+				  </if>
+		  	    WHERE
+		              PLACE.STATUS = 'Y'
+				 	<if test="keyword != ''">
+				  AND
+				      PLACE_TITLE LIKE '%' || #{keyword} || '%'
+					</if>
+					<if test="tagNo != 0">
+		 		  AND
+		       		  TAG.TAG_NO = #{tagNo}
+		   			</if>
+		   			<if test="regionNo != 0">
+				  AND
+				      REGION.REGION_NO = #{regionNo}
+					</if>
+		   		ORDER
+				   BY 
+				 <choose>
+					<when test="order == 'likes'">
+					  LIKES DESC
+					</when>
+					 <otherwise>
+				      PLACE.CREATE_DATE DESC
+					 </otherwise>
+				 </choose>
+					, PLACE.PLACE_NO DESC
+	 				<if test="tagNo != 0">
+			 		, TAG_TITLE ASC
+					</if>
+			   OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY	
+		  	   ) PLACE
+		  JOIN
+		       FR_MEMBER MEMBER ON (MEMBER.MEMBER_NO = PLACE.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_IMAGE IMG ON (PLACE.PLACE_NO = IMG.PLACE_NO AND IMAGE_LEVEL = 0 AND IMG.STATUS ='Y')
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG PLACETAG ON (PLACETAG.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_TAG TAG ON (PLACETAG.TAG_NO = TAG.TAG_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION PLACEREGION ON (PLACEREGION.PLACE_NO = PLACE.PLACE_NO)
+		  LEFT
+		  JOIN
+		       FR_REGION REGION ON (PLACEREGION.REGION_NO = REGION.REGION_NO)
+		       <if test = "regionNo != 0">
+		 WHERE
+		       REGION.REGION_NO = #{regionNo}
+		       </if>
+		 ORDER
+		    BY 
+		    <choose>
+				<when test="order == 'likes'">
+			   LIKES DESC
+				</when>
+			    <otherwise>
+		       PLACE.CREATE_DATE DESC
+				</otherwise>
+			</choose>
+			 , PLACE.PLACE_NO DESC
+				<if test="tagNo != 0">
+			 , TAG.TAG_TITLE ASC
+				</if>
+		
+		
+	</select>
+	
+	<insert id="savePlace" parameterType="PlaceDTO">
+		<selectKey resultType="long" keyProperty="placeNo" order="BEFORE">
+			SELECT SEQ_PLACE_NO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT
+		  INTO
+		       FR_PLACE
+		       (
+		       PLACE_NO
+		     , PLACE_TITLE
+		     , PLACE_CONTENT
+		     , MEMBER_NO
+		     , CREATE_DATE
+		     , STATUS
+		       )
+		VALUES
+		       (
+		       #{placeNo}
+		     , #{placeTitle}
+		     , #{placeContent}
+		     , #{placeWriter}
+		     , SYSDATE
+		     , 'Y'
+		       )
+		
+	</insert>
+	
+	<insert id="saveTagsByPlaceNo" parameterType="map">
+	INSERT ALL
+		 <foreach collection="tagNums" item="tagNo">
+		  INTO
+		       FR_PLACE_TAG
+		       (
+		       TAG_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{tagNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+		</foreach>
+		SELECT
+		       *
+		  FROM
+		       DUAL
+	</insert>
+	
+	<insert id="saveImage" parameterType="PlaceImage">
+		INSERT
+		  INTO
+		       FR_PLACE_IMAGE
+		       (
+		       IMAGE_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , PLACE_NO
+		     , CREATE_DATE
+		     , STATUS
+		     , IMAGE_LEVEL
+		       )
+		VALUES
+		       (
+		       SEQ_PLACE_IMAGE_NO.NEXTVAL
+		     , #{originName}
+		     , #{changeName}
+		     , #{refPlaceNo}
+		     , SYSDATE
+		     , 'Y'
+		     , #{imageLevel}
+		       )
+	</insert>
+	
+	<update id="updateViewCount" parameterType="long">
+		UPDATE
+		       FR_PLACE
+		   SET
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		
+		
+	</update>
+	
+	<resultMap id="findPlace" type="PlaceDTO">
+		<id column="placeNo" property="placeNo"/>
+		<result column="placeTitle" property="placeTitle"/>
+		<result column="placeContent" property="placeContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="placeWriter" property="placeWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="viewCount" property="viewCount"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate"/>
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>		
+	</resultMap>
+	
+	<select id="findPlaceByPlaceNo" resultMap="findPlace" parameterType="long">
+		SELECT
+			   PLACE.PLACE_NO placeNo
+			 , PLACE_TITLE placeTitle
+			 , PLACE_CONTENT placeContent
+			 , MEMBER.MEMBER_NO memberNo
+			 , NICKNAME placeWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+			 , VIEW_COUNT viewCount
+			 , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_LIKE
+		         WHERE
+		               PLACE.PLACE_NO = FR_PLACE_LIKE.PLACE_NO) AS likes
+			 , PLACE.CREATE_DATE createDate
+			 , PLACELIKE.MEMBER_NO likeMembers
+		  FROM
+		       FR_PLACE PLACE
+		  JOIN
+		       FR_MEMBER MEMBER ON (PLACE.MEMBER_NO = MEMBER.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_LIKE PLACELIKE ON (PLACELIKE.PLACE_NO = PLACE.PLACE_NO)
+		 WHERE
+		       PLACE.PLACE_NO = #{placeNo}
+		   AND
+		       PLACE.STATUS = 'Y'
+	</select>
+	
+	<select id="findImagesByPlaceNo" resultType="PlaceImageDTO" parameterType="long">
+		SELECT
+		       IMAGE_NO imageNo
+		     , ORIGIN_NAME originName
+		     , CHANGE_NAME changeName
+		     , IMAGE_LEVEL imageLevel
+		  FROM
+		       FR_PLACE_IMAGE 
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+	</select>
+	
+	<select id="findTagsByPlaceNo" resultType="TagDTO" parameterType="long">
+		SELECT
+		       TAG_NO tagNo
+		     , TAG_TITLE tagTitle
+		     , TAG_CONTENT tagContent
+		  FROM
+		       FR_TAG
+		  LEFT
+		  JOIN
+		       FR_PLACE_TAG USING (TAG_NO)
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       TAG_TITLE ASC
+	</select>
+	
+	<resultMap id="findReplies" type="PlaceReplyDTO">
+		<id column="replyNo" property="replyNo"/>
+		<result column="replyContent" property="replyContent"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="replyWriter" property="replyWriter"/>
+		<result column="profileImage" property="profileImage"/>
+		<result column="likes" property="likes"/>
+		<result column="createDate" property="createDate" />
+		<collection property="likeMembers" ofType="Long">
+			<result column="likeMembers" property="likeMembers"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findRepliesByPlaceNo" resultMap="findReplies" parameterType="long">
+		SELECT
+		       REPLY.REPLY_NO replyNo
+		     , REPLY_CONTENT replyContent
+		     , MEMBER.MEMBER_NO memberNo
+		     , NICKNAME replyWriter
+		     , MEMBERIMG.CHANGE_NAME profileImage
+		     , (SELECT 
+		               COUNT(*)
+		          FROM
+		               FR_PLACE_REPLY_LIKE
+		         WHERE
+		               REPLY.REPLY_NO = FR_PLACE_REPLY_LIKE.REPLY_NO) AS likes
+		     , REPLY.CREATE_DATE createDate
+		     , REPLYLIKE.MEMBER_NO likeMembers
+		  FROM
+		       FR_PLACE_REPLY REPLY
+		  JOIN
+		       FR_MEMBER MEMBER ON (REPLY.MEMBER_NO = MEMBER.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_MEMBER_IMAGE MEMBERIMG ON (MEMBER.MEMBER_NO = MEMBERIMG.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       FR_PLACE_REPLY_LIKE REPLYLIKE ON (REPLYLIKE.REPLY_NO = REPLY.REPLY_NO)
+		 WHERE
+		       REPLY.STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		 ORDER
+		    BY
+		       REPLY.CREATE_DATE DESC
+	</select>
+	
+	<select id="findRegionByPlaceNo" resultType="RegionDTO" parameterType="long">
+		SELECT
+		       REGION_NO regionNo
+		     , REGION_NAME regionName
+		  FROM
+		       FR_REGION
+		  LEFT
+		  JOIN
+		       FR_PLACE_REGION USING (REGION_NO)
+		 WHERE
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<update id="updatePlace" parameterType="PlaceDTO">
+		UPDATE
+		       FR_PLACE
+		   SET
+		       PLACE_TITLE = #{placeTitle}
+		     , PLACE_CONTENT = #{placeContent}
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		   AND
+		       MEMBER_NO = #{placeWriter}
+		
+	</update>
+	
+	<update id="deleteImage" parameterType="long">
+		UPDATE
+		       FR_PLACE_IMAGE
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       IMAGE_NO = #{imageNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	<delete id="deleteTags" parameterType="long">
+		DELETE
+		  FROM
+		       FR_PLACE_TAG
+		 WHERE
+		       PLACE_NO = #{placeNo}
+		
+	</delete>
+	
+	<update id="deletePlace" parameterType="long">
+		UPDATE
+		       FR_PLACE
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+		   
+	</update>
+	
+	<select id="countByPlaceNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveReply" parameterType="PlaceReply">
+		INSERT
+		  INTO
+		       FR_PLACE_REPLY
+		       (
+		       REPLY_NO
+		     , REPLY_CONTENT
+		     , MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       SEQ_PLACE_REPLY_NO.NEXTVAL
+		     , #{replyContent}
+		     , #{replyWriter}
+		     , #{refPlaceNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
+	<select id="countLikeByMember" parameterType="PlaceLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</select>
+	
+	<insert id="saveLike" parameterType="PlaceLike">
+		INSERT
+		  INTO
+		       FR_PLACE_LIKE
+		       (
+		       MEMBER_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+		
+	</insert>
+	
+	<delete id="deleteLike" parameterType="PlaceLike">
+		DELETE
+		  FROM
+		       FR_PLACE_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       PLACE_NO = #{placeNo}
+	</delete>
+	
+	<insert id="saveRegionByPlaceNo" parameterType="map">
+		INSERT
+		  INTO
+		       FR_PLACE_REGION
+		       (
+		       REGION_NO
+		     , PLACE_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{regionNo}
+		     , #{placeNo}
+		     , SYSDATE
+		       )
+	</insert>
+
+	
+</mapper>

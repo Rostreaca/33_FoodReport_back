@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.admin.review.model.dao.AdminReviewMapper">
+	
+	<select id="countByReviews"
+		resultType="_int">
+		SELECT 
+			   COUNT(*) 
+		  FROM 
+		  	   FR_REVIEW
+	</select>
+
+	<select id="findAllReviews"
+		parameterType="map">
+ 		SELECT
+			   REVIEW.REVIEW_NO reviewNo
+			 , REVIEW.REVIEW_TITLE reviewTitle
+			 , REVIEW.REVIEW_CONTENT reviewContent
+			 , REVIEW.CREATE_DATE createDate
+			 , REVIEW.STATUS status
+			 , REVIEW.VIEW_COUNT viewCount
+			 , REVIEW.UPDATE_DATE updateDate
+			 , REVIEW.DELETE_DATE deleteDate
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = REVIEW.MEMBER_NO ) AS NICKNAME
+			 , (SELECT 
+			 		   COUNT(*)
+			 	  FROM
+			 	  	   FR_REVIEW_LIKE
+			 	 WHERE
+			 	 	   REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 ,  (SELECT 
+			 		    CHANGE_NAME
+          		   FROM 
+          		        FR_MEMBER_IMAGE
+         		  WHERE 
+         		  		MEMBER_NO = REVIEW.MEMBER_NO) AS profileImage
+		  FROM
+		  	   FR_REVIEW REVIEW
+		  ORDER BY REVIEW_NO DESC
+		  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="countByReviewTitle"
+		resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   FR_REVIEW
+		 WHERE
+		 	   REVIEW_TITLE LIKE '%' || #{reviewTitle} || '%'
+	</select>
+	
+	<select id="findByReviewTitle"
+		parameterType="map">
+		SELECT
+			   REVIEW.REVIEW_NO reviewNo
+			 , REVIEW.REVIEW_TITLE reviewTitle
+			 , REVIEW.REVIEW_CONTENT reviewContent
+			 , REVIEW.CREATE_DATE createDate
+			 , REVIEW.STATUS status
+			 , REVIEW.VIEW_COUNT viewCount
+			 , REVIEW.UPDATE_DATE updateDate
+			 , REVIEW.DELETE_DATE deleteDate
+			 , (SELECT
+			 		   NICKNAME
+			 	  FROM
+			 	  	   FR_MEMBER
+			 	 WHERE
+			 	 	   MEMBER_NO = REVIEW.MEMBER_NO ) AS NICKNAME
+			 , (SELECT 
+			 		   COUNT(*)
+			 	  FROM
+			 	  	   FR_REVIEW_LIKE
+			 	 WHERE
+			 	 	   REVIEW.REVIEW_NO = FR_REVIEW_LIKE.REVIEW_NO) AS LIKES
+			 ,  (SELECT 
+			 		    CHANGE_NAME
+          		   FROM 
+          		        FR_MEMBER_IMAGE
+         		  WHERE 
+         		  		MEMBER_NO = REVIEW.MEMBER_NO) AS profileImage
+		  FROM
+		  	   FR_REVIEW REVIEW
+		  WHERE
+		 	   REVIEW_TITLE LIKE '%' || #{reviewTitle} || '%'
+		  ORDER BY REVIEW_NO DESC
+		  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<update id="deleteReview">
+		UPDATE
+			   FR_REVIEW
+		   SET
+		   	   STATUS = 'N'
+		   	 , DELETE_DATE = SYSDATE
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+		   AND
+		   	   STATUS = 'Y'
+	</update>
+	
+	<update id="updateReview">
+		UPDATE
+			   FR_REVIEW
+		   SET
+		   	   STATUS = 'Y'
+		   	 , UPDATE_DATE = SYSDATE
+		 WHERE
+		 	   REVIEW_NO = #{reviewNo}
+		   AND
+		   	   STATUS = 'N'
+	</update>
+	
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.token.model.dao.TokenMapper">
+	
+	<!-- 토큰 저장 -->
+	<insert id="saveToken"
+			parameterType="RefreshToken">
+		INSERT 
+		  INTO 
+		  	   FR_TOKEN 
+		VALUES 
+			   (
+			   SEQ_TOKEN_NO.NEXTVAL
+			 , #{token}
+			 , #{expiration}
+			 , #{memberNo}
+			   )
+	</insert>
+	
+	<!-- 토큰 삭제(회원 탈퇴)-->
+	<delete id="deleteToken"
+			parameterType="long">	
+		DELETE 
+		  FROM 
+		  	   FR_TOKEN
+		 WHERE 
+		 	   MEMBER_NO = #{memberNo}
+	</delete>
+	
+	<!-- 토큰 삭제(로그아웃) -->
+	<delete id="deleteTokenByRefreshTokenDTO"
+			parameterType="RefreshTokenDTO">	
+		DELETE 
+		  FROM 
+		  	   FR_TOKEN
+		 WHERE 
+		 	   MEMBER_NO = #{memberNo}
+		   AND 
+		       TOKEN = #{token}
+	</delete>
+	
+	<!-- 토큰 조회 -->
+	<select id="findByToken"
+			parameterType="String">
+		SELECT 
+			   TOKEN 
+			   MEMBER_NO memberNo 
+			   EXPIRATION 
+		  FROM 
+		  	   FR_TOKEN 
+		 WHERE 
+		 	   #{refreshToken}
+	</select>
+	
+	
+</mapper>

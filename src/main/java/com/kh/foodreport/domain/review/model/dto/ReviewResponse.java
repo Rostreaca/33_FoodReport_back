@@ -1,8 +1,8 @@
-package com.kh.foodreport.domain.member.controller;
+package com.kh.foodreport.domain.review.model.dto;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.kh.foodreport.global.util.PageInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,10 +15,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TestVO {
+public class ReviewResponse{
 
-	private String str;
-	private List<String> text;
-	private Integer number;
+	private List<ReviewDTO> reviews;
+	private PageInfo pageInfo;
 	
 }

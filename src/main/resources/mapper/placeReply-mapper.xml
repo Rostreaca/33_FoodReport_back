@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.foodreport.domain.place.model.dao.PlaceReplyMapper">
+	
+	<update id="updateReply" parameterType="PlaceReplyDTO">
+		UPDATE
+		       FR_PLACE_REPLY
+		   SET
+		       REPLY_CONTENT = #{replyContent} 
+		     , UPDATE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{replyWriter}
+	</update>
+		
+	<update id="deleteReply" parameterType="PlaceReply">
+		UPDATE
+		       FR_PLACE_REPLY
+		   SET
+		       STATUS = 'N'
+		     , DELETE_DATE = SYSDATE
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{replyWriter} 
+		
+	</update>
+	
+		<select id="countReplyLikeByMember" parameterType="PlaceReplyLike" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_REPLY_LIKE
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND 
+		       REPLY_NO = #{replyNo}
+	</select>
+	
+	<insert id="saveReplyLike" parameterType="PlaceReplyLike">
+		INSERT
+		  INTO
+		       FR_PLACE_REPLY_LIKE
+		       (
+		       REPLY_NO
+		     , MEMBER_NO
+		     , CREATE_DATE
+		       )
+		VALUES
+		       (
+		       #{replyNo}
+		     , #{memberNo}
+		     , SYSDATE
+		       )
+	</insert>
+	
+	<select id="countByReplyNo" parameterType="long">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       FR_PLACE_REPLY
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       REPLY_NO = #{replyNo}
+	</select>
+	
+	<delete id="deleteReplyLike" parameterType="PlaceReplyLike">
+		DELETE
+		  FROM
+		       FR_PLACE_REPLY_LIKE
+		 WHERE
+		       REPLY_NO = #{replyNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+		
+	</delete>
+	
+</mapper>
