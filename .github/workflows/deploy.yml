@@ -1,0 +1,91 @@
+name: Build and Deploy Spring Boot App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: Grant execute permission for gradle
+        run: chmod +x ./gradlew
+
+      - name: Build to Boot Project
+        run: ./gradlew bootJar -x test
+
+      - name: Verify Build jar
+        run: |
+          if [ ! -f build/libs/*.jar ]; then 
+            echo "빌드 실패"
+            exit 1
+          fi
+          echo "빌드파일 만들기 성공"
+        
+      - name: Change Maintenance Mode
+        if: github.event_name == 'push'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.SSH_KEY}}
+          script: |
+            cd /home/ubuntu/deploy
+            sudo cp /home/ubuntu/deploy/front/dist/index.html /home/ubuntu/deploy/maintenence/index_tmp.html
+            sudo cp /home/ubuntu/deploy/maintenence/index.html /home/ubuntu/deploy/front/dist/index.html
+            docker compose restart web
+            echo "유지보수 모드 활성화"
+            sleep 5
+
+        # 이슈사항 : 빌드는 하고싶은데 배포는 조건에 맞는 경우에만 하고 싶을 때
+      - name: Prepare Target Directory
+        if: github.event_name == 'push'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.SSH_KEY}}
+          script: | #백업파일 생성
+            mkdir -p /home/ubuntu/deploy/back/backup
+            find /home/ubuntu/deploy/back/backup -name "backup-*.jar" -mtime +3 -delete
+            if [ -f /home/ubuntu/deploy/back/*jar ]; then
+              mv /home/ubuntu/deploy/back/*.jar /home/ubuntu/deploy/back/backup/backup-$(date +%Y%m%d%H%M%S).jar
+            fi
+
+      - name: Deploy Boot App To EC2
+        if: github.event_name == 'push'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.SSH_KEY}}
+          source: "build/libs/*.jar"
+          target: "/home/ubuntu/deploy/back"
+          strip_components: 2 # target의 source의 파일경로를 적용 시 source의 앞단 경로 2개까지 없앰
+      - name: Restart Container
+        if: github.event_name == 'push'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.SSH_KEY}}
+          script : |
+            cd /home/ubuntu/deploy
+            docker compose restart api
+            sleep 50
+            sudo cp /home/ubuntu/deploy/maintenence/index_tmp.html /home/ubuntu/deploy/front/dist/index.html
+            sudo rm /home/ubuntu/deploy/maintenence/index_tmp.html
+            docker compose restart web
+            echo "정상 모드 복원 완료"
