@@ -343,7 +343,7 @@
 		       PLACE_NO = #{placeNo}
 		 ORDER
 		    BY
-		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+		       IMAGE_LEVEL ASC, CREATE_DATE ASC
 	</select>
 	
 	<select id="findTagsByPlaceNo" resultType="TagDTO" parameterType="long">
@@ -459,7 +459,14 @@
 		       FR_PLACE_TAG
 		 WHERE
 		       PLACE_NO = #{placeNo}
-		
+	</delete>
+	
+	<delete id="deleteRegion" parameterType="long">
+		DELETE
+		  FROM
+		       FR_PLACE_REGION
+		 WHERE
+		       PLACE_NO = #{placeNo}
 	</delete>
 	
 	<update id="deletePlace" parameterType="long">

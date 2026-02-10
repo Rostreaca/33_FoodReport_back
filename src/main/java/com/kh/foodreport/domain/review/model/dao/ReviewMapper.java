@@ -62,5 +62,9 @@ public interface ReviewMapper {
 
 	public RegionDTO findRegionByReviewNo(Long reviewNo);
 
+	public int deleteRegion(Long reviewNo);
+
+	public List<TagDTO> findTagsByReviewNo(Long reviewNo);
+
 	
 }
