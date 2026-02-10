@@ -17,7 +17,7 @@ public interface ReviewService {
 
 	public ReviewDTO findReviewByReviewNo(Long reviewNo);
 
-	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo);
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo, List<Long> deleteImageNums);
 
 	public void deleteReview(Long reviewNo);
 

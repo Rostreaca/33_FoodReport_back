@@ -343,7 +343,7 @@
 		       PLACE_NO = #{placeNo}
 		 ORDER
 		    BY
-		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+		       IMAGE_LEVEL ASC, CREATE_DATE ASC
 	</select>
 	
 	<select id="findTagsByPlaceNo" resultType="TagDTO" parameterType="long">

@@ -79,6 +79,7 @@ public class ReviewController {
 														, @ModelAttribute ReviewDTO review
 														, @RequestParam(name = "tagNums", required = false) List<Long> tagNums
 														, @RequestParam(name = "images", required = false) List<MultipartFile> images
+														, @RequestParam(name = "deleteImageNums", required = false) List<Long> deleteImageNums 
 														, @AuthenticationPrincipal CustomUserDetails user
 														, @RequestParam(name="regionNo", required=false) Long regionNo){
 		
@@ -86,7 +87,7 @@ public class ReviewController {
 		
 		review.setReviewWriter(String.valueOf(user.getMemberNo()));
 		
-		reviewService.updateReview(review,tagNums,images, regionNo);
+		reviewService.updateReview(review,tagNums,images,regionNo,deleteImageNums);
 		
 		return ApiResponse.ok(null, "리뷰 변경에 성공했습니다.");
 	}

@@ -456,7 +456,7 @@
 		       STATUS = 'Y'
 		 ORDER
 		    BY
-		       IMAGE_LEVEL ASC, CREATE_DATE DESC
+		       IMAGE_LEVEL ASC, CREATE_DATE ASC
 	</select>
 	
 	<update id="deleteImage" parameterType="long">

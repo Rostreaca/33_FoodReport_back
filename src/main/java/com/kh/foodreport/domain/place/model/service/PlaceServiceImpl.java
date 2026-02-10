@@ -83,7 +83,7 @@ public class PlaceServiceImpl implements PlaceService{
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
 		if (images != null && !images.isEmpty()) {
-			saveImages(place.getPlaceNo(), images);
+			saveImages(place.getPlaceNo(), images, false);
 		}
 		
 		if (regionNo != null ) {
@@ -123,7 +123,7 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 	}
 	
-	private void saveImages(Long placeNo, List<MultipartFile> images) {
+	private void saveImages(Long placeNo, List<MultipartFile> images, boolean hasThumbnail) {
 
 		List<String> imageUrls = new ArrayList<>();
 
@@ -135,12 +135,10 @@ public class PlaceServiceImpl implements PlaceService{
 			}
 
 			// 썸네일 여부를 저장할 변수
-			int imageLevel = 0;
+			int imageLevel = 1;
 
-			if (i == 0) { // 첫 이미지 : 썸네일(imageLevel : 0), 다른 이미지(imageLevel : 1)
+			if (i == 0 && !hasThumbnail) { // 첫 이미지 : 썸네일(imageLevel : 0), 다른 이미지(imageLevel : 1)
 				imageLevel = 0;
-			} else {
-				imageLevel = 1;
 			}
 
 			// S3로 파일 저장 후 DB에 담을 파일경로 + changeName 가져오기
@@ -212,7 +210,7 @@ public class PlaceServiceImpl implements PlaceService{
 	
 	@Transactional
 	@Override
-	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images, Long regionNo) {
+	public void updatePlace(PlaceDTO place, List<Long> tagNums, List<MultipartFile> images, Long regionNo, List<Long> deleteImageNums) {
 		
 		GlobalValidator.validateNo(place.getPlaceNo(), "유효하지 않은 게시글 번호입니다.");
 		placeValiator.validatePlace(place);
@@ -224,7 +222,7 @@ public class PlaceServiceImpl implements PlaceService{
 		}
 
 		// 이미지가 존재하면 이미지 update
-			updateImages(place.getPlaceNo(), images);
+			updateImages(place.getPlaceNo(), images, deleteImageNums);
 		
 			updateTags(place.getPlaceNo(),tagNums);			
 		
@@ -245,19 +243,25 @@ public class PlaceServiceImpl implements PlaceService{
 		placeMapper.deleteRegion(placeNo);
 	}
 	
-	private void updateImages(Long placeNo, List<MultipartFile> images) {
+	private void updateImages(Long placeNo, List<MultipartFile> images, List<Long> deleteImageNums) {
 		
 		List<PlaceImageDTO> placeImages = placeMapper.findImagesByPlaceNo(placeNo);
+
+		boolean hasThumbnail = false;
 		
 		if (placeImages != null && !placeImages.isEmpty()) { // 기존 게시글에 이미지가 존재하면 우선 DELETE 함
-			placeImages.forEach(image -> { 
-				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
-			});
+			for(PlaceImageDTO image : placeImages) {
+				if(deleteImageNums != null && deleteImageNums.contains(image.getImageNo())) { // 프론트엔드에서 기존 이미지를 삭제했을 경우에만 DELETE
+					deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+				} else if(image.getImageLevel() == 0) {
+					hasThumbnail = true;
+				}
+			}
 		}
 		
 		// 요청받은 이미지가 존재하면 INSERT
 		if(images != null && !images.isEmpty()) {
-			saveImages(placeNo, images);
+			saveImages(placeNo, images, hasThumbnail);
 		}
 
 	}

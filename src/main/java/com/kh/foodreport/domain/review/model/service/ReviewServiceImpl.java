@@ -47,7 +47,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final FileService fileService;
 	private final Pagenation pagenation;
 
-	private void saveImages(Long reviewNo, List<MultipartFile> images) {
+	private void saveImages(Long reviewNo, List<MultipartFile> images, boolean hasThumbnail) {
 
 		// Mapper에서 Insert문을 성공적으로 처리했는 지 확인 할 변수
 		int result = 1;
@@ -64,12 +64,10 @@ public class ReviewServiceImpl implements ReviewService {
 			}
 
 			// 썸네일 여부를 저장할 변수
-			int imageLevel = 0;
+			int imageLevel = 1;
 
-			if (i == 0) { // 첫 이미지 : 썸네일(imageLevel : 0), 다른 이미지(imageLevel : 1)
+			if (i == 0 && !hasThumbnail) { // 첫 이미지 : 썸네일(imageLevel : 0), 다른 이미지(imageLevel : 1)
 				imageLevel = 0;
-			} else {
-				imageLevel = 1;
 			}
 
 			// S3로 파일 저장 후 DB에 담을 파일경로 + changeName 가져오기
@@ -158,7 +156,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// 이미지가 존재할 경우 이미지 저장 메소드 호출
 		if (images != null && !images.isEmpty()) {
-			saveImages(review.getReviewNo(), images);
+			saveImages(review.getReviewNo(), images, false);
 		}
 		
 		if(regionNo != null) {
@@ -220,8 +218,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo) {
-
+	public void updateReview(ReviewDTO review, List<Long> tagNums, List<MultipartFile> images, Long regionNo ,List<Long> deleteImageNums) {
 		GlobalValidator.validateNo(review.getReviewNo(), "유효하지 않은 게시글 번호입니다.");
 		reviewValidator.validateReview(review);
 
@@ -231,7 +228,7 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewCreationException("리뷰 내용 수정에 실패했습니다");
 		}
 
-			updateImages(review.getReviewNo(), images);
+			updateImages(review.getReviewNo(), images, deleteImageNums);
 
 			updateTags(review.getReviewNo(), tagNums);
 		
@@ -264,20 +261,25 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 	
 	
-	private void updateImages(Long reviewNo, List<MultipartFile> images) {
+	private void updateImages(Long reviewNo, List<MultipartFile> images, List<Long> deleteImageNums) {
 		
 		List<ReviewImageDTO> reviewImages = reviewMapper.findImagesByReviewNo(reviewNo);
 		
-		if (reviewImages != null && !reviewImages.isEmpty()) { // 기존 이미지 X
-
-			reviewImages.forEach(image -> { // 반복
-				deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
-			});
-		}
+		boolean hasThumbnail = false;
 		
+		if (reviewImages != null && !reviewImages.isEmpty()) {
+			for(ReviewImageDTO image : reviewImages) {// 반복
+
+				if(deleteImageNums != null && deleteImageNums.contains(image.getImageNo())) { // 프론트엔드에서 기존 이미지를 삭제했을 경우
+					deleteImage(image); // 새파일 저장이 성공적으로 끝나면 S3에서 기존 파일 삭제 및 DB STATUS 변경
+				} else if(image.getImageLevel() == 0) {
+					hasThumbnail = true;
+				}
+			}
+		}
 
 		if(images != null && !images.isEmpty()) {
-			saveImages(reviewNo, images);
+			saveImages(reviewNo, images, hasThumbnail);
 		}
 		
 	}
