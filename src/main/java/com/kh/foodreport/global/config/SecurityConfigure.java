@@ -51,7 +51,7 @@ public class SecurityConfigure {
 					// 비로그인 허용(POST)
 					requests.requestMatchers(HttpMethod.POST,"/api/members").permitAll(); // 회원가입 경로 누구나 접근 가능
 					
-					requests.requestMatchers(HttpMethod.POST, "/api/members/**", "/api/reviews/*/replies", "/api/reviews/**","/api/members/images").authenticated();
+					requests.requestMatchers(HttpMethod.POST, "/api/members/**", "/api/reviews/*/replies", "/api/reviews/**","/api/members/images", "/api/places/*/likes","/api/places/*/replies","/api/places/replies/**").authenticated();
 					
 					// 로그인 필요(GET)
 					
@@ -60,9 +60,9 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members").permitAll();
 					// 로그인 필요(PUT)	
 
-					requests.requestMatchers(HttpMethod.PUT, "/api/members", "/api/members/info", "/api/reviews/**").authenticated();
+					requests.requestMatchers(HttpMethod.PUT, "/api/members", "/api/members/info", "/api/reviews/**","/api/places/replies/**").authenticated();
 					// 로그인 필요(DELETE)
-					requests.requestMatchers(HttpMethod.DELETE, "/api/members", "/api/reviews/**").authenticated();
+					requests.requestMatchers(HttpMethod.DELETE, "/api/members", "/api/reviews/**","/api/places/*/likes","/api/places/replies/**").authenticated();
 					
 					// 사장님
 					requests.requestMatchers(HttpMethod.POST,"/api/places/**").hasAuthority("ROLE_OWNER");
