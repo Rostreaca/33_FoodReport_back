@@ -93,6 +93,8 @@
 	           FR_MEMBER
 	 	 WHERE 
 	       	   MEMBER_NO = #{memberNo}
+	       AND 
+	           STATUS = 'Y'
 	</select>
 	
 	<!-- 프로필 이미지 저장 -->
